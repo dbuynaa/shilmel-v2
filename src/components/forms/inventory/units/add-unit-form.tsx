@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { type JSX } from "react";
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { addUnit } from "@/actions/inventory/units"

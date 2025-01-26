@@ -1,11 +1,12 @@
 import * as React from "react"
+import type { JSX } from "react"
 import type { Metadata } from "next"
 import { unstable_noStore as noStore } from "next/cache"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import { db } from "@/db/index"
 import { categories, type Category } from "@/db/schema"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 import type { SearchParams } from "@/types"
 import { categoriesSearchParamsSchema } from "@/validations/params"
 import { asc, desc, like, sql } from "drizzle-orm"
@@ -21,12 +22,13 @@ export const metadata: Metadata = {
 }
 
 interface AppInventoryCategoriesPageProps {
-  searchParams: SearchParams
+  searchParams: Promise<SearchParams>
 }
 
-export default async function AppInventoryCategoriesPage({
-  searchParams,
-}: AppInventoryCategoriesPageProps): Promise<JSX.Element> {
+export default async function AppInventoryCategoriesPage(
+  props: AppInventoryCategoriesPageProps
+): Promise<JSX.Element> {
+  const searchParams = await props.searchParams
   const session = await auth()
   if (!session) redirect("/signin")
 

@@ -7,7 +7,7 @@ import { getUserByEmail, getUserByResetPasswordToken } from "@/actions/users"
 import { signIn } from "@/auth"
 import { db } from "@/db"
 import { users, type NewUser } from "@/db/schema"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 import {
   signInWithPasswordSchema,
   signUpWithPasswordSchema,

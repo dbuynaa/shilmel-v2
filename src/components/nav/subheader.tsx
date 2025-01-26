@@ -6,6 +6,8 @@ import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
 import { InstantHelperMenu } from "@/components/nav/app/menus/instant-helper-menu"
 
+import type { JSX } from "react";
+
 interface SubheaderProps {
   buttonText: string
   buttonLink: string

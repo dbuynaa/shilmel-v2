@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import Link from "next/link"
 
@@ -10,6 +9,8 @@ import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
 import { SidebarNav } from "@/components/nav/app/sidebar-nav"
 import { SubscriptionPrompt } from "@/components/subscription-prompt"
+
+import type { JSX } from "react";
 
 export function Sidebar(): JSX.Element {
   const [collapsed, setCollapsed] = React.useState<boolean>(false)

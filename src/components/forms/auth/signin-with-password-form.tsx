@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { signInWithPassword } from "@/actions/auth"
@@ -24,6 +23,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
+
+import type { JSX } from "react";
 
 export function SignInWithPasswordForm(): JSX.Element {
   const { toast } = useToast()

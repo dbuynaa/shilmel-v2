@@ -4,7 +4,7 @@ import NextAuth from "next-auth"
 import { linkOAuthAccount } from "@/actions/auth"
 import { getUserById } from "@/actions/users"
 import { db } from "@/db/index"
-import { env } from "@/env.mjs"
+import { env } from "@/env.js"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 
 import authConfig from "@/config/auth"

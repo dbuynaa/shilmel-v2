@@ -1,6 +1,8 @@
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 
+import type { JSX } from "react";
+
 export function Search(): JSX.Element {
   return (
     <form className="relative">

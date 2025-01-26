@@ -11,6 +11,8 @@ import {
 import { AddUnitForm } from "@/components/forms/inventory/units/add-unit-form"
 import { SubSubHeader } from "@/components/nav/subsubheader"
 
+import type { JSX } from "react";
+
 export default async function AppInventoryUnitsNewUnitPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

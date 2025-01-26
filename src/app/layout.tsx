@@ -2,7 +2,7 @@ import "@/styles/globals.css"
 
 import * as React from "react"
 import type { Metadata, Viewport } from "next"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 
 import { fontInter } from "@/config/fonts"
 import { siteConfig } from "@/config/site"

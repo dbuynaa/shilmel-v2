@@ -1,11 +1,12 @@
-"use client"
-
+"use client";
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
+
+import type { JSX } from "react";
 
 export function ViewToggle(): JSX.Element {
   const [active, setActive] = React.useState<"list" | "grid">("grid")

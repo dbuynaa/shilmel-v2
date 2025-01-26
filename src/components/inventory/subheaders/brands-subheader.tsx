@@ -6,6 +6,8 @@ import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
 import { InstantHelperMenu } from "@/components/nav/app/menus/instant-helper-menu"
 
+import type { JSX } from "react";
+
 export function BrandsSubheader(): JSX.Element {
   return (
     <div className="flex h-20 w-full items-center justify-end border-b bg-tertiary px-5">

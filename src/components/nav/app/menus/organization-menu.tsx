@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/sheet"
 import { Icons } from "@/components/icons"
 
+import type { JSX } from "react";
+
 export function OrganizationMenu(): JSX.Element {
   return (
     <Sheet>

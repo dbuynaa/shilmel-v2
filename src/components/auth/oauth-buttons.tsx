@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import { unstable_noStore as noStore } from "next/cache"
 import { signIn } from "next-auth/react"
@@ -8,6 +7,8 @@ import { DEFAULT_SIGNIN_REDIRECT } from "@/data/constants/index"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
+
+import type { JSX } from "react";
 
 export function OAuthButtons(): JSX.Element {
   const { toast } = useToast()

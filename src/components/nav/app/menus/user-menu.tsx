@@ -14,6 +14,8 @@ import {
 import { SignOutButton } from "@/components/auth/signout-button"
 import { Icons } from "@/components/icons"
 
+import type { JSX } from "react";
+
 export async function UserMenu(): Promise<JSX.Element> {
   const session = await auth()
   return (

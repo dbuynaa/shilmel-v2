@@ -9,7 +9,10 @@ export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
     NEXTAUTH_URL: z.string().url(),
-    AUTH_SECRET: z.string(),
+    AUTH_SECRET:
+      process.env.NODE_ENV === "production"
+        ? z.string()
+        : z.string().optional(),
     GOOGLE_ID: z.string(),
     GOOGLE_SECRET: z.string(),
     GITHUB_ID: z.string(),

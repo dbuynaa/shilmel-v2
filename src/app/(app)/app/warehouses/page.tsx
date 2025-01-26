@@ -1,9 +1,10 @@
 import * as React from "react"
+import type { JSX } from "react"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { getAllWarehouses } from "@/actions/warehouses"
 import { auth } from "@/auth"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 
 import { Subheader } from "@/components/nav/subheader"
 import { WarehouseCardSkeleton } from "@/components/skeletons/warehouse-card-skeleton"

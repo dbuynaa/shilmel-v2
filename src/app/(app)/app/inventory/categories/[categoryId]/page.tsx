@@ -1,8 +1,9 @@
+import type { JSX } from "react"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { getCategoryById } from "@/actions/inventory/categories"
 import { auth } from "@/auth"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 
 import {
   Card,
@@ -21,14 +22,15 @@ export const metadata: Metadata = {
 }
 
 interface AppInventoryCategoriesUpdateCategoryPageProps {
-  params: {
+  params: Promise<{
     categoryId: number
-  }
+  }>
 }
 
-export default async function AppInventoryCategoriesUpdateCategoryPage({
-  params,
-}: AppInventoryCategoriesUpdateCategoryPageProps): Promise<JSX.Element> {
+export default async function AppInventoryCategoriesUpdateCategoryPage(
+  props: AppInventoryCategoriesUpdateCategoryPageProps
+): Promise<JSX.Element> {
+  const params = await props.params
   const session = await auth()
   if (!session) redirect("/signin")
 

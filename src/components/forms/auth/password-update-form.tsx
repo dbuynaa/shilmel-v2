@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { updatePassword } from "@/actions/auth"
@@ -22,6 +21,8 @@ import {
 } from "@/components/ui/form"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
+
+import type { JSX } from "react";
 
 interface PasswordUpdateFormProps {
   resetPasswordToken: string

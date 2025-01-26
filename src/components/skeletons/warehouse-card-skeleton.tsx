@@ -2,6 +2,8 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Card, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 
+import type { JSX } from "react";
+
 export function WarehouseCardSkeleton(): JSX.Element {
   return (
     <Card className="h-full overflow-hidden">

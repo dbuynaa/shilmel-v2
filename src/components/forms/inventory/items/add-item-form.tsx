@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
@@ -37,6 +36,8 @@ import { FileDialog } from "@/components/file-dialog"
 import { Icons } from "@/components/icons"
 import { Zoom } from "@/components/image-zoom"
 import type { UploadFilesRouter } from "@/app/api/uploadthing/core"
+
+import type { JSX } from "react";
 
 type AddItemFormInputs = z.infer<typeof itemSchema>
 

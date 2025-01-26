@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { resendEmailVerificationLink } from "@/actions/emails"
@@ -22,6 +21,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
+
+import type { JSX } from "react";
 
 export function EmailVerificationForm(): JSX.Element {
   const router = useRouter()

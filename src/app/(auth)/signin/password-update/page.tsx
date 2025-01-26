@@ -1,7 +1,8 @@
+import type { JSX } from "react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getUserByResetPasswordToken } from "@/actions/users"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -22,12 +23,13 @@ export const metadata: Metadata = {
 }
 
 interface PasswordUpdatePageProps {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function PasswordUpdatePage({
-  searchParams,
-}: PasswordUpdatePageProps): Promise<JSX.Element> {
+export default async function PasswordUpdatePage(
+  props: PasswordUpdatePageProps
+): Promise<JSX.Element> {
+  const searchParams = await props.searchParams
   if (searchParams.token) {
     const user = await getUserByResetPasswordToken(String(searchParams.token))
 

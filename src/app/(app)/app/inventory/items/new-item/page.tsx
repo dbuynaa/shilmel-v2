@@ -11,6 +11,8 @@ import {
 import { AddItemForm } from "@/components/forms/inventory/items/add-item-form"
 import { SubSubHeader } from "@/components/nav/subsubheader"
 
+import type { JSX } from "react";
+
 export default async function AppInventoryItemsNewItemPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

@@ -8,6 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+import type { JSX } from "react";
+
 export function SalesOrderSummary(): JSX.Element {
   return (
     <div className="flex h-96 w-full flex-col whitespace-nowrap rounded-md border bg-tertiary transition-all duration-300 ease-in-out hover:bg-secondary/30">

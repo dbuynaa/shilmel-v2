@@ -11,6 +11,8 @@ import {
 import { AddBrandForm } from "@/components/forms/inventory/brands/add-brand-form"
 import { SubSubHeader } from "@/components/nav/subsubheader"
 
+import type { JSX } from "react";
+
 export default async function AppInventoryBrandsNewBrandPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

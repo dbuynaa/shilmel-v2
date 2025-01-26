@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -32,6 +31,8 @@ import {
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Icons } from "@/components/icons"
+
+import type { JSX } from "react";
 
 type AwaitedCategory = Pick<
   Category,

@@ -1,9 +1,10 @@
+import type { JSX } from "react"
 import { type Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { markEmailAsVerified } from "@/actions/emails"
 import { getUserByEmailVerificationToken } from "@/actions/users"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -23,12 +24,13 @@ export const metadata: Metadata = {
 }
 
 export interface VerifyEmailPageProps {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function VerifyEmailPage({
-  searchParams,
-}: VerifyEmailPageProps): Promise<JSX.Element> {
+export default async function VerifyEmailPage(
+  props: VerifyEmailPageProps
+): Promise<JSX.Element> {
+  const searchParams = await props.searchParams
   const emailVerificationToken = searchParams.token as string
 
   if (emailVerificationToken) {

@@ -1,7 +1,8 @@
+import type { JSX } from "react"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 
 import {
   Card,

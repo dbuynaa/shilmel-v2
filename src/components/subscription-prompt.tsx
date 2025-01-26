@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button"
 
+import type { JSX } from "react";
+
 export function SubscriptionPrompt(): JSX.Element {
   return (
     <div className="w-full space-y-3 px-2 py-3">

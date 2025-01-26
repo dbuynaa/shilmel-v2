@@ -5,6 +5,8 @@ import { auth } from "@/auth"
 import { settingsOptions } from "@/data/constants/settings"
 import { Icons } from "@/components/icons"
 
+import type { JSX } from "react";
+
 export default async function SettingsPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

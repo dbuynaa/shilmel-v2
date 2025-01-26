@@ -3,6 +3,8 @@ import { auth } from "@/auth"
 
 import { BrandsSubheader } from "@/components/inventory/subheaders/brands-subheader"
 
+import type { JSX } from "react";
+
 export default async function AppInventoryBrandsPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

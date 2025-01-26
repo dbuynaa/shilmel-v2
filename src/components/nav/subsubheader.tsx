@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -7,6 +6,8 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
+
+import type { JSX } from "react";
 
 export function SubSubHeader(): JSX.Element {
   const paths = usePathname()
@@ -16,13 +17,13 @@ export function SubSubHeader(): JSX.Element {
     .slice(1)
 
   return (
-    <ul className="flex h-20 w-full items-center gap-1 border-b bg-tertiary px-5">
+    (<ul className="flex h-20 w-full items-center gap-1 border-b bg-tertiary px-5">
       {pathNames.length > 3 && <Icons.chevronRight className="h-4 w-4" />}
       {pathNames.map((link, index) => {
         const href = `/app/${pathNames.slice(0, index + 1).join("/")}`
 
         return (
-          <React.Fragment key={index}>
+          (<React.Fragment key={index}>
             <li
               className={cn(
                 buttonVariants({ variant: "ghost" }),
@@ -41,9 +42,9 @@ export function SubSubHeader(): JSX.Element {
             {pathNames.length !== index + 1 && (
               <Icons.chevronRight className="h-4 w-4 text-muted-foreground" />
             )}
-          </React.Fragment>
-        )
+          </React.Fragment>)
+        );
       })}
-    </ul>
-  )
+    </ul>)
+  );
 }

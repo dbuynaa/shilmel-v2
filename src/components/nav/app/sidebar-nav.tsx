@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -14,6 +13,8 @@ import {
 } from "@/components/ui/collapsible"
 import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
+
+import type { JSX } from "react";
 
 interface SidebarNavProps {
   collapsed: boolean

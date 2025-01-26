@@ -1,9 +1,10 @@
-"use client"
-
+"use client";
 import { signOut } from "next-auth/react"
 
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
+
+import type { JSX } from "react";
 
 export function SignOutButton(): JSX.Element {
   return (

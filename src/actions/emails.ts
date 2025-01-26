@@ -6,7 +6,7 @@ import { unstable_noStore as noStore } from "next/cache"
 import { getUserByEmail } from "@/actions/users"
 import { db } from "@/db"
 import { users } from "@/db/schema"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 import { eq } from "drizzle-orm"
 
 import { resend } from "@/config/email"

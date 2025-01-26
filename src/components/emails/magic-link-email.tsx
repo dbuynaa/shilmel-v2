@@ -10,6 +10,8 @@ import { Text } from "@react-email/text"
 
 import { siteConfig } from "@/config/site"
 
+import type { JSX } from "react";
+
 interface MagicLinkEmailProps {
   identifier: string
   url: string

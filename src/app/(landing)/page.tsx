@@ -1,5 +1,7 @@
 import Link from "next/link"
 
+import type { JSX } from "react";
+
 export default function HomePage(): JSX.Element {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">

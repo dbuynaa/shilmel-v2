@@ -1,11 +1,12 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { sidebarItems } from "@/data/nav-items-app"
 import { cn } from "@/lib/utils"
+
+import type { JSX } from "react";
 
 export function SubheaderNav(): JSX.Element {
   const pathname = usePathname()

@@ -4,6 +4,8 @@ import { auth } from "@/auth"
 import { AddItemGroupForm } from "@/components/forms/inventory/item-group/add-item-group-form"
 import { SubSubHeader } from "@/components/nav/subsubheader"
 
+import type { JSX } from "react";
+
 export default async function AppInventoryItemGroupsNewItemGroupPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

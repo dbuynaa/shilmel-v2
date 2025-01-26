@@ -10,6 +10,8 @@ import {
 import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
 
+import type { JSX } from "react";
+
 export function ReferAndEarnMenu(): JSX.Element {
   return (
     <Sheet>

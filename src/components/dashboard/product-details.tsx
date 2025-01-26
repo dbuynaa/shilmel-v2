@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 export function ProductDetails(): JSX.Element {
   return (
     <div className="flex h-64 w-full flex-col whitespace-nowrap rounded-md border bg-tertiary transition-all duration-300 ease-in-out hover:bg-secondary/30 xl:w-1/2">

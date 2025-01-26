@@ -4,7 +4,7 @@ import EmailProvider from "next-auth/providers/email"
 import GitHubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
 import { getUserByEmail } from "@/actions/users"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 import { signInWithPasswordSchema } from "@/validations/auth"
 import bcryptjs from "bcryptjs"
 

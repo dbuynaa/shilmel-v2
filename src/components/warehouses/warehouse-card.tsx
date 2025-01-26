@@ -10,6 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
+import type { JSX } from "react";
+
 interface WarehouseCardProps {
   warehouse: Warehouse
   href: string

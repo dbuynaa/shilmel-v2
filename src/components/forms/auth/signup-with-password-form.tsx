@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { signUpWithPassword } from "@/actions/auth"
@@ -23,6 +22,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
+
+import type { JSX } from "react";
 
 export function SignUpWithPasswordForm(): JSX.Element {
   const router = useRouter()

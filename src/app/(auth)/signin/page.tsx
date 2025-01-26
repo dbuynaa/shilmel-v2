@@ -1,8 +1,9 @@
+import type { JSX } from "react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
-import { env } from "@/env.mjs"
+import { env } from "@/env"
 
 import { DEFAULT_SIGNIN_REDIRECT } from "@/data/constants/index"
 import {
@@ -30,7 +31,7 @@ export default async function SignInPage(): Promise<JSX.Element> {
 
   return (
     <div className="flex h-auto min-h-screen w-full items-center justify-center">
-      <Card className="max-sm:flex  max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
+      <Card className="max-sm:flex max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl">Sign in</CardTitle>

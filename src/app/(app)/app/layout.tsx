@@ -2,6 +2,8 @@ import * as React from "react"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 
+import type { JSX } from "react";
+
 interface AppLayoutProps {
   children: React.ReactNode
 }

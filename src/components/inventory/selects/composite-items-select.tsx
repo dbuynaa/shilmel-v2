@@ -8,6 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+import type { JSX } from "react";
+
 export function CompositeItemsSelect(): JSX.Element {
   return (
     <Select>

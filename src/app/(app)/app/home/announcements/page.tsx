@@ -2,6 +2,8 @@ import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import Balancer from "react-wrap-balancer"
 
+import type { JSX } from "react";
+
 export default async function AppHomeAnnouncementsPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

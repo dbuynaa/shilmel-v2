@@ -2,6 +2,8 @@ import { dashboardSalesActivityItems } from "@/data/constants/dashboard"
 import { cn } from "@/lib/utils"
 import { SalesActivityItem } from "@/components/dashboard/sales-activity-item"
 
+import type { JSX } from "react";
+
 export function SalesActivity(): JSX.Element {
   return (
     <div className="flex h-auto w-full flex-col whitespace-nowrap rounded-md border bg-tertiary transition-all duration-300 ease-in-out hover:bg-secondary/30 xl:h-48 xl:w-2/3">

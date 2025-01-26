@@ -4,6 +4,8 @@ import { auth } from "@/auth"
 import { AddCompositeItemForm } from "@/components/forms/inventory/composite-items/add-composite-item-form"
 import { SubSubHeader } from "@/components/nav/subsubheader"
 
+import type { JSX } from "react";
+
 export default async function AppInventoryCompositeItemsNewCompositeItemPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

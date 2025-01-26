@@ -8,6 +8,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
+import type { JSX } from "react";
+
 interface CustomTooltipProps {
   children: React.ReactNode
   text: string

@@ -9,6 +9,8 @@ import { CompositeItemsSelect } from "@/components/inventory/selects/composite-i
 import { ViewToggle } from "@/components/inventory/view-toggle"
 import { InstantHelperMenu } from "@/components/nav/app/menus/instant-helper-menu"
 
+import type { JSX } from "react";
+
 export function CompositeItemsSubheader(): JSX.Element {
   return (
     <div className="flex h-20 w-full items-center justify-between border-b bg-tertiary px-5">

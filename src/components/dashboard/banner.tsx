@@ -1,10 +1,11 @@
-"use client"
-
+"use client";
 import * as React from "react"
 import Balancer from "react-wrap-balancer"
 
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
+
+import type { JSX } from "react";
 
 export function Banner(): JSX.Element {
   const [hidden, setHidden] = React.useState<boolean>(false)

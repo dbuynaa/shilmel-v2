@@ -11,6 +11,8 @@ import { SalesOrder } from "@/components/dashboard/sales-order"
 import { SalesOrderSummary } from "@/components/dashboard/sales-order-summary"
 import { TopSellingItems } from "@/components/dashboard/top-selling-items"
 
+import type { JSX } from "react";
+
 export default async function AppHomeDashboardPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")

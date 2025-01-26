@@ -3,6 +3,8 @@ import * as React from "react"
 import { Header } from "@/components/nav/app/header"
 import { Sidebar } from "@/components/nav/app/sidebar"
 
+import type { JSX } from "react";
+
 interface AppLayoutProps {
   children: React.ReactNode
 }

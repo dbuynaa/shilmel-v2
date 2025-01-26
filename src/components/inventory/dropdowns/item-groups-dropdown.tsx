@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Icons } from "@/components/icons"
 
+import type { JSX } from "react";
+
 export function ItemGroupsDropdown(): JSX.Element {
   return (
     <DropdownMenu>

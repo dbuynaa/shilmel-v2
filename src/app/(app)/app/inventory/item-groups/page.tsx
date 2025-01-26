@@ -4,6 +4,8 @@ import { auth } from "@/auth"
 import { OptionCards } from "@/components/inventory/option-cards"
 import { ItemGroupsSubheader } from "@/components/inventory/subheaders/item-groups-subheader"
 
+import type { JSX } from "react";
+
 export default async function AppInventoryItemGroupsPage(): Promise<JSX.Element> {
   const session = await auth()
   if (!session) redirect("/signin")
