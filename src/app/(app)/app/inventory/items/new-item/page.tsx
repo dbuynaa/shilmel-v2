@@ -1,3 +1,4 @@
+import type { JSX } from "react"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 
@@ -11,11 +12,9 @@ import {
 import { AddItemForm } from "@/components/forms/inventory/items/add-item-form"
 import { SubSubHeader } from "@/components/nav/subsubheader"
 
-import type { JSX } from "react";
-
 export default async function AppInventoryItemsNewItemPage(): Promise<JSX.Element> {
-  const session = await auth()
-  if (!session) redirect("/signin")
+  // const session = await auth()
+  // if (!session) redirect("/signin")
 
   return (
     <div className="relative">

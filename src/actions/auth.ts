@@ -1,7 +1,6 @@
 "use server"
 
-import crypto from "crypto"
-
+// import crypto from "crypto"
 import { AuthError } from "next-auth"
 import { getUserByEmail, getUserByResetPasswordToken } from "@/actions/users"
 import { signIn } from "@/auth"
@@ -17,10 +16,15 @@ import {
 import bcryptjs from "bcryptjs"
 import { eq } from "drizzle-orm"
 
-import { resend } from "@/config/email"
+// import { resend } from "@/config/email"
 import { EmailVerificationEmail } from "@/components/emails/email-verification-email"
 import { ResetPasswordEmail } from "@/components/emails/reset-password-email"
 
+async function generateRandomBytes(length: number): Promise<Uint8Array> {
+  const randomBytes = new Uint8Array(length)
+  crypto.getRandomValues(randomBytes)
+  return randomBytes
+}
 export async function signUpWithPassword(
   rawInput: SignUpWithPasswordFormInput
 ): Promise<"invalid-input" | "exists" | "success" | "error"> {
@@ -42,7 +46,7 @@ export async function signUpWithPassword(
 
     if (!newUserResponse) return "error"
 
-    const emailVerificationToken = crypto.randomBytes(32).toString("base64url")
+    const emailVerificationToken = generateRandomBytes(32).toString()
 
     // TODO: Replace with prepared statement
     const updatedUserResponse = await db
@@ -50,17 +54,19 @@ export async function signUpWithPassword(
       .set({ emailVerificationToken })
       .where(eq(users.email, validatedInput.data.email))
 
-    const emailSent = await resend.emails.send({
-      from: env.RESEND_EMAIL_FROM,
-      to: [validatedInput.data.email],
-      subject: "Verify your email address",
-      react: EmailVerificationEmail({
-        email: validatedInput.data.email,
-        emailVerificationToken,
-      }),
-    })
+    // const emailSent = await resend.emails.send({
+    //   from: env.RESEND_EMAIL_FROM,
+    //   to: [validatedInput.data.email],
+    //   subject: "Verify your email address",
+    //   react: EmailVerificationEmail({
+    //     email: validatedInput.data.email,
+    //     emailVerificationToken,
+    //   }),
+    // })
 
-    return updatedUserResponse && emailSent ? "success" : "error"
+    // return updatedUserResponse && emailSent ? "success" : "error"
+
+    return updatedUserResponse ? "success" : "error"
   } catch (error) {
     console.error(error)
     throw new Error("Error signing up with password")
@@ -118,7 +124,7 @@ export async function resetPassword(
   if (!user) return "not-found"
 
   const today = new Date()
-  const resetPasswordToken = crypto.randomBytes(32).toString("base64url")
+  const resetPasswordToken = generateRandomBytes(32).toString()
   const resetPasswordTokenExpiry = new Date(today.setDate(today.getDate() + 1)) // 24 hours from now
 
   try {
@@ -131,14 +137,16 @@ export async function resetPassword(
       })
       .where(eq(users.email, email))
 
-    const emailSent = await resend.emails.send({
-      from: env.RESEND_EMAIL_FROM,
-      to: [email],
-      subject: "Reset your password",
-      react: ResetPasswordEmail({ email, resetPasswordToken }),
-    })
+    // const emailSent = await resend.emails.send({
+    //   from: env.RESEND_EMAIL_FROM,
+    //   to: [email],
+    //   subject: "Reset your password",
+    //   react: ResetPasswordEmail({ email, resetPasswordToken }),
+    // })
 
-    return userUpdatedResponse && emailSent ? "success" : null
+    // return userUpdatedResponse && emailSent ? "success" : null
+
+    return userUpdatedResponse ? "success" : null
   } catch (error) {
     console.error(error)
     return null

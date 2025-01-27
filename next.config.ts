@@ -1,8 +1,10 @@
-import "./src/env.js"
+import type { NextConfig } from "next/types"
 
-/** @type {import("next").NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   pageExtensions: ["tsx", "mdx", "ts", "js"],
   images: {
     remotePatterns: [

@@ -1,5 +1,6 @@
 import type { UserRole } from "@/types/auth"
 
+import { cache } from "react"
 import NextAuth from "next-auth"
 import { linkOAuthAccount } from "@/actions/auth"
 import { getUserById } from "@/actions/users"
@@ -7,11 +8,11 @@ import { db } from "@/db/index"
 import { env } from "@/env.js"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 
-import authConfig from "@/config/auth"
+import authConfig from "@/config/authConfig"
 
-export const {
-  handlers: { GET, POST },
-  auth,
+const {
+  auth: uncachedAuth,
+  handlers,
   signIn,
   signOut,
 } = NextAuth({
@@ -60,3 +61,7 @@ export const {
   adapter: DrizzleAdapter(db),
   ...authConfig,
 })
+
+const auth = cache(uncachedAuth)
+
+export { auth, handlers, signIn, signOut }

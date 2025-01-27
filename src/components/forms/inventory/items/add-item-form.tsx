@@ -1,5 +1,7 @@
-"use client";
+"use client"
+
 import * as React from "react"
+import type { JSX } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { addItem, checkItem } from "@/actions/inventory/items"
@@ -36,8 +38,6 @@ import { FileDialog } from "@/components/file-dialog"
 import { Icons } from "@/components/icons"
 import { Zoom } from "@/components/image-zoom"
 import type { UploadFilesRouter } from "@/app/api/uploadthing/core"
-
-import type { JSX } from "react";
 
 type AddItemFormInputs = z.infer<typeof itemSchema>
 
@@ -260,7 +260,9 @@ export function AddItemForm(): JSX.Element {
                     inputMode="numeric"
                     placeholder="Single item selling price"
                     value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    onChange={(e) =>
+                      field.onChange(e.target.valueAsNumber.toString())
+                    }
                   />
                 </FormControl>
                 <FormMessage className="sm:text-sm" />
@@ -280,7 +282,9 @@ export function AddItemForm(): JSX.Element {
                     inputMode="numeric"
                     placeholder="Cost of acquiring the item"
                     value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    onChange={(e) =>
+                      field.onChange(e.target.valueAsNumber.toString())
+                    }
                   />
                 </FormControl>
                 <FormMessage className="sm:text-sm" />

@@ -2,6 +2,9 @@ import "@/styles/globals.css"
 
 import * as React from "react"
 import type { Metadata, Viewport } from "next"
+import { headers } from "next/headers"
+import { SessionProvider } from "next-auth/react"
+import { auth } from "@/auth"
 import { env } from "@/env"
 
 import { fontInter } from "@/config/fonts"
@@ -11,7 +14,7 @@ import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 
-// import { ThemeToggle } from "@/components/theme-toggle"
+// import { ThemeToggle } from "@/components/theme-toggle";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -43,7 +46,6 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -69,7 +71,8 @@ interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const session = await auth()
   return (
     <html lang="en">
       <body className={cn("font-sans antialiased", fontInter.className)}>
@@ -79,7 +82,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <SessionProvider session={session}>{children}</SessionProvider>
 
           <Toaster />
           <TailwindIndicator />

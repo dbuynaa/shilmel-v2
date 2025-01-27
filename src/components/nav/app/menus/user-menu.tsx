@@ -1,4 +1,7 @@
-import { auth } from "@/auth"
+"use client"
+
+import type { JSX } from "react"
+import { useSession } from "next-auth/react"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -14,10 +17,10 @@ import {
 import { SignOutButton } from "@/components/auth/signout-button"
 import { Icons } from "@/components/icons"
 
-import type { JSX } from "react";
+export function UserMenu(): JSX.Element {
+  // const session = await auth()
+  const session = useSession().data
 
-export async function UserMenu(): Promise<JSX.Element> {
-  const session = await auth()
   return (
     <Sheet>
       <SheetTrigger
