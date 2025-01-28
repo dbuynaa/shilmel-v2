@@ -100,7 +100,6 @@ export async function signInWithPassword(
       email: validatedInput.data.email,
       password: validatedInput.data.password,
       redirect: false,
-      // callbackUrl: "/app/home/dashboard",
     })
 
     return "success"

@@ -13,16 +13,13 @@ interface AppLayoutProps {
 export default async function AppLayout({
   children,
 }: AppLayoutProps): Promise<JSX.Element> {
-  const session = await auth()
   return (
-    <SessionProvider session={session}>
-      <div className="flex">
-        <Sidebar />
-        <div className="h-screen w-full overflow-y-auto">
-          <Header />
-          <main>{children}</main>
-        </div>
+    <div className="flex">
+      <Sidebar />
+      <div className="h-screen w-full overflow-y-auto">
+        <Header />
+        <main>{children}</main>
       </div>
-    </SessionProvider>
+    </div>
   )
 }

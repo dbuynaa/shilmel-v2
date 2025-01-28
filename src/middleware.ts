@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
 import { auth } from "./auth"
 
@@ -17,7 +17,6 @@ export default async function middleware(req: NextRequest) {
   const session = await auth()
 
   // 4. Redirect to /login if the user is not authenticated
-  console.log("session", session)
   if (isProtectedRoute && !session?.user.id) {
     return NextResponse.redirect(new URL("/signin", req.nextUrl))
   }
