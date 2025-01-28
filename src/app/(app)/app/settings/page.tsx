@@ -19,10 +19,10 @@ export default async function SettingsPage(): Promise<JSX.Element> {
         return (
           <div
             key={option.title}
-            className="h-full w-full min-w-[300px] space-y-2 rounded-md border bg-tertiary"
+            className="size-full min-w-[300px] space-y-2 rounded-md border bg-tertiary"
           >
             <div className="flex items-center gap-2 border-b px-5 py-3">
-              <Icon className="h-5 w-5 text-muted-foreground" />
+              <Icon className="size-5 text-muted-foreground" />
               <h2 className="whitespace-nowrap text-lg font-semibold tracking-wide">
                 {option.title}
               </h2>

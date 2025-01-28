@@ -1,6 +1,7 @@
 "use server"
 
 import { unstable_noStore as noStore } from "next/cache"
+import { db } from "@/db"
 import { extendedItemSchema } from "@/validations/inventory"
 import type { z } from "zod"
 
@@ -11,6 +12,7 @@ export async function addItem(
 
   console.log("Adding item to the database ...")
   console.log(input)
+  // db.
   return new Promise((resolve) => {
     setTimeout(() => {
       console.log("Item added to the database")

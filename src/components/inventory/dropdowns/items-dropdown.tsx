@@ -13,33 +13,33 @@ export function ItemsDropdown(): JSX.Element {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex h-9 w-9 items-center justify-center rounded-md border hover:bg-secondary/80"
+        className="flex size-9 items-center justify-center rounded-md border hover:bg-secondary/80"
         aria-label="More Options"
       >
-        <Icons.moreHorizontal className="h-4 w-4" aria-hidden="true" />
+        <Icons.moreHorizontal className="size-4" aria-hidden="true" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-tertiary">
         <DropdownMenuItem className="flex items-center gap-2">
-          <Icons.download className="h-4 w-4 text-muted-foreground" />
+          <Icons.download className="size-4 text-muted-foreground" />
           Import Items
         </DropdownMenuItem>
         <DropdownMenuItem className="flex items-center gap-2">
-          <Icons.upload className="h-4 w-4 text-muted-foreground" />
+          <Icons.upload className="size-4 text-muted-foreground" />
           Export Items
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="flex items-center gap-2">
-          <Icons.upload className="h-4 w-4 text-muted-foreground" />
+          <Icons.upload className="size-4 text-muted-foreground" />
           Export Current View
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="flex items-center gap-2">
-          <Icons.settings className="h-4 w-4 text-muted-foreground" />
+          <Icons.settings className="size-4 text-muted-foreground" />
           Preferences
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="flex items-center gap-2">
-          <Icons.refresh className="h-4 w-4 text-muted-foreground" />
+          <Icons.refresh className="size-4 text-muted-foreground" />
           Refresh List
         </DropdownMenuItem>
       </DropdownMenuContent>

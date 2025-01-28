@@ -17,7 +17,7 @@ export function NotificationsMenu(): JSX.Element {
     <Sheet>
       <SheetTrigger className={cn(buttonVariants({ variant: "ghost" }), "p-3")}>
         <CustomTooltip text="Notifications">
-          <Icons.notifications aria-hidden="true" className="h-4 w-4" />
+          <Icons.notifications aria-hidden="true" className="size-4" />
         </CustomTooltip>
       </SheetTrigger>
       <SheetContent>

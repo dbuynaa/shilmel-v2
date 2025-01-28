@@ -16,7 +16,7 @@ import {
 import bcryptjs from "bcryptjs"
 import { eq } from "drizzle-orm"
 
-// import { resend } from "@/config/email"
+import { resend } from "@/config/email"
 import { EmailVerificationEmail } from "@/components/emails/email-verification-email"
 import { ResetPasswordEmail } from "@/components/emails/reset-password-email"
 
@@ -54,19 +54,20 @@ export async function signUpWithPassword(
       .set({ emailVerificationToken })
       .where(eq(users.email, validatedInput.data.email))
 
-    // const emailSent = await resend.emails.send({
-    //   from: env.RESEND_EMAIL_FROM,
-    //   to: [validatedInput.data.email],
-    //   subject: "Verify your email address",
-    //   react: EmailVerificationEmail({
-    //     email: validatedInput.data.email,
-    //     emailVerificationToken,
-    //   }),
-    // })
+    const emailSent = await resend.emails.send({
+      // from: env.RESEND_EMAIL_FROM,
+      from: "f7M2H@example.com",
+      to: [validatedInput.data.email],
+      subject: "Verify your email address",
+      react: EmailVerificationEmail({
+        email: validatedInput.data.email,
+        emailVerificationToken,
+      }),
+    })
 
-    // return updatedUserResponse && emailSent ? "success" : "error"
+    return updatedUserResponse && emailSent ? "success" : "error"
 
-    return updatedUserResponse ? "success" : "error"
+    // return updatedUserResponse ? "success" : "error"
   } catch (error) {
     console.error(error)
     throw new Error("Error signing up with password")
@@ -99,6 +100,7 @@ export async function signInWithPassword(
       email: validatedInput.data.email,
       password: validatedInput.data.password,
       redirect: false,
+      // callbackUrl: "/app/home/dashboard",
     })
 
     return "success"
@@ -137,16 +139,17 @@ export async function resetPassword(
       })
       .where(eq(users.email, email))
 
-    // const emailSent = await resend.emails.send({
-    //   from: env.RESEND_EMAIL_FROM,
-    //   to: [email],
-    //   subject: "Reset your password",
-    //   react: ResetPasswordEmail({ email, resetPasswordToken }),
-    // })
+    const emailSent = await resend.emails.send({
+      // from: env.RESEND_EMAIL_FROM,
+      from: "f7M2H@example.com",
+      to: [email],
+      subject: "Reset your password",
+      react: ResetPasswordEmail({ email, resetPasswordToken }),
+    })
 
-    // return userUpdatedResponse && emailSent ? "success" : null
+    return userUpdatedResponse && emailSent ? "success" : null
 
-    return userUpdatedResponse ? "success" : null
+    // return userUpdatedResponse ? "success" : null
   } catch (error) {
     console.error(error)
     return null

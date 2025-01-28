@@ -19,7 +19,7 @@ export function AppsMenu(): JSX.Element {
         className={cn(buttonVariants({ variant: "outline" }), "p-2")}
       >
         <CustomTooltip text="Other Apps">
-          <Icons.layoutGrid className="h-5 w-5" aria-hidden="true" />
+          <Icons.layoutGrid className="size-5" aria-hidden="true" />
         </CustomTooltip>
       </SheetTrigger>
       <SheetContent>

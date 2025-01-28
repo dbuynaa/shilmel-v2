@@ -18,7 +18,7 @@ export function BrandsSubheader(): JSX.Element {
             className={cn(buttonVariants(), "gap-1")}
             aria-label="Add new brand"
           >
-            <Icons.plus aria-hidden="true" className="h-4 w-4" />
+            <Icons.plus aria-hidden="true" className="size-4" />
             <span>New Brand</span>
           </Link>
         </CustomTooltip>

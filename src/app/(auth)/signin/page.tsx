@@ -36,7 +36,7 @@ export default async function SignInPage(): Promise<JSX.Element> {
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl">Sign in</CardTitle>
             <Link href="/">
-              <Icons.close className="h-4 w-4" />
+              <Icons.close className="size-4" />
             </Link>
           </div>
           <CardDescription>

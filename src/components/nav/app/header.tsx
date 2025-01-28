@@ -16,7 +16,7 @@ import type { JSX } from "react";
 
 export function Header(): JSX.Element {
   return (
-    <header className="sticky top-0 z-[50] flex h-20 items-center justify-between gap-8 border-b bg-tertiary px-5">
+    <header className="sticky top-0 z-50 flex h-20 items-center justify-between gap-8 border-b bg-tertiary px-5">
       <div className="flex h-full items-center gap-2">
         <CustomTooltip text="Recent Activity">
           <Link
@@ -24,7 +24,7 @@ export function Header(): JSX.Element {
             href="/app/home/updates"
             className={cn(buttonVariants({ variant: "outline" }), "p-3")}
           >
-            <Icons.recentActivities aria-hidden="true" className="h-4 w-4" />
+            <Icons.recentActivities aria-hidden="true" className="size-4" />
           </Link>
         </CustomTooltip>
 
@@ -43,7 +43,7 @@ export function Header(): JSX.Element {
               aria-label="Settings"
               className={cn(buttonVariants({ variant: "ghost" }), "p-3")}
             >
-              <Icons.settings aria-hidden="true" className="h-4 w-4" />
+              <Icons.settings aria-hidden="true" className="size-4" />
             </Link>
           </CustomTooltip>
         </div>

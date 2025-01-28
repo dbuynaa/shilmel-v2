@@ -45,7 +45,7 @@ export function OAuthButtons(): JSX.Element {
         onClick={() => void handleOAuthSignIn("google")}
         className="w-full sm:w-auto"
       >
-        <Icons.google className="mr-2 h-4 w-4" />
+        <Icons.google className="mr-2 size-4" />
         Google
       </Button>
 
@@ -55,7 +55,7 @@ export function OAuthButtons(): JSX.Element {
         onClick={() => void handleOAuthSignIn("github")}
         className="w-full sm:w-auto"
       >
-        <Icons.gitHub className="mr-2 h-4 w-4" />
+        <Icons.gitHub className="mr-2 size-4" />
         GitHub
       </Button>
     </div>

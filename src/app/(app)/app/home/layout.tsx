@@ -1,11 +1,9 @@
-import * as React from "react"
+import type { JSX, ReactNode } from "react"
 
 import { Subheader } from "@/components/nav/app/subheader"
 
-import type { JSX } from "react";
-
 interface AppHomeLayoutProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export default function AppHomeLayout({

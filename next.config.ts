@@ -21,7 +21,6 @@ const nextConfig: NextConfig = {
         hostname: "uploadthing.com",
       },
     ],
-    unoptimized: true,
   },
 }
 

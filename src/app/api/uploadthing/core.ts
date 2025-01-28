@@ -10,7 +10,7 @@ export const uploadFilesRouter = {
       if (!session) throw new Error("Unauthorized")
       return { userId: session.user.id }
     })
-    // eslint-disable-next-line @typescript-eslint/require-await
+     
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete for userId:", metadata.userId)
       console.log("file url", file.url)

@@ -26,7 +26,7 @@ export function Subheader({
             className={cn(buttonVariants(), "gap-1")}
             aria-label="Add new item"
           >
-            <Icons.plus aria-hidden="true" className="h-4 w-4" />
+            <Icons.plus aria-hidden="true" className="size-4" />
             <span>{buttonText}</span>
           </Link>
         </CustomTooltip>

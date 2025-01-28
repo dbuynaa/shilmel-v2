@@ -28,7 +28,7 @@ export function Sidebar(): JSX.Element {
             href="/app/home/dashboard"
             className="flex w-full items-center justify-center gap-2"
           >
-            <Icons.logo className="h-5 w-5" />
+            <Icons.logo className="size-5" />
             <span
               className={cn(
                 "whitespace-nowrap font-bold leading-none tracking-wide",
@@ -55,9 +55,9 @@ export function Sidebar(): JSX.Element {
               onClick={() => setCollapsed(!collapsed)}
             >
               {collapsed ? (
-                <Icons.chevronRight className="h-4 w-4" aria-hidden="true" />
+                <Icons.chevronRight className="size-4" aria-hidden="true" />
               ) : (
-                <Icons.chevronLeft className="h-4 w-4" aria-hidden="true" />
+                <Icons.chevronLeft className="size-4" aria-hidden="true" />
               )}
             </Button>
           </CustomTooltip>

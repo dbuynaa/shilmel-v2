@@ -13,9 +13,9 @@ import type { JSX } from "react";
 export function InstantHelperMenu(): JSX.Element {
   return (
     <Sheet>
-      <SheetTrigger className="flex h-9 w-9 items-center justify-center rounded-md bg-orange-600 hover:bg-orange-600/80">
+      <SheetTrigger className="flex size-9 items-center justify-center rounded-md bg-orange-600 hover:bg-orange-600/80">
         <CustomTooltip text="Instant Helper">
-          <Icons.helpBadge className="h-5 w-5 text-foreground" />
+          <Icons.helpBadge className="size-5 text-foreground" />
         </CustomTooltip>
       </SheetTrigger>
       <SheetContent className="z-[99]">

@@ -1,5 +1,7 @@
-"use client";
+"use client"
+
 import * as React from "react"
+import type { JSX } from "react"
 import { useRouter } from "next/navigation"
 import { signInWithPassword } from "@/actions/auth"
 import {
@@ -23,8 +25,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
-
-import type { JSX } from "react";
 
 export function SignInWithPasswordForm(): JSX.Element {
   const { toast } = useToast()
@@ -79,6 +79,7 @@ export function SignInWithPasswordForm(): JSX.Element {
               title: "Success!",
               description: "You are now signed in",
             })
+            router.push(DEFAULT_SIGNIN_REDIRECT)
             break
           default:
             toast({
@@ -87,8 +88,6 @@ export function SignInWithPasswordForm(): JSX.Element {
               variant: "destructive",
             })
         }
-
-        router.push(DEFAULT_SIGNIN_REDIRECT)
       } catch (error) {
         console.error(error)
         toast({
@@ -141,7 +140,7 @@ export function SignInWithPasswordForm(): JSX.Element {
           {isPending ? (
             <>
               <Icons.spinner
-                className="mr-2 h-4 w-4 animate-spin"
+                className="mr-2 size-4 animate-spin"
                 aria-hidden="true"
               />
               <span>Signing in...</span>

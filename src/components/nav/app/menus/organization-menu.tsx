@@ -21,7 +21,7 @@ export function OrganizationMenu(): JSX.Element {
         )}
       >
         <span className="truncate">Piotr Borowiecki</span>
-        <Icons.chevronDown aria-hidden="true" className="h-4 w-4" />
+        <Icons.chevronDown aria-hidden="true" className="size-4" />
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>

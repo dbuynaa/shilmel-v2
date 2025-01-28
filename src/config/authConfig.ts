@@ -6,7 +6,7 @@ import GoogleProvider from "next-auth/providers/google"
 import { getUserByEmail } from "@/actions/users"
 import { env } from "@/env"
 import { signInWithPasswordSchema } from "@/validations/auth"
-import bcryptjs from "bcryptjs"
+import { compare } from "bcryptjs"
 
 import { resend } from "@/config/email"
 import { siteConfig } from "@/config/site"
@@ -33,7 +33,7 @@ export default {
           const user = await getUserByEmail(validatedCredentials.data.email)
           if (!user || !user.passwordHash) return null
 
-          const passwordIsValid = await bcryptjs.compare(
+          const passwordIsValid = await compare(
             validatedCredentials.data.password,
             user.passwordHash
           )
@@ -43,36 +43,36 @@ export default {
         return null
       },
     }),
-    EmailProvider({
-      type: "email",
-      server: {
-        host: env.RESEND_HOST,
-        port: Number(env.RESEND_PORT),
-        auth: {
-          user: env.RESEND_USERNAME,
-          pass: env.RESEND_API_KEY,
-        },
-      },
-      async sendVerificationRequest({
-        identifier,
-        url,
-      }: {
-        identifier: string
-        url: string
-      }) {
-        try {
-          await resend.emails.send({
-            from: env.RESEND_EMAIL_FROM,
-            to: [identifier],
-            subject: `${siteConfig.name} magic link sign in`,
-            react: MagicLinkEmail({ identifier, url }),
-          })
+    // EmailProvider({
+    //   type: "email",
+    //   server: {
+    //     host: env.RESEND_HOST,
+    //     port: Number(env.RESEND_PORT),
+    //     auth: {
+    //       user: env.RESEND_USERNAME,
+    //       pass: env.RESEND_API_KEY,
+    //     },
+    //   },
+    //   async sendVerificationRequest({
+    //     identifier,
+    //     url,
+    //   }: {
+    //     identifier: string
+    //     url: string
+    //   }) {
+    //     try {
+    //       await resend.emails.send({
+    //         from: env.RESEND_EMAIL_FROM,
+    //         to: [identifier],
+    //         subject: `${siteConfig.name} magic link sign in`,
+    //         react: MagicLinkEmail({ identifier, url }),
+    //       })
 
-          console.log("Verification email sent")
-        } catch (error) {
-          throw new Error("Failed to send verification email")
-        }
-      },
-    }),
+    //       console.log("Verification email sent")
+    //     } catch (error) {
+    //       throw new Error("Failed to send verification email")
+    //     }
+    //   },
+    // }),
   ],
 } satisfies NextAuthConfig

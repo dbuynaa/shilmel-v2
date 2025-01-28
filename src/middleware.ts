@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 import { auth } from "./auth"
 
@@ -9,12 +9,15 @@ const publicRoutes = ["/signin", "/signup", "/"]
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
   const path = req.nextUrl.pathname
-  const isProtectedRoute = protectedRoutes.includes(path)
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    path.startsWith(route)
+  )
   const isPublicRoute = publicRoutes.includes(path)
 
   const session = await auth()
 
   // 4. Redirect to /login if the user is not authenticated
+  console.log("session", session)
   if (isProtectedRoute && !session?.user.id) {
     return NextResponse.redirect(new URL("/signin", req.nextUrl))
   }
@@ -25,7 +28,7 @@ export default async function middleware(req: NextRequest) {
     session?.user &&
     !req.nextUrl.pathname.startsWith("/app")
   ) {
-    return NextResponse.redirect(new URL("/app", req.nextUrl))
+    return NextResponse.redirect(new URL("/app/home/dashboard", req.nextUrl))
   }
 
   return NextResponse.next()

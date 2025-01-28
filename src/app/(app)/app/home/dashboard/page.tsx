@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation"
-import { auth } from "@/auth"
+import type { JSX } from "react"
 
 import { Banner } from "@/components/dashboard/banner"
 import { Footer } from "@/components/dashboard/footer"
@@ -11,12 +10,7 @@ import { SalesOrder } from "@/components/dashboard/sales-order"
 import { SalesOrderSummary } from "@/components/dashboard/sales-order-summary"
 import { TopSellingItems } from "@/components/dashboard/top-selling-items"
 
-import type { JSX } from "react";
-
-export default async function AppHomeDashboardPage(): Promise<JSX.Element> {
-  const session = await auth()
-  if (!session) redirect("/signin")
-
+export default function AppHomeDashboardPage(): JSX.Element {
   return (
     <div>
       <div className="flex w-full max-w-8xl flex-col gap-5 p-5">

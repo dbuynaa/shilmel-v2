@@ -2,9 +2,6 @@ import "@/styles/globals.css"
 
 import * as React from "react"
 import type { Metadata, Viewport } from "next"
-import { headers } from "next/headers"
-import { SessionProvider } from "next-auth/react"
-import { auth } from "@/auth"
 import { env } from "@/env"
 
 import { fontInter } from "@/config/fonts"
@@ -71,24 +68,28 @@ interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export default async function RootLayout({ children }: RootLayoutProps) {
-  const session = await auth()
+const RootLayout = async ({ children }: RootLayoutProps) => {
+  // const session = await auth()
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
       <body className={cn("font-sans antialiased", fontInter.className)}>
+        {/* <SessionProvider session={session}> */}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          <SessionProvider session={session}>{children}</SessionProvider>
+          {children}
 
           <Toaster />
           <TailwindIndicator />
           {/* <ThemeToggle /> */}
         </ThemeProvider>
+        {/* </SessionProvider> */}
       </body>
     </html>
   )
 }
+
+export default RootLayout

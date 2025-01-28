@@ -26,7 +26,7 @@ export function QuickCreateMenu() {
             showChevron={false}
             className={cn(buttonVariants({ variant: "outline" }), "p-3")}
           >
-            <Icons.plus className="h-4 w-4" aria-hidden="true" />
+            <Icons.plus className="size-4" aria-hidden="true" />
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]">
@@ -40,7 +40,7 @@ export function QuickCreateMenu() {
                         "gap-2 hover:bg-transparent"
                       )}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className="size-4" />
                       <span className="font-semibold">{item.title}</span>
                     </div>
                     {item.subitems.map((subitem) => (
@@ -53,7 +53,7 @@ export function QuickCreateMenu() {
                         <NavigationMenuLink
                           className={cn(navigationMenuTriggerStyle(), "gap-2")}
                         >
-                          <Icons.plus className="h-4 w-4" />
+                          <Icons.plus className="size-4" />
                           <span className="text-muted-foreground">
                             {subitem.title}
                           </span>

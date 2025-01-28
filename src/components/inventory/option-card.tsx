@@ -21,7 +21,7 @@ export function OptionCard({ option }: OptionCardProps) {
     >
       <h3 className="text-xl font-semibold tracking-wide">{option.title}</h3>
       <Icon
-        className="h-14 w-14 text-foreground/40 xl:h-18 xl:w-18"
+        className="size-14 text-foreground/40 xl:h-18 xl:w-18"
         aria-hidden="true"
       />
       <p className="max-w-xs text-center text-sm tracking-wide text-muted-foreground">

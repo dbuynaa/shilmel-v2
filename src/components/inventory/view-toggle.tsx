@@ -24,7 +24,7 @@ export function ViewToggle(): JSX.Element {
           aria-label="List view"
           onClick={() => setActive("list")}
         >
-          <Icons.list className="h-4 w-4" aria-hidden="true" />
+          <Icons.list className="size-4" aria-hidden="true" />
         </Button>
       </CustomTooltip>
 
@@ -39,7 +39,7 @@ export function ViewToggle(): JSX.Element {
           aria-label="Grid view"
           onClick={() => setActive("grid")}
         >
-          <Icons.layoutGrid className="h-4 w-4" aria-hidden="true" />
+          <Icons.layoutGrid className="size-4" aria-hidden="true" />
         </Button>
       </CustomTooltip>
     </div>

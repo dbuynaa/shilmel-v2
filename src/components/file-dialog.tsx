@@ -141,14 +141,14 @@ export function FileDialog<TFieldValues extends FieldValues>({
           {isUploading ? (
             <div className="group grid w-full place-items-center gap-1 sm:px-10">
               <Icons.upload
-                className="h-9 w-9 animate-pulse text-muted-foreground"
+                className="size-9 animate-pulse text-muted-foreground"
                 aria-hidden="true"
               />
             </div>
           ) : isDragActive ? (
             <div className="grid place-items-center gap-2 text-muted-foreground sm:px-5">
               <Icons.upload
-                className={cn("h-8 w-8", isDragActive && "animate-bounce")}
+                className={cn("size-8", isDragActive && "animate-bounce")}
                 aria-hidden="true"
               />
               <p className="text-base font-medium">Drop the file here</p>
@@ -156,7 +156,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
           ) : (
             <div className="grid place-items-center gap-1 sm:px-5">
               <Icons.upload
-                className="h-8 w-8 text-muted-foreground"
+                className="size-8 text-muted-foreground"
                 aria-hidden="true"
               />
               <p className="mt-2 text-base font-medium text-muted-foreground">
@@ -192,7 +192,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
             className="mt-2.5 w-full"
             onClick={() => setFiles(null)}
           >
-            <Icons.trash className="mr-2 h-4 w-4" aria-hidden="true" />
+            <Icons.trash className="mr-2 size-4" aria-hidden="true" />
             Remove All
             <span className="sr-only">Remove all</span>
           </Button>
@@ -259,7 +259,7 @@ function FileCard({ i, file, files, setFiles }: FileCardProps) {
         <Image
           src={cropData ? cropData : file.preview}
           alt={file.name}
-          className="h-10 w-10 shrink-0 rounded-md"
+          className="size-10 shrink-0 rounded-md"
           width={40}
           height={40}
           loading="lazy"
@@ -281,10 +281,10 @@ function FileCard({ i, file, files, setFiles }: FileCardProps) {
                 type="button"
                 variant="outline"
                 size="icon"
-                className="h-7 w-7"
+                className="size-7"
               >
                 <Icons.cropImage
-                  className="h-4 w-4 text-white"
+                  className="size-4 text-white"
                   aria-hidden="true"
                 />
                 <span className="sr-only">Crop image</span>
@@ -297,7 +297,7 @@ function FileCard({ i, file, files, setFiles }: FileCardProps) {
               <div className="mt-8 grid place-items-center space-y-5">
                 <Cropper
                   ref={cropperRef}
-                  className="h-[450px] w-[450px] object-cover"
+                  className="size-[450px] object-cover"
                   zoomTo={0.5}
                   initialAspectRatio={1 / 1}
                   preview=".img-preview"
@@ -323,7 +323,7 @@ function FileCard({ i, file, files, setFiles }: FileCardProps) {
                     }}
                   >
                     <Icons.cropImage
-                      className="mr-2 h-3.5 w-3.5"
+                      className="mr-2 size-3.5"
                       aria-hidden="true"
                     />
                     Crop image
@@ -340,7 +340,7 @@ function FileCard({ i, file, files, setFiles }: FileCardProps) {
                     }}
                   >
                     <Icons.reset
-                      className="mr-2 h-3.5 w-3.5"
+                      className="mr-2 size-3.5"
                       aria-hidden="true"
                     />
                     Reset crop
@@ -354,13 +354,13 @@ function FileCard({ i, file, files, setFiles }: FileCardProps) {
           type="button"
           variant="outline"
           size="icon"
-          className="h-7 w-7"
+          className="size-7"
           onClick={() => {
             if (!files) return
             setFiles(files.filter((_, j) => j !== i))
           }}
         >
-          <Icons.close className="h-4 w-4 text-white" aria-hidden="true" />
+          <Icons.close className="size-4 text-white" aria-hidden="true" />
           <span className="sr-only">Remove file</span>
         </Button>
       </div>

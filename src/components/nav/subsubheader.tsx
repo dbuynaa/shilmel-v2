@@ -18,7 +18,7 @@ export function SubSubHeader(): JSX.Element {
 
   return (
     (<ul className="flex h-20 w-full items-center gap-1 border-b bg-tertiary px-5">
-      {pathNames.length > 3 && <Icons.chevronRight className="h-4 w-4" />}
+      {pathNames.length > 3 && <Icons.chevronRight className="size-4" />}
       {pathNames.map((link, index) => {
         const href = `/app/${pathNames.slice(0, index + 1).join("/")}`
 
@@ -40,7 +40,7 @@ export function SubSubHeader(): JSX.Element {
               )}
             </li>
             {pathNames.length !== index + 1 && (
-              <Icons.chevronRight className="h-4 w-4 text-muted-foreground" />
+              <Icons.chevronRight className="size-4 text-muted-foreground" />
             )}
           </React.Fragment>)
         );

@@ -2,6 +2,7 @@
 
 import type { JSX } from "react"
 import { useSession } from "next-auth/react"
+import { auth } from "@/auth"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -18,8 +19,7 @@ import { SignOutButton } from "@/components/auth/signout-button"
 import { Icons } from "@/components/icons"
 
 export function UserMenu(): JSX.Element {
-  // const session = await auth()
-  const session = useSession().data
+  const { data: session } = useSession()
 
   return (
     <Sheet>
@@ -29,12 +29,12 @@ export function UserMenu(): JSX.Element {
           "transition-all duration-300 ease-in-out hover:opacity-70"
         )}
       >
-        <Avatar className="h-9 w-9 rounded-md">
+        <Avatar className="size-9 rounded-md">
           {session?.user.image ? (
-            <AvatarImage src={session.user.image} className="h-9 w-9" />
+            <AvatarImage src={session.user.image} className="size-9" />
           ) : (
-            <AvatarFallback className="h-9 w-9 rounded-md">
-              <Icons.user className="h-4 w-4" />
+            <AvatarFallback className="size-9 rounded-md">
+              <Icons.user className="size-4" />
             </AvatarFallback>
           )}
         </Avatar>
