@@ -50,3 +50,100 @@ export function formatDate(
     ...options,
   }).format(new Date(date))
 }
+
+export function invariant(
+  condition: unknown,
+  message: string
+): asserts condition {
+  if (!condition) {
+    throw new Error(message)
+  }
+}
+
+export const safeJsonParse = (str: string | null | undefined): unknown => {
+  if (str === null || str === undefined) {
+    return null
+  }
+  try {
+    return JSON.parse(str)
+  } catch {
+    return null
+  }
+}
+export const capitalize = (str: string) =>
+  str[0] ? str[0].toUpperCase() + str.slice(1) : ""
+
+export const deslugify = (slug: string) => {
+  return slug
+    .split("-")
+    .map((part) => capitalize(part))
+    .join(" ")
+}
+
+export const formatProductName = (name: string, variant?: string) => {
+  if (!variant) {
+    return name
+  }
+  return `${name} (${deslugify(variant)})`
+}
+
+type Money = { amount: number; currency: string }
+
+const getDecimalsForStripe = (currency: string) => {
+  invariant(currency.length === 3, "currency needs to be a 3-letter code")
+
+  const stripeDecimals = stripeCurrencies[currency.toUpperCase()]
+  const decimals = stripeDecimals ?? 2
+  return decimals
+}
+
+export const getDecimalFromStripeAmount = ({
+  amount: minor,
+  currency,
+}: Money) => {
+  assertInteger(minor)
+  const decimals = getDecimalsForStripe(currency)
+  const multiplier = 10 ** decimals
+  return Number.parseFloat((minor / multiplier).toFixed(decimals))
+}
+
+export const formatMoney = ({
+  amount: minor,
+  currency,
+  locale = "en-US",
+}: Money & { locale?: string }) => {
+  const amount = getDecimalFromStripeAmount({ amount: minor, currency })
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+  }).format(amount)
+}
+
+export const assertInteger = (value: number) => {
+  invariant(Number.isInteger(value), "Value must be an integer")
+}
+
+const stripeCurrencies: Record<string, number> = {
+  BIF: 0,
+  CLP: 0,
+  DJF: 0,
+  GNF: 0,
+  JPY: 0,
+  KMF: 0,
+  KRW: 0,
+  MGA: 0,
+  PYG: 0,
+  RWF: 0,
+  UGX: 0,
+  VND: 0,
+  VUV: 0,
+  XAF: 0,
+  XOF: 0,
+  XPF: 0,
+
+  BHD: 3,
+  JOD: 3,
+  KWD: 3,
+  OMR: 3,
+  TND: 3,
+}

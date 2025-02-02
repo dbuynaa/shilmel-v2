@@ -32,6 +32,7 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
+    NEXT_PUBLIC_LANGUAGE: z.string().optional().default("en-US"),
   },
 
   /**
@@ -53,6 +54,8 @@ export const env = createEnv({
     RESEND_HOST: process.env.RESEND_HOST,
     RESEND_USERNAME: process.env.RESEND_USERNAME,
     RESEND_PORT: process.env.RESEND_PORT,
+
+    NEXT_PUBLIC_LANGUAGE: process.env.NEXT_PUBLIC_LANGUAGE,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

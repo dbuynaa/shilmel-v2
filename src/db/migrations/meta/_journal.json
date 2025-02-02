@@ -1,19 +1,33 @@
 {
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1705079630470,
-      "tag": "0000_small_vance_astro",
+      "version": "7",
+      "when": 1738137164626,
+      "tag": "0000_warm_aqueduct",
       "breakpoints": true
     },
     {
       "idx": 1,
-      "version": "5",
-      "when": 1705256562429,
-      "tag": "0001_damp_rattler",
+      "version": "7",
+      "when": 1738137382901,
+      "tag": "0001_workable_magma",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1738157815849,
+      "tag": "0002_hot_lord_hawal",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1738494445171,
+      "tag": "0003_silent_gladiator",
       "breakpoints": true
     }
   ]

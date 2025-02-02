@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { PasswordResetForm } from "@/components/forms/auth/password-reset-form"
+import { PasswordResetForm } from "@/components/admin/forms/auth/password-reset-form"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),

@@ -9,7 +9,7 @@ import { compare } from "bcryptjs"
 
 import { resend } from "@/config/email"
 import { siteConfig } from "@/config/site"
-import { MagicLinkEmail } from "@/components/emails/magic-link-email"
+import { MagicLinkEmail } from "@/components/admin/emails/magic-link-email"
 
 export default {
   providers: [
@@ -55,14 +55,16 @@ export default {
 
         if (validatedCredentials.success) {
           const user = await getUserByEmail(validatedCredentials.data.email)
-          if (!user || !user.passwordHash) return null
+          if (!user || !user.password) return null
 
           const passwordIsValid = await compare(
             validatedCredentials.data.password,
-            user.passwordHash
+            user.password
           )
 
-          if (passwordIsValid) return user
+          if (passwordIsValid) {
+            return { ...user, id: String(user.id) }
+          }
         }
         return null
       },

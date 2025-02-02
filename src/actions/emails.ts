@@ -10,7 +10,7 @@ import { env } from "@/env"
 import { eq } from "drizzle-orm"
 
 import { resend } from "@/config/email"
-import { EmailVerificationEmail } from "@/components/emails/email-verification-email"
+import { EmailVerificationEmail } from "@/components/admin/emails/email-verification-email"
 
 export async function resendEmailVerificationLink(
   email: string

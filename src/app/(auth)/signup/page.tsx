@@ -14,9 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { SignInWithEmailForm } from "@/components/admin/forms/auth/signin-with-email-form"
+import { SignUpWithPasswordForm } from "@/components/admin/forms/auth/signup-with-password-form"
 import { OAuthButtons } from "@/components/auth/oauth-buttons"
-import { SignInWithEmailForm } from "@/components/forms/auth/signin-with-email-form"
-import { SignUpWithPasswordForm } from "@/components/forms/auth/signup-with-password-form"
 import { Icons } from "@/components/icons"
 
 export const metadata: Metadata = {

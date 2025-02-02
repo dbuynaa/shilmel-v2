@@ -5,6 +5,8 @@ import type { Metadata, Viewport } from "next"
 import { SessionProvider } from "next-auth/react"
 import { auth } from "@/auth"
 import { env } from "@/env"
+import { IntlClientProvider } from "@/i18n/client"
+import { getLocale, getMessages } from "@/i18n/server"
 
 import { fontInter } from "@/config/fonts"
 import { siteConfig } from "@/config/site"
@@ -71,11 +73,14 @@ interface RootLayoutProps {
 }
 
 const RootLayout = async ({ children }: RootLayoutProps) => {
-  const session = await auth()
+  // const session = await auth()
+  const locale = await getLocale()
+  const messages = await getMessages()
+
   return (
-    <html suppressHydrationWarning lang="en">
+    <html lang={locale} suppressHydrationWarning>
       <body className={cn("font-sans antialiased", fontInter.className)}>
-        <SessionProvider session={session}>
+        <IntlClientProvider messages={messages} locale={locale}>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -88,7 +93,10 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
             <TailwindIndicator />
             {/* <ThemeToggle /> */}
           </ThemeProvider>
-        </SessionProvider>
+        </IntlClientProvider>
+        {/* <SessionProvider session={session}>
+        
+        </SessionProvider> */}
       </body>
     </html>
   )

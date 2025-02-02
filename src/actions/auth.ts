@@ -17,8 +17,8 @@ import bcryptjs from "bcryptjs"
 import { eq } from "drizzle-orm"
 
 import { resend } from "@/config/email"
-import { EmailVerificationEmail } from "@/components/emails/email-verification-email"
-import { ResetPasswordEmail } from "@/components/emails/reset-password-email"
+import { EmailVerificationEmail } from "@/components/admin/emails/email-verification-email"
+import { ResetPasswordEmail } from "@/components/admin/emails/reset-password-email"
 
 async function generateRandomBytes(length: number): Promise<Uint8Array> {
   const randomBytes = new Uint8Array(length)

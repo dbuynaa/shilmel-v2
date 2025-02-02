@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { EmailVerificationForm } from "@/components/forms/auth/email-verification-form"
+import { EmailVerificationForm } from "@/components/admin/forms/auth/email-verification-form"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),

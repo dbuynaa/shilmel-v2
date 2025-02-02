@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { PasswordUpdateForm } from "@/components/forms/auth/password-update-form"
+import { PasswordUpdateForm } from "@/components/admin/forms/auth/password-update-form"
 import { Icons } from "@/components/icons"
 
 export const metadata: Metadata = {

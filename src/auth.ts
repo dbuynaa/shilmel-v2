@@ -52,6 +52,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
   },
-  adapter: DrizzleAdapter(db),
+  // adapter: DrizzleAdapter(db),
   ...authConfig,
 })
