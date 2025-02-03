@@ -2,8 +2,9 @@ import type { SVGAttributes } from "react"
 import { getTranslations } from "@/i18n/server"
 import StoreConfig from "@/store.config"
 
-import { Newsletter } from "@/components/store/footer/newsletter.client"
+// import { Newsletter } from "@/components/store/footer/newsletter.client"
 import { YnsLink } from "@/components/store/yns-link"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const sections = [
   {
@@ -41,7 +42,8 @@ export async function Footer() {
         <div className="">
           <div className="flex w-full max-w-sm flex-col gap-2">
             <h3 className="font-semibold">{t("newsletterTitle")}</h3>
-            <Newsletter />
+            {/* <Newsletter /> */}
+            <ThemeToggle />
           </div>
         </div>
 

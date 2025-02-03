@@ -27,3 +27,22 @@ export const psGetUserByResetPasswordToken = db
   .from(users)
   .where(eq(users.resetPasswordToken, sql.placeholder("resetPasswordToken")))
   .prepare("psGetUserByResetPasswordToken")
+
+export const psUpdateUserEmailVerificationToken = db
+  .update(users)
+  .set({
+    emailVerificationToken: sql`${sql.placeholder("emailVerificationToken")}`,
+  })
+  .where(eq(users.email, sql.placeholder("email")))
+  .prepare("psUpdateUserEmailVerificationToken")
+
+export const psMarkEmailAsVerified = db
+  .update(users)
+  .set({
+    emailVerified: sql`${sql.placeholder("emailVerified")}`,
+    emailVerificationToken: sql`${sql.placeholder("emailVerificationToken")}`,
+  })
+  .where(
+    eq(users.emailVerificationToken, sql`${sql.placeholder("currentToken")}`)
+  )
+  .prepare("psMarkEmailAsVerified")

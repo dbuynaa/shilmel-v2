@@ -1,25 +1,7 @@
 CREATE TYPE "public"."OrderStatus" AS ENUM('PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED');--> statement-breakpoint
 CREATE TYPE "public"."UserRole" AS ENUM('USER', 'ADMIN');--> statement-breakpoint
-CREATE TABLE "CartItem" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"cartId" text NOT NULL,
-	"productId" text,
-	"quantity" integer NOT NULL,
-	"size" text NOT NULL,
-	"color" text NOT NULL,
-	CONSTRAINT "CartItem_id_unique" UNIQUE("id")
-);
---> statement-breakpoint
-CREATE TABLE "Cart" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"userId" text NOT NULL,
-	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
-	"updatedAt" timestamp (3) NOT NULL,
-	CONSTRAINT "Cart_id_unique" UNIQUE("id")
-);
---> statement-breakpoint
 CREATE TABLE "Category" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"description" text,
 	"icon" text NOT NULL,
@@ -28,7 +10,7 @@ CREATE TABLE "Category" (
 );
 --> statement-breakpoint
 CREATE TABLE "Customization" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"orderNumber" text NOT NULL,
 	"logoPosition" text,
 	"logoFile" text,
@@ -40,7 +22,7 @@ CREATE TABLE "Customization" (
 );
 --> statement-breakpoint
 CREATE TABLE "ImageColor" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"color" text NOT NULL,
 	"image" text[] NOT NULL,
 	"productId" text NOT NULL,
@@ -48,7 +30,7 @@ CREATE TABLE "ImageColor" (
 );
 --> statement-breakpoint
 CREATE TABLE "OrderItem" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"quantity" integer NOT NULL,
 	"size" text NOT NULL,
 	"color" text NOT NULL,
@@ -61,7 +43,7 @@ CREATE TABLE "OrderItem" (
 );
 --> statement-breakpoint
 CREATE TABLE "Order" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"status" "OrderStatus" DEFAULT 'PENDING' NOT NULL,
 	"totalAmount" integer NOT NULL,
 	"paymentMethod" text DEFAULT 'card' NOT NULL,
@@ -74,14 +56,14 @@ CREATE TABLE "Order" (
 );
 --> statement-breakpoint
 CREATE TABLE "ProductMaterial" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"material" text NOT NULL,
 	"productId" text NOT NULL,
 	CONSTRAINT "ProductMaterial_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE "Product" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"description" text,
 	"price" integer NOT NULL,
@@ -94,7 +76,7 @@ CREATE TABLE "Product" (
 );
 --> statement-breakpoint
 CREATE TABLE "SizeQuantity" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"size" text NOT NULL,
 	"stock" integer NOT NULL,
 	"productId" text NOT NULL,
@@ -104,19 +86,23 @@ CREATE TABLE "SizeQuantity" (
 );
 --> statement-breakpoint
 CREATE TABLE "User" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"name" text,
 	"email" text,
-	"emailVerified" timestamp (3),
 	"password" text NOT NULL,
 	"role" "UserRole" DEFAULT 'USER' NOT NULL,
+	"emailVerified" timestamp (3),
+	"emailVerificationToken" text,
+	"resetPasswordToken" text,
+	"resetPasswordTokenExpiry" timestamp,
 	"image" text,
 	"last_activity_date" date DEFAULT now(),
-	CONSTRAINT "User_id_unique" UNIQUE("id")
+	CONSTRAINT "User_id_unique" UNIQUE("id"),
+	CONSTRAINT "User_resetPasswordToken_unique" UNIQUE("resetPasswordToken")
 );
 --> statement-breakpoint
 CREATE TABLE "WorkBranch" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"description" text,
 	"icon" text NOT NULL,

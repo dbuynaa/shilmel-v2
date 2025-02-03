@@ -14,7 +14,7 @@ export const metadata = {
 } satisfies Metadata
 
 export default async function Home() {
-  const products = await psGetAllProducts.execute({ limit: 8 })
+  const products = await psGetAllProducts.execute({ limit: 8, offset: 0 })
   const t = await getTranslations("/")
 
   return (
@@ -35,14 +35,14 @@ export default async function Home() {
               {t("hero.action")}
             </YnsLink>
           </div>
-          <Image
+          <img
             alt="Cup of Coffee"
             loading="eager"
-            priority={true}
+            // priority={true}
             className="rounded"
             height={450}
             width={450}
-            src=""
+            src="https://img.freepik.com/free-photo/side-view-woman-looking-clothes_23-2150746358.jpg"
             style={{
               objectFit: "cover",
             }}

@@ -15,8 +15,6 @@ import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 
-// import { ThemeToggle } from "@/components/theme-toggle";
-
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -73,30 +71,28 @@ interface RootLayoutProps {
 }
 
 const RootLayout = async ({ children }: RootLayoutProps) => {
-  // const session = await auth()
+  const session = await auth()
   const locale = await getLocale()
   const messages = await getMessages()
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={cn("font-sans antialiased", fontInter.className)}>
-        <IntlClientProvider messages={messages} locale={locale}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
+        <SessionProvider session={session}>
+          <IntlClientProvider messages={messages} locale={locale}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
 
-            <Toaster />
-            <TailwindIndicator />
-            {/* <ThemeToggle /> */}
-          </ThemeProvider>
-        </IntlClientProvider>
-        {/* <SessionProvider session={session}>
-        
-        </SessionProvider> */}
+              <Toaster />
+              <TailwindIndicator />
+            </ThemeProvider>
+          </IntlClientProvider>
+        </SessionProvider>
       </body>
     </html>
   )

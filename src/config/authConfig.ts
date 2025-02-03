@@ -62,9 +62,7 @@ export default {
             user.password
           )
 
-          if (passwordIsValid) {
-            return { ...user, id: String(user.id) }
-          }
+          if (passwordIsValid) return user
         }
         return null
       },

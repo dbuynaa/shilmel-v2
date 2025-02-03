@@ -5,8 +5,7 @@ import { AuthError } from "next-auth"
 import { getUserByEmail, getUserByResetPasswordToken } from "@/actions/users"
 import { signIn } from "@/auth"
 import { db } from "@/db"
-import { users, type NewUser } from "@/db/schema"
-import { env } from "@/env"
+import { User as NewUser, users } from "@/db/schema"
 import {
   signInWithPasswordSchema,
   signUpWithPasswordSchema,
@@ -37,11 +36,11 @@ export async function signUpWithPassword(
 
     const passwordHash = await bcryptjs.hash(validatedInput.data.password, 10)
 
-    // TODO: Replace with prepared statement
     const newUserResponse = await db.insert(users).values({
       id: crypto.randomUUID(),
       email: validatedInput.data.email,
-      passwordHash,
+      password: passwordHash,
+      role: "USER",
     } as NewUser)
 
     if (!newUserResponse) return "error"
@@ -90,8 +89,7 @@ export async function signInWithPassword(
   const existingUser = await getUserByEmail(validatedInput.data.email)
   if (!existingUser) return "not-registered"
 
-  if (!existingUser.email || !existingUser.passwordHash)
-    return "incorrect-provider"
+  if (!existingUser.email || !existingUser.password) return "incorrect-provider"
 
   if (!existingUser.emailVerified) return "unverified-email"
 
@@ -173,7 +171,7 @@ export async function updatePassword(
     const userUpdatedResponse = await db
       .update(users)
       .set({
-        passwordHash,
+        password: passwordHash,
         resetPasswordToken: null,
         resetPasswordTokenExpiry: null,
       })

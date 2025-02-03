@@ -11,4 +11,11 @@ export const psGetProductsById = db
 export const psGetAllProducts = db
   .select()
   .from(products)
+  .offset(sql.placeholder("offset"))
+  .limit(sql.placeholder("limit"))
   .prepare("psGetAllProducts")
+
+export const psDeleteProduct = db
+  .delete(products)
+  .where(eq(products.id, sql.placeholder("id")))
+  .prepare("psDeleteProduct")

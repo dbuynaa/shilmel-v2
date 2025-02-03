@@ -29,8 +29,6 @@ export default async function AppInventoryCategoriesPage(
   props: AppInventoryCategoriesPageProps
 ): Promise<JSX.Element> {
   const searchParams = await props.searchParams
-  const session = await auth()
-  if (!session) redirect("/signin")
 
   const { page, per_page, sort, name } =
     categoriesSearchParamsSchema.parse(searchParams)

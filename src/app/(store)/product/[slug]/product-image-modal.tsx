@@ -43,7 +43,10 @@ export function ProductImageModal({ images }: ImageModalProps) {
     })
   }
 
-  const src = imageIndex !== null && images[Number(imageIndex)]
+  const src =
+    imageIndex !== null && images[Number(imageIndex)]
+      ? images[Number(imageIndex)]
+      : null
 
   useEffect(() => {
     setImageIndex(initialImageIndex)
@@ -163,9 +166,11 @@ export function ProductImageModal({ images }: ImageModalProps) {
               />
             </YnsLink>
             {/* preload images */}
-            <div className="pointer-events-none relative opacity-0">
-              <ImageElement src={src} />
-            </div>
+            {src && (
+              <div className="pointer-events-none relative opacity-0">
+                <ImageElement src={src} />
+              </div>
+            )}
           </Fragment>
         ))}
       </div>

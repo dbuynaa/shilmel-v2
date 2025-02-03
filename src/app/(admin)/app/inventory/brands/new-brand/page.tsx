@@ -1,3 +1,4 @@
+import type { JSX } from "react"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 
@@ -11,12 +12,7 @@ import {
 import { AddBrandForm } from "@/components/admin/forms/inventory/brands/add-brand-form"
 import { SubSubHeader } from "@/components/admin/nav/subsubheader"
 
-import type { JSX } from "react";
-
 export default async function AppInventoryBrandsNewBrandPage(): Promise<JSX.Element> {
-  const session = await auth()
-  if (!session) redirect("/signin")
-
   return (
     <div>
       <SubSubHeader />

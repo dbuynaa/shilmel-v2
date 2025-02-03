@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next/types"
-import { publicUrl } from "@/env"
+import { getProductsByCategory } from "@/actions/products"
+import { env } from "@/env"
 import { getTranslations } from "@/i18n/server"
-import * as Commerce from "commerce-kit"
 
 import { deslugify } from "@/lib/utils"
 import { ProductList } from "@/components/store/products/product-list"
@@ -11,10 +11,7 @@ export const generateMetadata = async (props: {
   params: Promise<{ slug: string }>
 }): Promise<Metadata> => {
   const params = await props.params
-  const products = await Commerce.productBrowse({
-    first: 100,
-    filter: { category: params.slug },
-  })
+  const products = await getProductsByCategory(params.slug)
 
   if (products.length === 0) {
     return notFound()
@@ -24,7 +21,9 @@ export const generateMetadata = async (props: {
 
   return {
     title: t("title", { categoryName: deslugify(params.slug) }),
-    alternates: { canonical: `${publicUrl}/category/${params.slug}` },
+    alternates: {
+      canonical: `${env.NEXT_PUBLIC_APP_URL}/category/${params.slug}`,
+    },
   }
 }
 
@@ -32,10 +31,7 @@ export default async function CategoryPage(props: {
   params: Promise<{ slug: string }>
 }) {
   const params = await props.params
-  const products = await Commerce.productBrowse({
-    first: 100,
-    filter: { category: params.slug },
-  })
+  const products = await getProductsByCategory(params.slug)
 
   if (products.length === 0) {
     return notFound()

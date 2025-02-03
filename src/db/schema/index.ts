@@ -1,30 +1,32 @@
+import { relations } from "drizzle-orm"
 import {
   customType,
+  date,
+  integer,
   pgEnum,
   pgTable,
+  serial,
   text,
   timestamp,
-  integer,
-  date,
-  serial,
   varchar,
-} from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+} from "drizzle-orm/pg-core"
+import { createInsertSchema, createSelectSchema } from "drizzle-zod"
+import { z } from "zod"
 
 export const customBytes = customType<{ data: Buffer }>({
   dataType() {
-    return "bytea";
+    return "bytea"
   },
   fromDriver(value: unknown) {
-    if (Buffer.isBuffer(value)) return value;
-    throw new Error("Expected Buffer");
+    if (Buffer.isBuffer(value)) return value
+    throw new Error("Expected Buffer")
   },
   toDriver(value: Buffer) {
-    return value;
+    return value
   },
-});
+})
 
-export const userRoleEnum = pgEnum("UserRole", ["USER", "ADMIN"]);
+export const userRoleEnum = pgEnum("UserRole", ["USER", "ADMIN"])
 
 export const orderStatusEnum = pgEnum("OrderStatus", [
   "PENDING",
@@ -32,10 +34,14 @@ export const orderStatusEnum = pgEnum("OrderStatus", [
   "SHIPPED",
   "DELIVERED",
   "CANCELLED",
-]);
+])
 
 export const users = pgTable("User", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   name: text("name"),
   email: text("email"),
   password: text("password").notNull(),
@@ -48,10 +54,14 @@ export const users = pgTable("User", {
   }),
   image: text("image"),
   lastActivityDate: date("last_activity_date").defaultNow(),
-});
+})
 
 export const products = pgTable("Product", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   name: text("name").notNull(),
   description: text("description"),
   price: integer("price").notNull(),
@@ -62,17 +72,25 @@ export const products = pgTable("Product", {
     .notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
   workBranchId: text("workBranchId"),
-});
+})
 
 export const imageColors = pgTable("ImageColor", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   color: text("color").notNull(),
   image: text("image").array().notNull(),
   productId: text("productId").notNull(),
-});
+})
 
 export const customizations = pgTable("Customization", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   orderNumber: text("orderNumber").notNull(),
   logoPosition: text("logoPosition"),
   logoFile: text("logoFile"),
@@ -82,16 +100,24 @@ export const customizations = pgTable("Customization", {
     .defaultNow()
     .notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-});
+})
 
 export const productMaterials = pgTable("ProductMaterial", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   material: text("material").notNull(),
   productId: text("productId").notNull(),
-});
+})
 
 export const sizeQuantities = pgTable("SizeQuantity", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   size: text("size").notNull(),
   stock: integer("stock").notNull(),
   productId: text("productId").notNull(),
@@ -99,10 +125,14 @@ export const sizeQuantities = pgTable("SizeQuantity", {
     .defaultNow()
     .notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-});
+})
 
 export const workBranches = pgTable("WorkBranch", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   name: text("name").notNull(),
   description: text("description"),
   icon: text("icon").notNull(),
@@ -111,10 +141,14 @@ export const workBranches = pgTable("WorkBranch", {
     .defaultNow()
     .notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-});
+})
 
 export const categories = pgTable("Category", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   name: text("name").notNull(),
   description: text("description"),
   icon: text("icon").notNull(),
@@ -122,7 +156,7 @@ export const categories = pgTable("Category", {
     mode: "date",
     precision: 3,
   }).defaultNow(),
-});
+})
 
 // export const carts = pgTable("Cart", {
 //   id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt( crypto.randomUUID())).unique(),
@@ -143,7 +177,11 @@ export const categories = pgTable("Category", {
 // });
 
 export const orders = pgTable("Order", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   status: orderStatusEnum("status").default("PENDING").notNull(),
   totalAmount: integer("totalAmount").notNull(),
   paymentMethod: text("paymentMethod").default("card").notNull(),
@@ -154,10 +192,14 @@ export const orders = pgTable("Order", {
     .defaultNow()
     .notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-});
+})
 
 export const orderItems = pgTable("OrderItem", {
-  id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt(crypto.randomUUID())).unique(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
   quantity: integer("quantity").notNull(),
   size: text("size").notNull(),
   color: text("color").notNull(),
@@ -170,11 +212,11 @@ export const orderItems = pgTable("OrderItem", {
   updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
     .defaultNow()
     .notNull(),
-});
+})
 
 export const usersRelations = relations(users, (helpers) => ({
   order: helpers.many(orders, { relationName: "OrderToUser" }),
-}));
+}))
 
 export const productsRelations = relations(products, (helpers) => ({
   materials: helpers.many(productMaterials, {
@@ -199,7 +241,7 @@ export const productsRelations = relations(products, (helpers) => ({
     fields: [products.workBranchId],
     references: [workBranches.id],
   }),
-}));
+}))
 
 export const imageColorsRelations = relations(imageColors, (helpers) => ({
   product: helpers.one(products, {
@@ -207,7 +249,7 @@ export const imageColorsRelations = relations(imageColors, (helpers) => ({
     fields: [imageColors.productId],
     references: [products.id],
   }),
-}));
+}))
 
 export const customizationsRelations = relations(customizations, (helpers) => ({
   product: helpers.one(products, {
@@ -215,7 +257,7 @@ export const customizationsRelations = relations(customizations, (helpers) => ({
     fields: [customizations.productId],
     references: [products.id],
   }),
-}));
+}))
 
 export const productMaterialsRelations = relations(
   productMaterials,
@@ -226,7 +268,7 @@ export const productMaterialsRelations = relations(
       references: [products.id],
     }),
   })
-);
+)
 
 export const sizeQuantitiesRelations = relations(sizeQuantities, (helpers) => ({
   product: helpers.one(products, {
@@ -234,7 +276,7 @@ export const sizeQuantitiesRelations = relations(sizeQuantities, (helpers) => ({
     fields: [sizeQuantities.productId],
     references: [products.id],
   }),
-}));
+}))
 
 export const workBranchesRelations = relations(workBranches, (helpers) => ({
   products: helpers.many(products, { relationName: "ProductToWorkBranch" }),
@@ -244,11 +286,11 @@ export const workBranchesRelations = relations(workBranches, (helpers) => ({
     references: [workBranches.id],
   }),
   children: helpers.many(workBranches, { relationName: "SubWorkBranches" }),
-}));
+}))
 
 export const categoriesRelations = relations(categories, (helpers) => ({
   products: helpers.many(products, { relationName: "CategoryToProduct" }),
-}));
+}))
 
 // export const cartsRelations = relations(carts, (helpers) => ({
 //   items: helpers.many(cartItems, { relationName: "CartToCartItem" }),
@@ -274,7 +316,7 @@ export const ordersRelations = relations(orders, (helpers) => ({
     fields: [orders.userId],
     references: [users.id],
   }),
-}));
+}))
 
 export const orderItemsRelations = relations(orderItems, (helpers) => ({
   order: helpers.one(orders, {
@@ -287,17 +329,60 @@ export const orderItemsRelations = relations(orderItems, (helpers) => ({
     fields: [orderItems.productId],
     references: [products.id],
   }),
-}));
+}))
 
-export type User = typeof users.$inferSelect;
-export type Product = typeof products.$inferSelect;
-export type ProductMaterial = typeof productMaterials.$inferSelect;
-export type SizeQuantity = typeof sizeQuantities.$inferSelect;
-export type ImageColor = typeof imageColors.$inferSelect;
-export type Customization = typeof customizations.$inferSelect;
+export type User = typeof users.$inferSelect
+export type Product = typeof products.$inferSelect
+export type ProductMaterial = typeof productMaterials.$inferSelect
+export type SizeQuantity = typeof sizeQuantities.$inferSelect
+export type ImageColor = typeof imageColors.$inferSelect
+export type Customization = typeof customizations.$inferSelect
 // export type Cart = typeof carts.$inferSelect;
 // export type CartItem = typeof cartItems.$inferSelect;
-export type Order = typeof orders.$inferSelect;
-export type OrderItem = typeof orderItems.$inferSelect;
-export type Category = typeof categories.$inferSelect;
-export type WorkBranch = typeof workBranches.$inferSelect;
+export type Order = typeof orders.$inferSelect
+export type OrderItem = typeof orderItems.$inferSelect
+export type Category = typeof categories.$inferSelect
+export type WorkBranch = typeof workBranches.$inferSelect
+
+// Product schemas
+export const productInsertSchema = createInsertSchema(products).extend({
+  name: z
+    .string()
+    .min(2, {
+      message: "Product name must be at least 2 characters long",
+    })
+    .max(100, {
+      message: "Product name cannot exceed 100 characters",
+    }),
+  price: z.number().min(0, {
+    message: "Price cannot be negative",
+  }),
+  description: z
+    .string()
+    .min(10, {
+      message:
+        "Please provide a more detailed description (minimum 10 characters)",
+    })
+    .optional(),
+  slug: z.string().regex(/^[a-z0-9-]+$/, {
+    message: "Slug can only contain lowercase letters, numbers, and hyphens",
+  }),
+})
+
+export const productSelectSchema = createSelectSchema(products)
+
+// Product Material schemas
+export const productMaterialInsertSchema = createInsertSchema(productMaterials)
+export const productMaterialSelectSchema = createSelectSchema(productMaterials)
+
+// Size Quantity schemas
+export const sizeQuantityInsertSchema = createInsertSchema(sizeQuantities)
+export const sizeQuantitySelectSchema = createSelectSchema(sizeQuantities)
+
+// Image Color schemas
+export const imageColorInsertSchema = createInsertSchema(imageColors)
+export const imageColorSelectSchema = createSelectSchema(imageColors)
+
+// Customization schemas
+export const customizationInsertSchema = createInsertSchema(customizations)
+export const customizationSelectSchema = createSelectSchema(customizations)
