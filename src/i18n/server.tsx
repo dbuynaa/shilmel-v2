@@ -6,12 +6,14 @@ import type { IntlNamespaceKeys, NamespacedKeys } from "./types"
 type En = typeof import("../../messages/en-US.json")
 
 export const getLocale = async () => env.NEXT_PUBLIC_LANGUAGE
-export const getMessages = async () =>
-  (
-    (await import(`../../messages/${await getLocale()}.json`)) as {
+export const getMessages = async () => {
+  const locale = (await getLocale()) || "en" // Provide a default locale if undefined
+  return (
+    (await import(`../../messages/${locale}.json`)) as {
       default: En
     }
   ).default
+}
 
 export const getTranslations = async <
   TNamespaceKey extends IntlNamespaceKeys = never,

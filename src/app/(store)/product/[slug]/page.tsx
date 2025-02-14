@@ -3,13 +3,15 @@ import { Suspense } from "react"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next/types"
-import { publicUrl } from "@/env"
+import { getProductBySlug } from "@/actions/products"
+// import { publicUrl } from "@/env"
 import { getLocale, getTranslations } from "@/i18n/server"
-import type { TrieveProductMetadata } from "@/scripts/upload-trieve"
+
+// import type { TrieveProductMetadata } from "@/scripts/upload-trieve"
 
 // import * as Commerce from "commerce-kit"
 
-import { getRecommendedProducts } from "@/lib/search/trieve"
+// import { getRecommendedProducts } from "@/lib/search/trieve"
 import { cn, deslugify, formatMoney, formatProductName } from "@/lib/utils"
 import {
   Breadcrumb,
@@ -65,14 +67,14 @@ export default async function SingleProductPage(props: {
   const params = await props.params
   const searchParams = await props.searchParams
 
-  // const variants = await Commerce.productGet({ slug: params.slug })
+  // const variants = await getProductBySlug({ slug: params.slug })
   // const selectedVariant =
   //   (variants.length > 1 && searchParams.variant) ||
   //   variants[0]?.metadata.variant
   // const product = variants.find(
   //   (variant) => variant.metadata.variant === selectedVariant
   // )
-
+  const product = await getProductBySlug(params.slug)
   if (!product) {
     return notFound()
   }
@@ -80,9 +82,10 @@ export default async function SingleProductPage(props: {
   const t = await getTranslations("/product.page")
   const locale = await getLocale()
 
-  const category = product.metadata.category
-  const images = product.images
-
+  // const category = product.metadata.category
+  // const images = product.images
+  const category = ""
+  // const images = product.images
   return (
     <article className="pb-12">
       <Breadcrumb>
@@ -114,14 +117,14 @@ export default async function SingleProductPage(props: {
           <BreadcrumbItem>
             <BreadcrumbPage>{product.name}</BreadcrumbPage>
           </BreadcrumbItem>
-          {selectedVariant && (
+          {/* {selectedVariant && (
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage>{deslugify(selectedVariant)}</BreadcrumbPage>
               </BreadcrumbItem>
             </>
-          )}
+          )} */}
         </BreadcrumbList>
       </Breadcrumb>
 
@@ -131,7 +134,7 @@ export default async function SingleProductPage(props: {
             <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
               {product.name}
             </h1>
-            {product.default_price.unit_amount && (
+            {/* {product.default_price.unit_amount && (
               <p className="mt-2 text-2xl font-medium leading-none tracking-tight text-foreground/70">
                 {formatMoney({
                   amount: product.default_price.unit_amount,
@@ -139,9 +142,19 @@ export default async function SingleProductPage(props: {
                   locale,
                 })}
               </p>
+            )} */}
+            {product.price && (
+              <p className="mt-2 text-2xl font-medium leading-none tracking-tight text-foreground/70">
+                {formatMoney({
+                  amount: parseInt(product.price),
+                  currency: "USD",
+                  locale,
+                })}
+              </p>
             )}
             <div className="mt-2">
-              {product.metadata.stock <= 0 && <div>Out of stock</div>}
+              {/* {product.metadata.stock <= 0 && <div>Out of stock</div>} */}
+              {/* {product.metadata.stock <= 0 && <div>Out of stock</div>} */}
             </div>
           </div>
 
@@ -152,7 +165,7 @@ export default async function SingleProductPage(props: {
               {/* {product.metadata.preview && (
 								<ProductModel3D model3d={product.metadata.preview} imageSrc={product.images[0]} />
 							)} */}
-              {images.map((image, idx) => {
+              {/* {images.map((image, idx) => {
                 const params = new URLSearchParams({
                   image: idx.toString(),
                 })
@@ -185,7 +198,7 @@ export default async function SingleProductPage(props: {
                     )}
                   </YnsLink>
                 )
-              })}
+              })} */}
             </div>
           </div>
 
@@ -193,10 +206,11 @@ export default async function SingleProductPage(props: {
             <section>
               <h2 className="sr-only">{t("descriptionTitle")}</h2>
               <div className="prose text-secondary-foreground">
-                <Markdown source={product.description || ""} />
+                {product.description}
+                {/* <Markdown source={product.description || ""} /> */}
               </div>
             </section>
-
+            {/* 
             {variants.length > 1 && (
               <div className="grid gap-2">
                 <p className="text-base font-medium" id="variant-label">
@@ -232,90 +246,88 @@ export default async function SingleProductPage(props: {
                   })}
                 </ul>
               </div>
-            )}
+            )} */}
 
-            <AddToCartButton
+            {/* <AddToCartButton
               productId={product.id}
               disabled={product.metadata.stock <= 0}
-            />
+            /> */}
           </div>
         </div>
       </StickyBottom>
 
-      <Suspense>
+      {/* <Suspense>
         <SimilarProducts id={product.id} />
-      </Suspense>
+      </Suspense> */}
 
-      <Suspense>
-        <ProductImageModal images={images} />
-      </Suspense>
+      <Suspense>{/* <ProductImageModal images={images} /> */}</Suspense>
 
-      <JsonLd jsonLd={mappedProductToJsonLd(product)} />
+      {/* <JsonLd jsonLd={mappedProductToJsonLd(product)} /> */}
     </article>
   )
 }
 
-async function SimilarProducts({ id }: { id: string }) {
-  const products = await getRecommendedProducts({ productId: id, limit: 4 })
+// async function SimilarProducts({ id }: { id: string }) {
+//   const products = await getRecommendedProducts({ productId: id, limit: 4 })
 
-  if (!products) {
-    return null
-  }
+//   if (!products) {
+//     return null
+//   }
 
-  return (
-    <section className="py-12">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold tracking-tight">You May Also Like</h2>
-      </div>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {products.map((product) => {
-          const trieveMetadata = product.metadata as TrieveProductMetadata
-          return (
-            <div
-              key={product.tracking_id}
-              className="group overflow-hidden rounded bg-card shadow-sm"
-            >
-              {trieveMetadata.image_url && (
-                <YnsLink
-                  href={`${publicUrl}${product.link}`}
-                  className="block"
-                  prefetch={false}
-                >
-                  <Image
-                    className={
-                      "w-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-80"
-                    }
-                    src={trieveMetadata.image_url}
-                    width={300}
-                    height={300}
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
-                    alt=""
-                  />
-                </YnsLink>
-              )}
-              <div className="p-4">
-                <h3 className="mb-2 text-lg font-semibold">
-                  <YnsLink
-                    href={product.link || "#"}
-                    className="hover:text-primary"
-                    prefetch={false}
-                  >
-                    {trieveMetadata.name}
-                  </YnsLink>
-                </h3>
-                <div className="flex items-center justify-between">
-                  <span>
-                    {formatMoney({
-                      amount: trieveMetadata.amount,
-                      currency: trieveMetadata.currency,
-                    })}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </section>
-  )
-}
+//   return (
+//     <section className="py-12">
+//       <div className="mb-8">
+//         <h2 className="text-2xl font-bold tracking-tight">You May Also Like</h2>
+//       </div>
+//       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+//         {/* {products.map((product) => {
+//           const trieveMetadata = product.metadata as TrieveProductMetadata
+//           return (
+//             <div
+//               key={product.tracking_id}
+//               className="group overflow-hidden rounded bg-card shadow-sm"
+//             >
+//               {trieveMetadata.image_url && (
+//                 <YnsLink
+//                   href={`${publicUrl}${product.link}`}
+//                   className="block"
+//                   prefetch={false}
+//                 >
+//                   <Image
+//                     className={
+//                       "w-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-80"
+//                     }
+//                     src={trieveMetadata.image_url}
+//                     width={300}
+//                     height={300}
+//                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
+//                     alt=""
+//                   />
+//                 </YnsLink>
+//               )}
+//               <div className="p-4">
+//                 <h3 className="mb-2 text-lg font-semibold">
+//                   <YnsLink
+//                     href={product.link || "#"}
+//                     className="hover:text-primary"
+//                     prefetch={false}
+//                   >
+//                     {trieveMetadata.name}
+//                   </YnsLink>
+//                 </h3>
+//                 <div className="flex items-center justify-between">
+//                   <span>
+//                     {formatMoney({
+//                       amount: trieveMetadata.amount,
+//                       currency: trieveMetadata.currency,
+//                     })}
+//                   </span>
+//                 </div>
+//               </div>
+//             </div>
+//           )
+//         })} */}
+//       </div>
+//     </section>
+//   )
+// }

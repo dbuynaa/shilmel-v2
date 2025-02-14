@@ -1,13 +1,13 @@
-import * as dotenv from "dotenv"
+import { env } from "@/env"
 import type { Config } from "drizzle-kit"
-
-dotenv.config()
 
 export default {
   schema: "./src/db/schema/index.ts",
   out: "./src/db/migrations",
   dialect: "postgresql",
+  strict: true,
+  casing: "camelCase",
   dbCredentials: {
-    url: process.env.DATABASE_URI ?? "",
+    url: env.DATABASE_URL,
   },
 } satisfies Config

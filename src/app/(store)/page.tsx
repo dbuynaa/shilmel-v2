@@ -1,5 +1,6 @@
 import Image from "next/image"
 import type { Metadata } from "next/types"
+import { db } from "@/db"
 import { psGetAllProducts } from "@/db/prepared/product.statements"
 // import { env} from "@/env"
 import { getTranslations } from "@/i18n/server"
@@ -14,7 +15,10 @@ export const metadata = {
 } satisfies Metadata
 
 export default async function Home() {
-  const products = await psGetAllProducts.execute({ limit: 8, offset: 0 })
+  const products = await psGetAllProducts.execute({
+    offset: 0,
+    limit: 10,
+  })
   const t = await getTranslations("/")
 
   return (

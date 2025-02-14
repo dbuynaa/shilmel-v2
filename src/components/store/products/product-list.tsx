@@ -1,15 +1,23 @@
 import Image from "next/image"
+import { InferResultType } from "@/db/schema/types"
+// import { Product } from "@/db/schema"
 import { getLocale } from "@/i18n/server"
-import type * as Commerce from "commerce-kit"
+
+// import type * as Commerce from "commerce-kit"
 
 import { formatMoney } from "@/lib/utils"
 import { JsonLd, mappedProductsToJsonLd } from "@/components/store/json-ld"
 import { YnsLink } from "@/components/store/yns-link"
 
+type ProductWithVariants = InferResultType<
+  "products",
+  { variants: { with: { images: true } } }
+>
+
 export const ProductList = async ({
   products,
 }: {
-  products: Commerce.MappedProduct[]
+  products: ProductWithVariants[]
 }) => {
   const locale = await getLocale()
 
@@ -19,13 +27,13 @@ export const ProductList = async ({
         {products.map((product, idx) => {
           return (
             <li key={product.id} className="group">
-              <YnsLink href={`/product/${product.metadata.slug}`}>
+              <YnsLink href={`/product/${product.id}`}>
                 <article className="overflow-hidden bg-white">
-                  {product.images[0] && (
-                    <div className="aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
+                  {product?.variants[0]?.images[0] && (
+                    <div className="aspec t-square w-full overflow-hidden rounded-lg bg-neutral-100">
                       <Image
                         className="group-hover:rotate hover-perspective w-full bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-75"
-                        src={product.images[0]}
+                        src={product.variants[0].images[0].url}
                         width={768}
                         height={768}
                         loading={idx < 3 ? "eager" : "lazy"}
@@ -40,11 +48,11 @@ export const ProductList = async ({
                       {product.name}
                     </h2>
                     <footer className="text-base font-normal text-neutral-900">
-                      {product.default_price.unit_amount && (
+                      {product.price && (
                         <p>
                           {formatMoney({
-                            amount: product.default_price.unit_amount,
-                            currency: product.default_price.currency,
+                            amount: parseInt(product.price),
+                            currency: "USD",
                             locale,
                           })}
                         </p>
@@ -57,7 +65,7 @@ export const ProductList = async ({
           )
         })}
       </ul>
-      <JsonLd jsonLd={mappedProductsToJsonLd(products)} />
+      {/* <JsonLd jsonLd={mappedProductsToJsonLd(products)} /> */}
     </>
   )
 }

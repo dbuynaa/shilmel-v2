@@ -1,33 +1,16 @@
+import { createId } from "@paralleldrive/cuid2"
 import { relations } from "drizzle-orm"
 import {
-  customType,
-  date,
   integer,
+  numeric,
   pgEnum,
   pgTable,
-  serial,
   text,
   timestamp,
-  varchar,
 } from "drizzle-orm/pg-core"
-import { createInsertSchema, createSelectSchema } from "drizzle-zod"
-import { z } from "zod"
 
-export const customBytes = customType<{ data: Buffer }>({
-  dataType() {
-    return "bytea"
-  },
-  fromDriver(value: unknown) {
-    if (Buffer.isBuffer(value)) return value
-    throw new Error("Expected Buffer")
-  },
-  toDriver(value: Buffer) {
-    return value
-  },
-})
-
+// Enums
 export const userRoleEnum = pgEnum("UserRole", ["USER", "ADMIN"])
-
 export const orderStatusEnum = pgEnum("OrderStatus", [
   "PENDING",
   "PROCESSING",
@@ -35,354 +18,349 @@ export const orderStatusEnum = pgEnum("OrderStatus", [
   "DELIVERED",
   "CANCELLED",
 ])
+export const paymentStatusEnum = pgEnum("PaymentStatus", [
+  "PENDING",
+  "COMPLETED",
+  "FAILED",
+])
 
+// Users
 export const users = pgTable("User", {
   id: text("id")
     .notNull()
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => createId())
     .unique(),
   name: text("name"),
-  email: text("email"),
+  email: text("email").notNull().unique(),
   password: text("password").notNull(),
   role: userRoleEnum("role").default("USER").notNull(),
-  emailVerified: timestamp("emailVerified", { mode: "date", precision: 3 }),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
   emailVerificationToken: text("emailVerificationToken"),
   resetPasswordToken: text("resetPasswordToken").unique(),
   resetPasswordTokenExpiry: timestamp("resetPasswordTokenExpiry", {
     mode: "date",
   }),
   image: text("image"),
-  lastActivityDate: date("last_activity_date").defaultNow(),
+  lastActivityDate: timestamp("last_activity_date").defaultNow(),
 })
 
-export const products = pgTable("Product", {
+// Addresses
+export const addresses = pgTable("Address", {
   id: text("id")
     .notNull()
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => createId())
     .unique(),
-  name: text("name").notNull(),
-  description: text("description"),
-  price: integer("price").notNull(),
-  discount: integer("discount"),
-  categoryId: text("categoryId").notNull(),
-  createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-  workBranchId: text("workBranchId"),
-})
-
-export const imageColors = pgTable("ImageColor", {
-  id: text("id")
+  userId: text("userId")
     .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
-    .unique(),
-  color: text("color").notNull(),
-  image: text("image").array().notNull(),
-  productId: text("productId").notNull(),
+    .references(() => users.id, { onDelete: "cascade" }),
+  street: text("street").notNull(),
+  city: text("city").notNull(),
+  state: text("state"),
+  postalCode: text("postalCode").notNull(),
+  country: text("country").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 })
 
-export const customizations = pgTable("Customization", {
-  id: text("id")
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
-    .unique(),
-  orderNumber: text("orderNumber").notNull(),
-  logoPosition: text("logoPosition"),
-  logoFile: text("logoFile"),
-  notes: text("notes"),
-  productId: text("productId").notNull(),
-  createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-})
-
-export const productMaterials = pgTable("ProductMaterial", {
-  id: text("id")
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
-    .unique(),
-  material: text("material").notNull(),
-  productId: text("productId").notNull(),
-})
-
-export const sizeQuantities = pgTable("SizeQuantity", {
-  id: text("id")
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
-    .unique(),
-  size: text("size").notNull(),
-  stock: integer("stock").notNull(),
-  productId: text("productId").notNull(),
-  createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-})
-
-export const workBranches = pgTable("WorkBranch", {
-  id: text("id")
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
-    .unique(),
-  name: text("name").notNull(),
-  description: text("description"),
-  icon: text("icon").notNull(),
-  parentId: text("parentId"),
-  createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-})
-
+// Categories
 export const categories = pgTable("Category", {
   id: text("id")
     .notNull()
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => createId())
     .unique(),
   name: text("name").notNull(),
   description: text("description"),
-  icon: text("icon").notNull(),
-  createdAt: timestamp("createdAt", {
-    mode: "date",
-    precision: 3,
-  }).defaultNow(),
+  parentId: text("parentId"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 })
 
-// export const carts = pgTable("Cart", {
-//   id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt( crypto.randomUUID())).unique(),
-//   userId: text("userId").notNull(),
-//   createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
-//     .defaultNow()
-//     .notNull(),
-//   updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
-// });
+// Products
+export const products = pgTable("Product", {
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createId())
+    .unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  discount: numeric("discount", { precision: 5, scale: 2 }),
+  categoryId: text("categoryId")
+    .references(() => categories.id, { onDelete: "cascade" })
+    .notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+})
 
-// export const cartItems = pgTable("CartItem", {
-//   id: serial("id").notNull().primaryKey().$defaultFn(() => parseInt( crypto.randomUUID())).unique(),
-//   cartId: text("cartId").notNull(),
-//   productId: text("productId"),
-//   quantity: integer("quantity").notNull(),
-//   size: text("size").notNull(),
-//   color: text("color").notNull(),
-// });
+// Product Variants (Size, Color, Stock)
+export const productVariants = pgTable("ProductVariant", {
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createId())
+    .unique(),
+  productId: text("productId")
+    .notNull()
+    .references(() => products.id, { onDelete: "cascade" }),
+  size: text("size").notNull(),
+  color: text("color").notNull(),
+  material: text("material"),
 
+  stock: integer("stock").notNull().default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+})
+
+export const images = pgTable("Image", {
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createId())
+    .unique(),
+  variantId: text("variantId")
+    .notNull()
+    .references(() => productVariants.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  altText: text("altText"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+})
+
+// Carts
+export const carts = pgTable("Cart", {
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+})
+
+// Cart Items
+export const cartItems = pgTable("CartItem", {
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  cartId: text("cartId")
+    .notNull()
+    .references(() => carts.id, { onDelete: "cascade" }),
+  variantId: text("variantId")
+    .notNull()
+    .references(() => productVariants.id, { onDelete: "cascade" }),
+  quantity: integer("quantity").notNull(),
+})
+
+// Orders
 export const orders = pgTable("Order", {
   id: text("id")
     .notNull()
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => createId())
     .unique(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  shippingAddressId: text("shippingAddressId")
+    .notNull()
+    .references(() => addresses.id, { onDelete: "cascade" }),
+  totalAmount: numeric("totalAmount", { precision: 10, scale: 2 }).notNull(),
   status: orderStatusEnum("status").default("PENDING").notNull(),
-  totalAmount: integer("totalAmount").notNull(),
   paymentMethod: text("paymentMethod").default("card").notNull(),
-  paymentStatus: text("paymentStatus").default("PENDING").notNull(),
-  paymentId: text("paymentId"),
-  userId: text("userId").notNull(),
-  createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
-    .defaultNow()
+  paymentStatus: paymentStatusEnum("paymentStatus")
+    .default("PENDING")
     .notNull(),
-  updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 }).notNull(),
+  paymentId: text("paymentId").unique(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 })
 
+// Order Items
 export const orderItems = pgTable("OrderItem", {
   id: text("id")
     .notNull()
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => createId())
     .unique(),
+  orderId: text("orderId")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  productId: text("productId")
+    .notNull()
+    .references(() => products.id, { onDelete: "cascade" }),
+  variantId: text("variantId")
+    .notNull()
+    .references(() => productVariants.id, { onDelete: "cascade" }),
   quantity: integer("quantity").notNull(),
-  size: text("size").notNull(),
-  color: text("color").notNull(),
-  price: integer("price").notNull(),
-  orderId: text("orderId").notNull(),
-  productId: text("productId").notNull(),
-  createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
-    .defaultNow()
-    .notNull(),
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 })
 
-export const usersRelations = relations(users, (helpers) => ({
-  order: helpers.many(orders, { relationName: "OrderToUser" }),
+// Payments
+export const payments = pgTable("Payment", {
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  orderId: text("orderId")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  status: paymentStatusEnum("status").default("PENDING").notNull(),
+  transactionId: text("transactionId").notNull().unique(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+})
+
+// Relationships
+// Users
+export const usersRelations = relations(users, ({ many }) => ({
+  orders: many(orders),
+  carts: many(carts),
+  addresses: many(addresses),
 }))
 
-export const productsRelations = relations(products, (helpers) => ({
-  materials: helpers.many(productMaterials, {
-    relationName: "ProductToProductMaterial",
-  }),
-  customization: helpers.one(customizations),
-  sizes: helpers.many(sizeQuantities, {
-    relationName: "ProductToSizeQuantity",
-  }),
-  imageColor: helpers.many(imageColors, {
-    relationName: "ImageColorToProduct",
-  }),
-  category: helpers.one(categories, {
-    relationName: "CategoryToProduct",
-    fields: [products.categoryId],
-    references: [categories.id],
-  }),
-  orderItems: helpers.many(orderItems, { relationName: "OrderItemToProduct" }),
-  // cartItems: helpers.many(cartItems, { relationName: "CartItemToProduct" }),
-  WorkBranch: helpers.one(workBranches, {
-    relationName: "ProductToWorkBranch",
-    fields: [products.workBranchId],
-    references: [workBranches.id],
-  }),
-}))
-
-export const imageColorsRelations = relations(imageColors, (helpers) => ({
-  product: helpers.one(products, {
-    relationName: "ImageColorToProduct",
-    fields: [imageColors.productId],
-    references: [products.id],
-  }),
-}))
-
-export const customizationsRelations = relations(customizations, (helpers) => ({
-  product: helpers.one(products, {
-    relationName: "CustomizationToProduct",
-    fields: [customizations.productId],
-    references: [products.id],
-  }),
-}))
-
-export const productMaterialsRelations = relations(
-  productMaterials,
-  (helpers) => ({
-    product: helpers.one(products, {
-      relationName: "ProductToProductMaterial",
-      fields: [productMaterials.productId],
-      references: [products.id],
-    }),
-  })
-)
-
-export const sizeQuantitiesRelations = relations(sizeQuantities, (helpers) => ({
-  product: helpers.one(products, {
-    relationName: "ProductToSizeQuantity",
-    fields: [sizeQuantities.productId],
-    references: [products.id],
-  }),
-}))
-
-export const workBranchesRelations = relations(workBranches, (helpers) => ({
-  products: helpers.many(products, { relationName: "ProductToWorkBranch" }),
-  parent: helpers.one(workBranches, {
-    relationName: "SubWorkBranches",
-    fields: [workBranches.parentId],
-    references: [workBranches.id],
-  }),
-  children: helpers.many(workBranches, { relationName: "SubWorkBranches" }),
-}))
-
-export const categoriesRelations = relations(categories, (helpers) => ({
-  products: helpers.many(products, { relationName: "CategoryToProduct" }),
-}))
-
-// export const cartsRelations = relations(carts, (helpers) => ({
-//   items: helpers.many(cartItems, { relationName: "CartToCartItem" }),
-// }));
-
-// export const cartItemsRelations = relations(cartItems, (helpers) => ({
-//   cart: helpers.one(carts, {
-//     relationName: "CartToCartItem",
-//     fields: [cartItems.cartId],
-//     references: [carts.id],
-//   }),
-//   product: helpers.one(products, {
-//     relationName: "CartItemToProduct",
-//     fields: [cartItems.productId],
-//     references: [products.id],
-//   }),
-// }));
-
-export const ordersRelations = relations(orders, (helpers) => ({
-  items: helpers.many(orderItems, { relationName: "OrderToOrderItem" }),
-  orderedBy: helpers.one(users, {
-    relationName: "OrderToUser",
-    fields: [orders.userId],
+// Addresses
+export const addressesRelations = relations(addresses, ({ one }) => ({
+  user: one(users, {
+    fields: [addresses.userId],
     references: [users.id],
   }),
 }))
 
-export const orderItemsRelations = relations(orderItems, (helpers) => ({
-  order: helpers.one(orders, {
-    relationName: "OrderToOrderItem",
+// Categories
+export const categoriesRelations = relations(categories, ({ many, one }) => ({
+  products: many(products, {
+    relationName: "CategoryToProduct",
+  }),
+  parent: one(categories, {
+    relationName: "SubCategories",
+    fields: [categories.parentId],
+    references: [categories.id],
+  }),
+  children: many(categories, {
+    relationName: "SubCategories",
+  }),
+}))
+
+// Products
+export const productsRelations = relations(products, ({ many, one }) => ({
+  category: one(categories, {
+    relationName: "CategoryToProduct",
+    fields: [products.categoryId],
+    references: [categories.id],
+  }),
+  cartItems: many(cartItems, { relationName: "CartItemToProduct" }),
+  variants: many(productVariants, { relationName: "ProductToVariant" }),
+  orderItems: many(orderItems, { relationName: "OrderItemToProduct" }),
+}))
+
+// Product Variants
+export const productVariantsRelations = relations(
+  productVariants,
+  ({ one, many }) => ({
+    product: one(products, {
+      relationName: "ProductToVariant",
+      fields: [productVariants.productId],
+      references: [products.id],
+    }),
+    images: many(images, {
+      relationName: "ImageToVariant",
+    }),
+    cartItems: many(cartItems),
+    orderItems: many(orderItems),
+  })
+)
+
+// Images
+export const imagesRelations = relations(images, ({ one }) => ({
+  variant: one(productVariants, {
+    relationName: "ImageToVariant",
+    fields: [images.variantId],
+    references: [productVariants.id],
+  }),
+}))
+
+// Carts
+export const cartsRelations = relations(carts, ({ one, many }) => ({
+  user: one(users, {
+    relationName: "CartToUser",
+    fields: [carts.userId],
+    references: [users.id],
+  }),
+  items: many(cartItems),
+}))
+
+// Cart Items
+export const cartItemsRelations = relations(cartItems, ({ one }) => ({
+  cart: one(carts, {
+    relationName: "CartToCartItem",
+    fields: [cartItems.cartId],
+    references: [carts.id],
+  }),
+  variant: one(productVariants, {
+    relationName: "CartItemToProduct",
+    fields: [cartItems.variantId],
+    references: [productVariants.id],
+  }),
+}))
+
+// Orders
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(users, {
+    relationName: "OrderToUser",
+    fields: [orders.userId],
+    references: [users.id],
+  }),
+  shippingAddress: one(addresses, {
+    fields: [orders.shippingAddressId],
+    references: [addresses.id],
+  }),
+  items: many(orderItems, { relationName: "OrderItemToOrder" }),
+
+  payment: one(payments, {
+    fields: [orders.paymentId],
+    references: [payments.id],
+  }),
+}))
+
+// Order Items
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    relationName: "OrderItemToOrder",
     fields: [orderItems.orderId],
     references: [orders.id],
   }),
-  product: helpers.one(products, {
+  product: one(products, {
     relationName: "OrderItemToProduct",
     fields: [orderItems.productId],
     references: [products.id],
+  }),
+  variant: one(productVariants, {
+    fields: [orderItems.variantId],
+    references: [productVariants.id],
+  }),
+}))
+
+// Payments
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  order: one(orders, {
+    fields: [payments.orderId],
+    references: [orders.id],
   }),
 }))
 
 export type User = typeof users.$inferSelect
 export type Product = typeof products.$inferSelect
-export type ProductMaterial = typeof productMaterials.$inferSelect
-export type SizeQuantity = typeof sizeQuantities.$inferSelect
-export type ImageColor = typeof imageColors.$inferSelect
-export type Customization = typeof customizations.$inferSelect
-// export type Cart = typeof carts.$inferSelect;
-// export type CartItem = typeof cartItems.$inferSelect;
+// export type Cart = typeof carts.$inferSelect
+// export type CartItem = typeof cartItems.$inferSelect
 export type Order = typeof orders.$inferSelect
 export type OrderItem = typeof orderItems.$inferSelect
-export type Category = typeof categories.$inferSelect
-export type WorkBranch = typeof workBranches.$inferSelect
-
-// Product schemas
-export const productInsertSchema = createInsertSchema(products).extend({
-  name: z
-    .string()
-    .min(2, {
-      message: "Product name must be at least 2 characters long",
-    })
-    .max(100, {
-      message: "Product name cannot exceed 100 characters",
-    }),
-  price: z.number().min(0, {
-    message: "Price cannot be negative",
-  }),
-  description: z
-    .string()
-    .min(10, {
-      message:
-        "Please provide a more detailed description (minimum 10 characters)",
-    })
-    .optional(),
-  slug: z.string().regex(/^[a-z0-9-]+$/, {
-    message: "Slug can only contain lowercase letters, numbers, and hyphens",
-  }),
-})
-
-export const productSelectSchema = createSelectSchema(products)
-
-// Product Material schemas
-export const productMaterialInsertSchema = createInsertSchema(productMaterials)
-export const productMaterialSelectSchema = createSelectSchema(productMaterials)
-
-// Size Quantity schemas
-export const sizeQuantityInsertSchema = createInsertSchema(sizeQuantities)
-export const sizeQuantitySelectSchema = createSelectSchema(sizeQuantities)
-
-// Image Color schemas
-export const imageColorInsertSchema = createInsertSchema(imageColors)
-export const imageColorSelectSchema = createSelectSchema(imageColors)
-
-// Customization schemas
-export const customizationInsertSchema = createInsertSchema(customizations)
-export const customizationSelectSchema = createSelectSchema(customizations)
+// export type Category = typeof categories.$inferSelect

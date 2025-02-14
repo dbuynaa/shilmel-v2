@@ -17,11 +17,11 @@ export async function CartModalPage() {
   // const cart = await Commerce.cartAddOptimistic({ add: searchParams.add, cart: originalCart! });
   const cart = originalCart
 
-  if (!cart || cart.lines.length === 0) {
+  if (!cart || cart.items.length === 0) {
     return null
   }
 
-  const currency = cart.lines[0]!.product.default_price.currency
+  const currency = "USD"
   // const total = calculateCartTotalNetWithoutShipping(cart)
   const total = 4
   const t = await getTranslations("/cart.modal")

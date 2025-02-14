@@ -1,6 +1,6 @@
 {
-  "id": "e65a8b6a-35a4-4b86-8961-6a0f85d46dc5",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "68ed760d-e544-4b96-97a8-8360d5e7839e",
+  "prevId": "e65a8b6a-35a4-4b86-8961-6a0f85d46dc5",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -70,25 +70,25 @@
         "Address_userId_User_id_fk": {
           "name": "Address_userId_User_id_fk",
           "tableFrom": "Address",
-          "tableTo": "User",
           "columnsFrom": [
             "userId"
           ],
+          "tableTo": "User",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "Address_id_unique": {
           "name": "Address_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -129,28 +129,28 @@
         "CartItem_cartId_Cart_id_fk": {
           "name": "CartItem_cartId_Cart_id_fk",
           "tableFrom": "CartItem",
-          "tableTo": "Cart",
           "columnsFrom": [
             "cartId"
           ],
+          "tableTo": "Cart",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "CartItem_variantId_ProductVariant_id_fk": {
           "name": "CartItem_variantId_ProductVariant_id_fk",
           "tableFrom": "CartItem",
-          "tableTo": "ProductVariant",
           "columnsFrom": [
             "variantId"
           ],
+          "tableTo": "ProductVariant",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -195,15 +195,15 @@
         "Cart_userId_User_id_fk": {
           "name": "Cart_userId_User_id_fk",
           "tableFrom": "Cart",
-          "tableTo": "User",
           "columnsFrom": [
             "userId"
           ],
+          "tableTo": "User",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -261,10 +261,10 @@
       "uniqueConstraints": {
         "Category_id_unique": {
           "name": "Category_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -319,25 +319,25 @@
         "Image_variantId_ProductVariant_id_fk": {
           "name": "Image_variantId_ProductVariant_id_fk",
           "tableFrom": "Image",
-          "tableTo": "ProductVariant",
           "columnsFrom": [
             "variantId"
           ],
+          "tableTo": "ProductVariant",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "Image_id_unique": {
           "name": "Image_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -398,38 +398,38 @@
         "OrderItem_orderId_Order_id_fk": {
           "name": "OrderItem_orderId_Order_id_fk",
           "tableFrom": "OrderItem",
-          "tableTo": "Order",
           "columnsFrom": [
             "orderId"
           ],
+          "tableTo": "Order",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "OrderItem_variantId_ProductVariant_id_fk": {
           "name": "OrderItem_variantId_ProductVariant_id_fk",
           "tableFrom": "OrderItem",
-          "tableTo": "ProductVariant",
           "columnsFrom": [
             "variantId"
           ],
+          "tableTo": "ProductVariant",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "OrderItem_id_unique": {
           "name": "OrderItem_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -513,38 +513,38 @@
         "Order_userId_User_id_fk": {
           "name": "Order_userId_User_id_fk",
           "tableFrom": "Order",
-          "tableTo": "User",
           "columnsFrom": [
             "userId"
           ],
+          "tableTo": "User",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "Order_shippingAddressId_Address_id_fk": {
           "name": "Order_shippingAddressId_Address_id_fk",
           "tableFrom": "Order",
-          "tableTo": "Address",
           "columnsFrom": [
             "shippingAddressId"
           ],
+          "tableTo": "Address",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "Order_id_unique": {
           "name": "Order_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -600,25 +600,25 @@
         "Payment_orderId_Order_id_fk": {
           "name": "Payment_orderId_Order_id_fk",
           "tableFrom": "Payment",
-          "tableTo": "Order",
           "columnsFrom": [
             "orderId"
           ],
+          "tableTo": "Order",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "Payment_transactionId_unique": {
           "name": "Payment_transactionId_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "transactionId"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -686,25 +686,25 @@
         "ProductVariant_productId_Product_id_fk": {
           "name": "ProductVariant_productId_Product_id_fk",
           "tableFrom": "ProductVariant",
-          "tableTo": "Product",
           "columnsFrom": [
             "productId"
           ],
+          "tableTo": "Product",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "ProductVariant_id_unique": {
           "name": "ProductVariant_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -771,25 +771,25 @@
         "Product_categoryId_Category_id_fk": {
           "name": "Product_categoryId_Category_id_fk",
           "tableFrom": "Product",
-          "tableTo": "Category",
           "columnsFrom": [
             "categoryId"
           ],
+          "tableTo": "Category",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "Product_id_unique": {
           "name": "Product_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -876,24 +876,24 @@
       "uniqueConstraints": {
         "User_id_unique": {
           "name": "User_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "User_email_unique": {
           "name": "User_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "User_resetPasswordToken_unique": {
           "name": "User_resetPasswordToken_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "resetPasswordToken"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -932,10 +932,10 @@
     }
   },
   "schemas": {},
+  "views": {},
   "sequences": {},
   "roles": {},
   "policies": {},
-  "views": {},
   "_meta": {
     "columns": {},
     "schemas": {},

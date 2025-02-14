@@ -1,5 +1,6 @@
 import type { Metadata } from "next/types"
-import { publicUrl } from "@/env"
+import { psGetAllProducts } from "@/db/prepared/product.statements"
+import { env } from "@/env"
 import { getTranslations } from "@/i18n/server"
 
 // import * as Commerce from "commerce-kit"
@@ -10,12 +11,15 @@ export const generateMetadata = async (): Promise<Metadata> => {
   const t = await getTranslations("/products.metadata")
   return {
     title: t("title"),
-    alternates: { canonical: `${publicUrl}/products` },
+    alternates: { canonical: `${env.NEXT_PUBLIC_APP_URL}/products` },
   }
 }
 
 export default async function AllProductsPage() {
-  const products = await Commerce.productBrowse({ first: 100 })
+  const products = await psGetAllProducts.execute({
+    offset: 0,
+    limit: 10,
+  })
   const t = await getTranslations("/products.page")
 
   return (

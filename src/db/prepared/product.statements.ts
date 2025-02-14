@@ -8,11 +8,25 @@ export const psGetProductsById = db
   .where(eq(products.id, sql.placeholder("id")))
   .prepare("psGetProductsById")
 
-export const psGetAllProducts = db
-  .select()
-  .from(products)
-  .offset(sql.placeholder("offset"))
-  .limit(sql.placeholder("limit"))
+// export const psGetAllProducts = db
+//   .select()
+//   .from(products)
+//   .offset(sql.placeholder("offset"))
+//   .limit(sql.placeholder("limit"))
+//   .prepare("psGetAllProducts")
+
+export const psGetAllProducts = db.query.products
+  .findMany({
+    limit: sql.placeholder("limit"),
+    offset: sql.placeholder("offset"),
+    with: {
+      variants: {
+        with: {
+          images: true,
+        },
+      },
+    },
+  })
   .prepare("psGetAllProducts")
 
 export const psDeleteProduct = db

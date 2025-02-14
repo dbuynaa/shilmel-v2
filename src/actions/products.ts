@@ -41,7 +41,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     const [product] = await db
       .select()
       .from(products)
-      .where(eq(products.name, deslugify(slug).toLowerCase()))
+      .where(eq(products.id, deslugify(slug).toLowerCase()))
 
     return product || null
   } catch (error) {

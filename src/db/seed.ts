@@ -1,12 +1,23 @@
 import { db } from "@/db"
+// import { db } from "."
+import * as schema from "@/db/schema"
 import { categories, products, users } from "@/db/schema"
-import { hash } from "bcryptjs"
+import { neon } from "@neondatabase/serverless"
+import bcryptjs from "bcryptjs"
+import { drizzle } from "drizzle-orm/neon-http"
+import { reset } from "drizzle-seed"
 
 async function main() {
   console.log("🌱 Seeding database...")
+  const sql = neon(
+    "postgresql://neondb_owner:npg_2gldYKQ4iLUk@ep-tight-pine-a1x4sscy-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+  )
 
-  // Create admin user
-  const hashedPassword = await hash("password123", 10)
+  const db = drizzle(sql, { schema })
+
+  reset(db, schema)
+  // Create admin userschema
+  const hashedPassword = await bcryptjs.hash("password123", 10)
   const [adminUser] = await db
     .insert(users)
     .values({
@@ -100,9 +111,9 @@ async function main() {
     .insert(products)
     .values(
       productData.map((prod) => ({
-        name: prod.name.toLowerCase(),
+        name: prod.name,
         description: prod.description,
-        price: prod.price,
+        price: prod.price.toString(),
         categoryId: prod.categoryId,
         createdAt: now,
         updatedAt: now,
