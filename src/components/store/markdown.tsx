@@ -1,9 +1,9 @@
-import "server-only"
+// import "server-only"
 
-import { MDXRemote } from "next-mdx-remote/rsc"
+// import { MDXRemote } from "next-mdx-remote/rsc"
 
-export const Markdown = async ({ source }: { source: string }) => {
-  return (
-    <MDXRemote source={source} options={{ mdxOptions: { format: "md" } }} />
-  )
-}
+// export const Markdown = async ({ source }: { source: string }) => {
+//   return (
+//     <MDXRemote source={source} options={{ mdxOptions: { format: "md" } }} />
+//   )
+// }

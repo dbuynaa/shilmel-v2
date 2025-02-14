@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { InferResultType } from "@/db/schema/types"
+import { InferResultType } from "@/db/schema/utils"
 // import { Product } from "@/db/schema"
 import { getLocale } from "@/i18n/server"
 

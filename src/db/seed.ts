@@ -15,7 +15,7 @@ async function main() {
 
   const db = drizzle(sql, { schema })
 
-  reset(db, schema)
+  await reset(db, schema)
   // Create admin userschema
   const hashedPassword = await bcryptjs.hash("password123", 10)
   const [adminUser] = await db

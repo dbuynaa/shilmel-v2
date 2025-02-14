@@ -1,15 +1,9 @@
-import { redirect } from "next/navigation"
-import { auth } from "@/auth"
+import type { JSX } from "react"
 import Balancer from "react-wrap-balancer"
 
-import type { JSX } from "react";
-
 export default async function AppHomeAnnouncementsPage(): Promise<JSX.Element> {
-  const session = await auth()
-  if (!session) redirect("/signin")
-
   return (
-    <div className=" flex h-full flex-1 flex-col items-center space-y-2 p-5">
+    <div className="flex h-full flex-1 flex-col items-center space-y-2 p-5">
       <h2 className="text-lg font-semibold">Never miss an announcement</h2>
       <p className="text-muted-foreground">
         <Balancer>

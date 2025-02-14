@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/breadcrumb"
 import { AddToCartButton } from "@/components/store/add-to-cart-button"
 import { JsonLd, mappedProductToJsonLd } from "@/components/store/json-ld"
-import { Markdown } from "@/components/store/markdown"
 import { MainProductImage } from "@/components/store/products/main-product-image"
 import { StickyBottom } from "@/components/store/sticky-bottom"
 import { YnsLink } from "@/components/store/yns-link"
