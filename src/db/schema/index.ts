@@ -366,4 +366,4 @@ export type Product = typeof products.$inferSelect
 // export type CartItem = typeof cartItems.$inferSelect
 export type Order = typeof orders.$inferSelect
 export type OrderItem = typeof orderItems.$inferSelect
-// export type Category = typeof categories.$inferSelect
+export type Category = typeof categories.$inferSelect

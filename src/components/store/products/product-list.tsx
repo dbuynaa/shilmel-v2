@@ -29,7 +29,7 @@ export const ProductList = async ({
             <li key={product.id} className="group">
               <YnsLink href={`/product/${product.id}`}>
                 <article className="overflow-hidden bg-white">
-                  {product?.variants[0]?.images[0] && (
+                  {product?.variants?.[0]?.images[0] && (
                     <div className="aspec t-square w-full overflow-hidden rounded-lg bg-neutral-100">
                       <Image
                         className="group-hover:rotate hover-perspective w-full bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-75"

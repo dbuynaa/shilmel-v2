@@ -23,7 +23,8 @@ export function QuickCreateMenu() {
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger
-            showChevron={false}
+            // showChevron={false}
+
             className={cn(buttonVariants({ variant: "outline" }), "p-3")}
           >
             <Icons.plus className="size-4" aria-hidden="true" />

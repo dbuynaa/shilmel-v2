@@ -4,8 +4,8 @@ import * as React from "react"
 import type { JSX } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { deleteCategory } from "@/actions/inventory/categories"
-import { type Category } from "@/db/schema"
+import { deleteItem } from "@/actions/inventory/items"
+import { type Category, type Product } from "@/db/schema"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { useToast } from "@/hooks/use-toast"
@@ -34,26 +34,23 @@ import { DataTable } from "@/components/admin/data-table/data-table"
 import { DataTableColumnHeader } from "@/components/admin/data-table/data-table-column-header"
 import { Icons } from "@/components/icons"
 
-type AwaitedCategory = Pick<
-  Category,
-  "id" | "name" | "description" | "createdAt"
->
+type AwaitedItem = Pick<Product, "id" | "name" | "description" | "createdAt">
 
-interface CategoriesTableShellProps {
-  data: AwaitedCategory[]
+interface ItemsTableShellProps {
+  data: AwaitedItem[]
   pageCount: number
 }
 
-export function CategoriesTableShell({
+export function ItemsTableShell({
   data,
   pageCount,
-}: CategoriesTableShellProps): JSX.Element {
+}: ItemsTableShellProps): JSX.Element {
   const { toast } = useToast()
   const router = useRouter()
   const [isPending, startTransition] = React.useTransition()
   const [selectedRowIds, setSelectedRowIds] = React.useState<string[]>([])
 
-  const columns = React.useMemo<ColumnDef<AwaitedCategory, unknown>[]>(
+  const columns = React.useMemo<ColumnDef<AwaitedItem, unknown>[]>(
     () => [
       {
         id: "select",
@@ -130,7 +127,7 @@ export function CategoriesTableShell({
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link
-                  href={`/app/inventory/categories/${row.original.id}`}
+                  href={`/app/inventory/Items/${row.original.id}`}
                   className="text-sm"
                 >
                   Edit
@@ -158,7 +155,7 @@ export function CategoriesTableShell({
                       onClick={() => {
                         startTransition(async () => {
                           try {
-                            const message = await deleteCategory({
+                            const message = await deleteItem({
                               id: row.original.id,
                             })
 
@@ -206,7 +203,7 @@ export function CategoriesTableShell({
     try {
       await Promise.all(
         selectedRowIds.map(async (id) => {
-          await deleteCategory({
+          await deleteItem({
             id,
           })
         })

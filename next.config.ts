@@ -6,16 +6,16 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   pageExtensions: ["tsx", "mdx", "ts", "js"],
-  experimental: {
-    esmExternals: true,
-    scrollRestoration: true,
-    // ppr: true,
-    cpus: 1,
-    reactOwnerStack: true,
-    reactCompiler: true,
-    mdxRs: true,
-    inlineCss: true,
-  },
+  // experimental: {
+  //   esmExternals: true,
+  //   scrollRestoration: true,
+  //   // ppr: true,
+  //   cpus: 1,
+  //   reactOwnerStack: true,
+  //   reactCompiler: true,
+  //   mdxRs: true,
+  //   inlineCss: true,
+  // },
   images: {
     remotePatterns: [
       {

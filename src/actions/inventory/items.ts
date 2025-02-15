@@ -2,7 +2,9 @@
 
 import { unstable_noStore as noStore } from "next/cache"
 import { db } from "@/db"
+import { products } from "@/db/schema"
 import { extendedItemSchema } from "@/validations/inventory"
+import { eq } from "drizzle-orm"
 import type { z } from "zod"
 
 export async function addItem(
@@ -35,4 +37,22 @@ export async function checkItem(input: {
       resolve(false)
     }, 1000)
   })
+}
+
+export async function deleteItem(rawInput: {
+  id: string
+}): Promise<"invalid-input" | "success" | "error"> {
+  // const validatedInput = deleteCategorySchema.safeParse(rawInput)
+  // if (!validatedInput.success) return "invalid-input"
+
+  try {
+    const deletedCategory = await db
+      .delete(products)
+      .where(eq(products.id, rawInput.id))
+
+    return deletedCategory ? "success" : "error"
+  } catch (error) {
+    console.error(error)
+    throw new Error("Error deleting category")
+  }
 }

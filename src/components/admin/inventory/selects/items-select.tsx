@@ -1,3 +1,5 @@
+import type { JSX } from "react"
+
 import { inventoryItemsSelectOptions } from "@/data/constants/inventory"
 import {
   Select,
@@ -7,8 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-import type { JSX } from "react";
 
 export function ItemsSelect(): JSX.Element {
   return (

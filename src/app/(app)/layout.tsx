@@ -1,7 +1,5 @@
 import * as React from "react"
 import type { JSX } from "react"
-import { SessionProvider } from "next-auth/react"
-import { auth } from "@/auth"
 
 import { Header } from "@/components/admin/nav/app/header"
 import { Sidebar } from "@/components/admin/nav/app/sidebar"

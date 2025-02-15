@@ -7,11 +7,11 @@ export const categorySchema = z.object({
 })
 
 export const deleteCategorySchema = z.object({
-  id: z.number(),
+  id: z.string(),
 })
 
 export const getCategoryByIdSchema = z.object({
-  id: z.number(),
+  id: z.string(),
 })
 
 export const getCategoryByNameSchema = z.object({
@@ -19,7 +19,7 @@ export const getCategoryByNameSchema = z.object({
 })
 
 export const updateCategorySchema = categorySchema.extend({
-  id: z.number(),
+  id: z.string(),
 })
 
 export type AddCategoryFormInput = z.infer<typeof categorySchema>
