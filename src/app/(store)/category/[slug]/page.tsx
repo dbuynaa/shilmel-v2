@@ -32,12 +32,21 @@ export default async function CategoryPage(props: {
 }) {
   const params = await props.params
   const products = await getProductsByCategory(params.slug)
-
-  if (products.length === 0) {
-    return notFound()
-  }
-
   const t = await getTranslations("/category.page")
+
+  if (!products || products.length === 0) {
+    return notFound()
+    // return (
+    //   <div className="pb-8 text-center">
+    //     <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
+    //       {deslugify(params.slug)}
+    //       <div className="text-lg font-semibold text-muted-foreground">
+    //         No products found
+    //       </div>
+    //     </h1>
+    //   </div>
+    // )
+  }
 
   return (
     <main className="pb-8">

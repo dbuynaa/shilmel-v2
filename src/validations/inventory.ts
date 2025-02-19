@@ -28,118 +28,64 @@ export type DeleteCategoryFormInput = z.infer<typeof deleteCategorySchema>
 export type GetCategoryByNameFormInput = z.infer<typeof getCategoryByNameSchema>
 export type GetCategoryByIdFormInput = z.infer<typeof getCategoryByIdSchema>
 
-// ITEMS
-export const itemSchema = z.object({
-  name: z.string(),
-  category: z.string(),
-  brand: z.string(),
-  barcode: z.string(),
-  description: z.string(),
-  sellingPrice: z
-    .string({
-      required_error: "Selling Price is required",
-      invalid_type_error: "Selling Price must be a string",
-    })
-    .regex(/^\d+(\.\d{1,2})?$/, {
-      message: "Invalid format",
-    }),
-  purchasePrice: z
-    .string({
-      required_error: "Purchase Price is required",
-      invalid_type_error: "Purchase Price must be a string",
-    })
-    .regex(/^\d+(\.\d{1,2})?$/, {
-      message: "Invalid format",
-    }),
-  taxRate: z
+// Schema for product variant
+const productVariantSchema = z.object({
+  // sku: z.string().min(1, "SKU is required"),
+  size: z.string().optional(),
+  color: z.string().optional(),
+  material: z.string().optional(),
+  stock: z
     .number({
-      required_error: "Tax Reate is required",
-      invalid_type_error: "Tax Rate must be a number",
+      required_error: "Stock quantity is required",
+      invalid_type_error: "Stock quantity must be a number",
     })
-    .positive({ message: "Tax Rate must greater than 0" })
-    .min(1, {
-      message: "Tax Rate must greater than 0",
-    }),
-  width: z
-    .number({
-      required_error: "Width is required",
-      invalid_type_error: "Width must be a number",
-    })
-    .positive({ message: "Width must greater than 0" })
-    .min(1, {
-      message: "Width must greater than 0",
-    }),
-  height: z
-    .number({
-      required_error: "Height is required",
-      invalid_type_error: "Height must be a number",
-    })
-    .positive({ message: "Height must greater than 0" })
-    .min(1, {
-      message: "Height must greater than 0",
-    }),
-  depth: z
-    .number({
-      required_error: "Depth is required",
-      invalid_type_error: "Depth must be a number",
-    })
-    .positive({ message: "Depth must greater than 0" })
-    .min(1, {
-      message: "Depth must greater than 0",
-    }),
-  dimensionsUnit: z.string(),
-  weight: z
-    .number({
-      required_error: "Weigth is required",
-      invalid_type_error: "Weight must be a number",
-    })
-    .positive({ message: "Weight must greater than 0" })
-    .min(1, {
-      message: "Weight must greater than 0",
-    }),
-  weightUnit: z.string(),
-  warehouse: z.string(),
-  sku: z.string(),
-  quantity: z
-    .number({
-      required_error: "Quantity is required",
-      invalid_type_error: "Quantity must be a number",
-    })
-    .positive({ message: "Quantity must greater than 0" })
-    .min(1, {
-      message: "Quantity must greater than 0",
-    }),
-  unit: z.string(),
-  reorderPoint: z
-    .number({
-      required_error: "Reorder Point is required",
-      invalid_type_error: "Reorder Point must be a number",
-    })
-    .positive({ message: "Reorder Point must greater than 0" })
-    .min(1, {
-      message: "Reorder Point must greater than 0",
-    }),
-  supplier: z.string(),
-  notes: z.string(),
+    .positive({ message: "Stock quantity must be greater than 0" })
+    .min(1, { message: "Stock quantity must be greater than 0" }),
   images: z
     .unknown()
+    .array()
     .refine((val) => {
       if (!Array.isArray(val)) return false
       if (val.some((file) => !(file instanceof File))) return false
       return true
     }, "Images must be an array of Files")
-    .optional()
-    .nullable()
-    .default(null),
+    .optional(),
+  // images: z
+  //   .array(
+  //     z.object({
+  //       id: z.string(),
+  //       name: z.string(),
+  //       url: z.string(),
+  //     }),
+  //     { required_error: "At least one image is required" }
+  //   )
+  //   .refine((images) => images.length > 0, {
+  //     message: "At least one image is required",
+  //   }),
 })
 
-export const extendedItemSchema = itemSchema.extend({
-  images: z
-    .array(z.object({ id: z.string(), name: z.string(), url: z.string() }))
-    .nullable(),
+// Main product schema
+export const itemSchema = z.object({
+  name: z.string().min(1, "Product name is required"),
+  category: z.string().min(1, "Category is required"),
+  description: z.string(),
+  price: z
+    .string({
+      required_error: "Base price is required",
+      invalid_type_error: "Base price must be a string",
+    })
+    .regex(/^\d+(\.\d{1,2})?$/, {
+      message: "Invalid price format. Use format: 99.99",
+    }),
+  variants: z
+    .array(productVariantSchema)
+    .min(1, "At least one variant is required")
+    .max(10, "Maximum 10 variants allowed"),
 })
 
+// Type inference
 export type AddItemFormInput = z.infer<typeof itemSchema>
+export type ProductVariantType = z.infer<typeof productVariantSchema>
 
 // UNITS
 export const unitSchema = z.object({

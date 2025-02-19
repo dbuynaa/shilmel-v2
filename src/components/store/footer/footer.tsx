@@ -1,15 +1,18 @@
 import type { SVGAttributes } from "react"
+// import { getStoreConfig } from "@/actions/inventory/categories"
 import { getTranslations } from "@/i18n/server"
-import StoreConfig from "@/store.config"
+import { getStoreConfig } from "@/store.config"
 
 // import { Newsletter } from "@/components/store/footer/newsletter.client"
 import { YnsLink } from "@/components/store/yns-link"
 import { ThemeToggle } from "@/components/theme-toggle"
 
+const config = await getStoreConfig()
+
 const sections = [
   {
     header: "Products",
-    links: StoreConfig.categories.map(({ name, slug }) => ({
+    links: config.categories.map(({ name, slug }) => ({
       label: name,
       href: `/category/${slug}`,
     })),
@@ -37,7 +40,7 @@ export async function Footer() {
   const t = await getTranslations("Global.footer")
 
   return (
-    <footer className="w-full bg-neutral-50 p-6 text-neutral-800 md:py-12">
+    <footer className="w-full bg-background p-6 text-foreground md:py-12">
       <div className="container flex max-w-7xl flex-row flex-wrap justify-center gap-16 text-sm sm:justify-between">
         <div className="">
           <div className="flex w-full max-w-sm flex-col gap-2">

@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
+	:root {
+		--background: 0 0% 100%;
 		--foreground: 222.2 84% 4.9%;
 
 		--card: 0 0% 100%;
@@ -19,8 +19,8 @@
 		--secondary: 210 40% 96.1%;
 		--secondary-foreground: 222.2 47.4% 11.2%;
 
-		--tertiary: 0 0% 99%;
-		--tertiary-foreground: 240 5.9% 10%;
+		--tertiary: 210 32% 96.1%;
+		--tertiary-foreground: 222.2 47.4% 11.2%;
 
 		--muted: 210 40% 96.1%;
 		--muted-foreground: 215.4 16.3% 46.9%;
@@ -36,11 +36,11 @@
 		--ring: 222.2 84% 4.9%;
 
 		--radius: 0.5rem;
-  }
+	}
 
-  /* D2d2d2 */
-  .dark {
-    --background: 222.2 84% 4.9%;
+	/* D2d2d2 */
+	.dark {
+		--background: 222.2 84% 4.9%;
 		--foreground: 210 40% 98%;
 
 		--card: 222.2 84% 4.9%;
@@ -55,8 +55,8 @@
 		--secondary: 217.2 32.6% 17.5%;
 		--secondary-foreground: 210 40% 98%;
 
-		--tertiary: 222.2 84% 4.9%;
-		--tertiary-foreground: 0 0% 98%;
+		--tertiary: 220 32.6% 9%;
+		--tertiary-foreground: 210 40% 98%;
 
 		--muted: 217.2 32.6% 17.5%;
 		--muted-foreground: 215 20.2% 65.1%;
@@ -70,14 +70,15 @@
 		--border: 217.2 32.6% 17.5%;
 		--input: 217.2 32.6% 17.5%;
 		--ring: 212.7 26.8% 83.9%;
-  }
+	}
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+	* {
+		@apply border-border;
+	}
+
+	body {
+		@apply bg-background text-foreground;
+	}
 }

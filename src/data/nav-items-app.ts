@@ -40,34 +40,9 @@ export const sidebarItems = [
         hrefPlus: "/app/inventory/items/new-item",
       },
       {
-        title: "Composite Items",
-        href: "/app/inventory/composite-items",
-        hrefPlus: "/app/inventory/composite-items/new-composite-item",
-      },
-      {
-        title: "Item Groups",
-        href: "/app/inventory/item-groups",
-        hrefPlus: "/app/inventory/item-groups/new-item-group",
-      },
-      {
         title: "Inventory Adjustments",
         href: "/app/inventory/inventory-adjustments",
         hrefPlus: "/app/inventory/inventory-adjustments/new-adjustment",
-      },
-      {
-        title: "Brands",
-        href: "/app/inventory/brands",
-        hrefPlus: "/app/inventory/brands/new-brand",
-      },
-      {
-        title: "Units",
-        href: "/app/inventory/units",
-        hrefPlus: "/app/inventory/units/new-unit",
-      },
-      {
-        title: "Price Lists",
-        href: "/app/inventory/price-lists",
-        hrefPlus: "/app/inventory/price-lists/new-list",
       },
     ],
   },
@@ -164,11 +139,11 @@ export const sidebarItems = [
       },
     ],
   },
-  {
-    title: "Warehouses",
-    href: "/app/warehouses",
-    icon: "warehouse",
-  },
+  // {
+  //   title: "Warehouses",
+  //   href: "/app/warehouses",
+  //   icon: "warehouse",
+  // },
   {
     title: "Integrations",
     href: "/app/integrations",

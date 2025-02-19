@@ -4,14 +4,9 @@ import Image from "next/image"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next/types"
 import { getProductBySlug } from "@/actions/products"
-// import { publicUrl } from "@/env"
+import { env } from "@/env"
 import { getLocale, getTranslations } from "@/i18n/server"
 
-// import type { TrieveProductMetadata } from "@/scripts/upload-trieve"
-
-// import * as Commerce from "commerce-kit"
-
-// import { getRecommendedProducts } from "@/lib/search/trieve"
 import { cn, deslugify, formatMoney, formatProductName } from "@/lib/utils"
 import {
   Breadcrumb,
@@ -28,36 +23,40 @@ import { StickyBottom } from "@/components/store/sticky-bottom"
 import { YnsLink } from "@/components/store/yns-link"
 import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal"
 
-// export const generateMetadata = async (props: {
-//   params: Promise<{ slug: string }>
-//   searchParams: Promise<{ variant?: string }>
-// }): Promise<Metadata> => {
-//   const searchParams = await props.searchParams
-//   const params = await props.params
-//   const variants = await Commerce.productGet({ slug: params.slug })
+export const generateMetadata = async (props: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ variant?: string }>
+}): Promise<Metadata> => {
+  const searchParams = await props.searchParams
+  const params = await props.params
+  const product = await getProductBySlug(params.slug)
+  const variants = product?.variants
+  const selectedVariant =
+    (variants &&
+      variants?.find((variant) => variant.sku === searchParams.variant)) ??
+    variants?.[0]
 
-//   const selectedVariant = searchParams.variant || variants[0]?.metadata.variant
-//   const product = variants.find(
-//     (variant) => variant.metadata.variant === selectedVariant
-//   )
-//   if (!product) {
-//     return notFound()
-//   }
-//   const t = await getTranslations("/product.metadata")
+  if (!product || !selectedVariant) {
+    return notFound()
+  }
 
-//   const canonical = new URL(`${publicUrl}/product/${product.metadata.slug}`)
-//   if (selectedVariant) {
-//     canonical.searchParams.set("variant", selectedVariant)
-//   }
+  const t = await getTranslations("/product.metadata")
 
-//   const productName = formatProductName(product.name, product.metadata.variant)
+  const canonical = new URL(
+    `${env.NEXT_PUBLIC_APP_URL}/product/${product.slug}`
+  )
+  if (searchParams.variant) {
+    canonical.searchParams.set("variant", searchParams.variant)
+  }
 
-//   return {
-//     title: t("title", { productName }),
-//     description: product.description,
-//     alternates: { canonical },
-//   } satisfies Metadata
-// }
+  const productName = formatProductName(product.name, selectedVariant.sku)
+
+  return {
+    title: t("title", { productName }),
+    description: product.description,
+    alternates: { canonical },
+  } satisfies Metadata
+}
 
 export default async function SingleProductPage(props: {
   params: Promise<{ slug: string }>
@@ -66,25 +65,21 @@ export default async function SingleProductPage(props: {
   const params = await props.params
   const searchParams = await props.searchParams
 
-  // const variants = await getProductBySlug({ slug: params.slug })
-  // const selectedVariant =
-  //   (variants.length > 1 && searchParams.variant) ||
-  //   variants[0]?.metadata.variant
-  // const product = variants.find(
-  //   (variant) => variant.metadata.variant === selectedVariant
-  // )
   const product = await getProductBySlug(params.slug)
-  if (!product) {
+  const variants = product?.variants
+  const selectedVariant =
+    (variants &&
+      variants?.find((variant) => variant.sku === searchParams.variant)) ??
+    variants?.[0]
+  if (!product || !selectedVariant) {
     return notFound()
   }
 
   const t = await getTranslations("/product.page")
   const locale = await getLocale()
 
-  // const category = product.metadata.category
-  // const images = product.images
-  const category = ""
-  // const images = product.images
+  const category = product.category
+  const images = selectedVariant?.images || []
   return (
     <article className="pb-12">
       <Breadcrumb>
@@ -105,8 +100,8 @@ export default async function SingleProductPage(props: {
                   className="inline-flex min-h-12 min-w-12 items-center justify-center"
                   asChild
                 >
-                  <YnsLink href={`/category/${category}`}>
-                    {deslugify(category)}
+                  <YnsLink href={`/category/${category.name}`}>
+                    {deslugify(category.name)}
                   </YnsLink>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -116,14 +111,16 @@ export default async function SingleProductPage(props: {
           <BreadcrumbItem>
             <BreadcrumbPage>{product.name}</BreadcrumbPage>
           </BreadcrumbItem>
-          {/* {selectedVariant && (
+          {selectedVariant && (
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{deslugify(selectedVariant)}</BreadcrumbPage>
+                <BreadcrumbPage>
+                  {deslugify(selectedVariant.sku)}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </>
-          )} */}
+          )}
         </BreadcrumbList>
       </Breadcrumb>
 
@@ -133,15 +130,6 @@ export default async function SingleProductPage(props: {
             <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
               {product.name}
             </h1>
-            {/* {product.default_price.unit_amount && (
-              <p className="mt-2 text-2xl font-medium leading-none tracking-tight text-foreground/70">
-                {formatMoney({
-                  amount: product.default_price.unit_amount,
-                  currency: product.default_price.currency,
-                  locale,
-                })}
-              </p>
-            )} */}
             {product.price && (
               <p className="mt-2 text-2xl font-medium leading-none tracking-tight text-foreground/70">
                 {formatMoney({
@@ -152,8 +140,9 @@ export default async function SingleProductPage(props: {
               </p>
             )}
             <div className="mt-2">
-              {/* {product.metadata.stock <= 0 && <div>Out of stock</div>} */}
-              {/* {product.metadata.stock <= 0 && <div>Out of stock</div>} */}
+              {selectedVariant && selectedVariant?.stock <= 0 && (
+                <div>Out of stock</div>
+              )}
             </div>
           </div>
 
@@ -161,10 +150,13 @@ export default async function SingleProductPage(props: {
             <h2 className="sr-only">{t("imagesTitle")}</h2>
 
             <div className="grid gap-4 lg:grid-cols-3 [&>*:first-child]:col-span-3">
-              {/* {product.metadata.preview && (
-								<ProductModel3D model3d={product.metadata.preview} imageSrc={product.images[0]} />
-							)} */}
-              {/* {images.map((image, idx) => {
+              {/* {selectedVariant && (
+                <ProductModel3D
+                  model3d={selectedVariant.images[0].url}
+                  imageSrc={selectedVariant.images[0].url}
+                />
+              )} */}
+              {images.map((image, idx) => {
                 const params = new URLSearchParams({
                   image: idx.toString(),
                 })
@@ -173,20 +165,21 @@ export default async function SingleProductPage(props: {
                 }
                 return (
                   <YnsLink key={idx} href={`?${params}`} scroll={false}>
-                    {idx === 0 && !product.metadata.preview ? (
+                    {idx === 0 && !selectedVariant.images[0].url ? (
                       <MainProductImage
-                        key={image}
-                        className="w-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
-                        src={image}
+                        key={image.id}
+                        className="w-full rounded-lg object-cover object-center transition-opacity"
+                        src={image.url}
                         loading="eager"
                         priority
-                        alt=""
+                        quality={100}
+                        alt={image.altText || ""}
                       />
                     ) : (
                       <Image
-                        key={image}
-                        className="w-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
-                        src={image}
+                        key={image.id}
+                        className="w-full rounded-lg object-cover object-center transition-opacity"
+                        src={image.url}
                         width={700 / 3}
                         height={700 / 3}
                         sizes="(max-width: 1024x) 33vw, (max-width: 1280px) 20vw, 225px"
@@ -197,7 +190,7 @@ export default async function SingleProductPage(props: {
                     )}
                   </YnsLink>
                 )
-              })} */}
+              })}
             </div>
           </div>
 
@@ -209,8 +202,8 @@ export default async function SingleProductPage(props: {
                 {/* <Markdown source={product.description || ""} /> */}
               </div>
             </section>
-            {/* 
-            {variants.length > 1 && (
+
+            {variants && variants.length > 1 && (
               <div className="grid gap-2">
                 <p className="text-base font-medium" id="variant-label">
                   {t("variantTitle")}
@@ -221,23 +214,22 @@ export default async function SingleProductPage(props: {
                   aria-labelledby="variant-label"
                 >
                   {variants.map((variant) => {
-                    const isSelected =
-                      selectedVariant === variant.metadata.variant
+                    const isSelected = selectedVariant?.sku === variant.sku
                     return (
-                      variant.metadata.variant && (
+                      variant && (
                         <li key={variant.id}>
                           <YnsLink
                             scroll={false}
                             prefetch={true}
-                            href={`/product/${variant.metadata.slug}?variant=${variant.metadata.variant}`}
+                            href={`/product/${product.slug}?variant=${variant.sku}`}
                             className={cn(
-                              "flex cursor-pointer items-center justify-center gap-2 rounded-md border p-2 transition-colors hover:bg-neutral-100",
+                              "flex cursor-pointer items-center justify-center gap-2 rounded-md border p-2 transition-colors hover:bg-secondary/30",
                               isSelected &&
-                                "border-black bg-neutral-50 font-medium"
+                                "border-primary bg-tertiary font-medium"
                             )}
                             aria-selected={isSelected}
                           >
-                            {deslugify(variant.metadata.variant)}
+                            {deslugify(variant.sku)}
                           </YnsLink>
                         </li>
                       )
@@ -245,12 +237,12 @@ export default async function SingleProductPage(props: {
                   })}
                 </ul>
               </div>
-            )} */}
+            )}
 
-            {/* <AddToCartButton
+            <AddToCartButton
               productId={product.id}
-              disabled={product.metadata.stock <= 0}
-            /> */}
+              disabled={selectedVariant?.stock <= 0}
+            />
           </div>
         </div>
       </StickyBottom>
@@ -259,7 +251,9 @@ export default async function SingleProductPage(props: {
         <SimilarProducts id={product.id} />
       </Suspense> */}
 
-      <Suspense>{/* <ProductImageModal images={images} /> */}</Suspense>
+      <Suspense>
+        <ProductImageModal images={images.map((image) => image.url)} />
+      </Suspense>
 
       {/* <JsonLd jsonLd={mappedProductToJsonLd(product)} /> */}
     </article>

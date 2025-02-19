@@ -23,7 +23,7 @@ export async function CategoryBox({
           src={src}
         />
       </div>
-      <div className="justify-end gap-2 px-4 py-2 text-neutral-600">
+      <div className="justify-end gap-2 px-4 py-2 text-muted-foreground">
         <h3 className="text-lg font-bold tracking-tight">
           {deslugify(categorySlug)}
         </h3>

@@ -27,27 +27,27 @@ export const ProductList = async ({
         {products.map((product, idx) => {
           return (
             <li key={product.id} className="group">
-              <YnsLink href={`/product/${product.id}`}>
-                <article className="overflow-hidden bg-white">
+              <YnsLink href={`/product/${product.slug}`}>
+                <article className="overflow-hidden bg-card">
                   {product?.variants?.[0]?.images[0] && (
-                    <div className="aspec t-square w-full overflow-hidden rounded-lg bg-neutral-100">
+                    <div className="aspect-square h-full overflow-hidden rounded-lg bg-tertiary">
                       <Image
-                        className="group-hover:rotate hover-perspective w-full bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-75"
+                        className="group-hover:rotate hover-perspective h-full w-full bg-tertiary object-cover object-center transition-opacity group-hover:opacity-75"
                         src={product.variants[0].images[0].url}
                         width={768}
                         height={768}
                         loading={idx < 3 ? "eager" : "lazy"}
                         priority={idx < 3}
                         sizes="(max-width: 1024x) 100vw, (max-width: 1280px) 50vw, 700px"
-                        alt=""
+                        alt={product.name}
                       />
                     </div>
                   )}
                   <div className="p-2">
-                    <h2 className="text-xl font-medium text-neutral-700">
+                    <h2 className="text-xl font-medium text-primary">
                       {product.name}
                     </h2>
-                    <footer className="text-base font-normal text-neutral-900">
+                    <footer className="text-base font-normal text-muted-foreground/80">
                       {product.price && (
                         <p>
                           {formatMoney({

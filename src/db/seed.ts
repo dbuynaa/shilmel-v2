@@ -114,6 +114,7 @@ async function main() {
         name: prod.name,
         description: prod.description,
         price: prod.price.toString(),
+        slug: prod.name.toLowerCase().replace(/\s+/g, "-"),
         categoryId: prod.categoryId,
         createdAt: now,
         updatedAt: now,

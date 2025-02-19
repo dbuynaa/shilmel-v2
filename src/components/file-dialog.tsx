@@ -21,7 +21,12 @@ import type {
 import { useToast } from "@/hooks/use-toast"
 import { cn, formatBytes } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Icons } from "@/components/icons"
 
 // FIXME Your proposed upload exceeds the maximum allowed size, this should trigger toast.error too
@@ -64,7 +69,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
         const fileWithPreview = Object.assign(file, {
           preview: URL.createObjectURL(file),
         })
-        setFiles((prev) => [...(prev ?? []), fileWithPreview])
+        setFiles([...(files ?? []), fileWithPreview])
       })
 
       if (rejectedFiles.length > 0) {
@@ -122,10 +127,11 @@ export function FileDialog<TFieldValues extends FieldValues>({
           <span className="sr-only">Upload Images</span>
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[480px]">
-        <p className="absolute left-5 top-4 text-base font-medium text-muted-foreground">
-          Upload your images
-        </p>
+        <DialogTitle className="absolute left-5 top-4 text-base font-medium text-muted-foreground">
+          Upload Images
+        </DialogTitle>
         <div
           {...getRootProps()}
           className={cn(
@@ -339,10 +345,7 @@ function FileCard({ i, file, files, setFiles }: FileCardProps) {
                       setCropData(null)
                     }}
                   >
-                    <Icons.reset
-                      className="mr-2 size-3.5"
-                      aria-hidden="true"
-                    />
+                    <Icons.reset className="mr-2 size-3.5" aria-hidden="true" />
                     Reset crop
                   </Button>
                 </div>

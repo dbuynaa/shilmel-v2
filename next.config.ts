@@ -30,6 +30,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "uploadthing.com",
       },
+      {
+        protocol: "https",
+        hostname: "a4mvnoigij.ufs.sh", // Added this line
+      },
     ],
   },
 }

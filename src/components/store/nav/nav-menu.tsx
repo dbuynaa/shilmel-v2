@@ -1,21 +1,26 @@
 import Link from "next/link"
-import StoreConfig from "@/store.config"
+import { getAllCategories } from "@/actions/inventory/categories"
+import { getStoreConfig } from "@/store.config"
+
+// import StoreConfig from "@/store.config"
 
 import { NavMobileMenu } from "@/components/store/nav/nav-mobile-menu.client"
+
+const { categories } = await getStoreConfig()
 
 const links = [
   {
     label: "Home",
     href: "/",
   },
-  ...StoreConfig.categories.map(({ name, slug }) => ({
+  // ...(categories?.map(({ name }) => ({
+  //   label: name,
+  //   href: `/category/${name}`,
+  // })) || []),
+  ...categories.map(({ name, slug }) => ({
     label: name,
     href: `/category/${slug}`,
   })),
-  {
-    label: "Digital",
-    href: "/category/digital",
-  },
 ]
 
 export const NavMenu = () => {

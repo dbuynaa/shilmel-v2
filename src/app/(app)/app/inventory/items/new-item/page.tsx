@@ -1,4 +1,5 @@
 import type { JSX } from "react"
+import { getAllCategories } from "@/actions/inventory/categories"
 
 import {
   Card,
@@ -11,6 +12,7 @@ import { AddItemForm } from "@/components/admin/forms/inventory/items/add-item-f
 import { SubSubHeader } from "@/components/admin/nav/subsubheader"
 
 export default async function AppInventoryItemsNewItemPage(): Promise<JSX.Element> {
+  const categories = await getAllCategories()
   return (
     <div className="relative">
       <SubSubHeader />
@@ -24,7 +26,7 @@ export default async function AppInventoryItemsNewItemPage(): Promise<JSX.Elemen
             </CardDescription>
           </CardHeader>
           <CardContent className="px-5 pt-2">
-            <AddItemForm />
+            <AddItemForm categories={categories} />
           </CardContent>
         </Card>
       </div>

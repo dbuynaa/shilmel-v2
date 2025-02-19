@@ -86,10 +86,9 @@ export const products = pgTable("Product", {
     .$defaultFn(() => createId())
     .unique(),
   name: text("name").notNull(),
-  // slug: text("slug").notNull(),
+  slug: text("slug").notNull(),
   description: text("description"),
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
-  discount: numeric("discount", { precision: 5, scale: 2 }),
   categoryId: text("categoryId")
     .references(() => categories.id, { onDelete: "cascade" })
     .notNull(),
@@ -107,10 +106,10 @@ export const productVariants = pgTable("ProductVariant", {
   productId: text("productId")
     .notNull()
     .references(() => products.id, { onDelete: "cascade" }),
-  // sku: text("sku").notNull().unique(),
+  sku: text("sku").notNull().unique(),
 
-  size: text("size").notNull(),
-  color: text("color").notNull(),
+  size: text("size"),
+  color: text("color"),
   material: text("material"),
 
   stock: integer("stock").notNull().default(0),

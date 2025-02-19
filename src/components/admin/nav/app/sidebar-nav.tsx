@@ -1,5 +1,7 @@
-"use client";
+"use client"
+
 import * as React from "react"
+import type { JSX } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -13,8 +15,6 @@ import {
 } from "@/components/ui/collapsible"
 import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
-
-import type { JSX } from "react";
 
 interface SidebarNavProps {
   collapsed: boolean
@@ -52,7 +52,7 @@ export function SidebarNav({
   }, [pathname])
 
   return (
-    <nav className="space-y-2 px-2 py-5">
+    <nav className="max-h-[79vh] space-y-2 overflow-y-auto px-2 py-5">
       {sidebarItems.map((item) => {
         const Icon = Icons[item.icon as keyof typeof Icons]
 

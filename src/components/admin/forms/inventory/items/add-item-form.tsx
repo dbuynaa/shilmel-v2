@@ -4,12 +4,14 @@ import * as React from "react"
 import type { JSX } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import type { getAllCategories } from "@/actions/inventory/categories"
 import { addItem, checkItem } from "@/actions/inventory/items"
-import { type FileWithPreview } from "@/types"
-import { itemSchema } from "@/validations/inventory"
+import type { FileWithPreview } from "@/types"
+import { itemSchema, type AddItemFormInput } from "@/validations/inventory"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { generateReactHelpers } from "@uploadthing/react/hooks"
-import { useForm } from "react-hook-form"
+import { generateReactHelpers } from "@uploadthing/react"
+import { useFieldArray, useForm } from "react-hook-form"
 import type { z } from "zod"
 
 import { useToast } from "@/hooks/use-toast"
@@ -43,70 +45,112 @@ type AddItemFormInputs = z.infer<typeof itemSchema>
 
 const { useUploadThing } = generateReactHelpers<UploadFilesRouter>()
 
-export function AddItemForm(): JSX.Element {
+export function AddItemForm({
+  categories,
+}: {
+  categories: Awaited<ReturnType<typeof getAllCategories>>
+}): JSX.Element {
+  const router = useRouter()
   const { toast } = useToast()
   const [isPending, startTransition] = React.useTransition()
-  const [files, setFiles] = React.useState<FileWithPreview[] | null>(null)
-  const { isUploading, startUpload } = useUploadThing("productImage")
+  const [files, setFiles] = React.useState<Record<number, FileWithPreview[]>>(
+    {}
+  )
 
-  const form = useForm<AddItemFormInputs>({
+  const { isUploading, startUpload, routeConfig } = useUploadThing(
+    "productImage",
+    {
+      onClientUploadComplete: () => {
+        toast({
+          title: "Upload complete",
+          description: "Your file has been uploaded.",
+        })
+      },
+      onUploadError: () => {
+        toast({
+          title: "Upload error",
+          description: "There was an error uploading your file.",
+          variant: "destructive",
+        })
+      },
+      onUploadBegin: () => {
+        toast({
+          title: "Uploading file",
+          description: "Please wait while we upload your file.",
+        })
+      },
+    }
+  )
+
+  const form = useForm<AddItemFormInput>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
       name: "",
+      category: "",
       description: "",
-      sku: "",
-      barcode: "",
-      supplier: "",
-      images: [],
+      price: "",
+      variants: [
+        {
+          size: "",
+          color: "",
+          material: "",
+          stock: 1,
+          images: [],
+        },
+      ],
     },
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    name: "variants",
+    control: form.control,
   })
 
   function onSubmit(formData: AddItemFormInputs) {
     startTransition(async () => {
       try {
-        await checkItem({ name: formData.name })
+        const exists = await checkItem({ name: formData.name })
 
-        if (isArrayOfFiles(formData.images)) {
+        if (exists) {
           toast({
-            title: "Uploading images...",
-            description: "Please wait while we upload your images.",
+            title: "This item already exists",
+            description: "Please use a different name",
+            variant: "destructive",
           })
-
-          try {
-            const res = await startUpload(formData.images)
+          return
+        }
+        const variants = await Promise.all(
+          formData.variants.map(async (variant) => {
+            if (!isArrayOfFiles(variant.images)) return variant
+            const res = await startUpload(variant.images)
             const formattedImages =
               res?.map((image) => ({
                 id: image.key,
                 name: image.key.split("_")[1] ?? image.key,
-                url: image.url,
-              })) ?? null
+                url: image.ufsUrl,
+              })) ?? []
 
-            await addItem({ ...formData, images: formattedImages })
-
-            toast({
-              title: "Product added successfully",
-            })
-          } catch (error) {
-            toast({
-              title: "Error uploading images",
-              description: "There was an error while uploading images",
-              variant: "destructive",
-            })
-          }
-        } else {
-          await addItem({
-            ...formData,
-            images: null,
+            return {
+              ...variant,
+              images: formattedImages,
+            }
           })
+        )
 
-          toast({
-            title: "Product added successfully",
-          })
-        }
+        await addItem({
+          ...formData,
+          variants,
+        })
+
+        toast({
+          title: "Product added successfully",
+        })
 
         form.reset()
-        setFiles(null)
+        setFiles({})
+        router.push("/app/inventory/items")
       } catch (error) {
+        console.log(error)
         toast({
           title: "Something went wrong",
           description: "Please try again",
@@ -115,7 +159,6 @@ export function AddItemForm(): JSX.Element {
       }
     })
   }
-
   return (
     <Form {...form}>
       <form
@@ -128,7 +171,7 @@ export function AddItemForm(): JSX.Element {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Product Name</FormLabel>
                 <FormControl>
                   <Input type="text" placeholder="Product name" {...field} />
                 </FormControl>
@@ -156,73 +199,19 @@ export function AddItemForm(): JSX.Element {
                   </FormControl>
                   <SelectContent>
                     <SelectGroup>
-                      {Object.values(["electronics", "clothes", "books"]).map(
-                        (option) => (
-                          <SelectItem
-                            key={option}
-                            value={option}
-                            className="capitalize"
-                          >
-                            {option}
-                          </SelectItem>
-                        )
-                      )}
+                      {categories?.map((option) => (
+                        <SelectItem
+                          key={option.id}
+                          value={option.id}
+                          className="capitalize"
+                        >
+                          {option.name}
+                        </SelectItem>
+                      ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="brand"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Brand</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={(value: typeof field.value) =>
-                    field.onChange(value)
-                  }
-                >
-                  <FormControl>
-                    <SelectTrigger className="capitalize">
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Object.values(["lenovo", "asus", "nike"]).map(
-                        (option) => (
-                          <SelectItem
-                            key={option}
-                            value={option}
-                            className="capitalize"
-                          >
-                            {option}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="barcode"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Barcode</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Product barcode" {...field} />
-                </FormControl>
-                <FormMessage className="pt-2 sm:text-sm" />
               </FormItem>
             )}
           />
@@ -233,7 +222,6 @@ export function AddItemForm(): JSX.Element {
             render={({ field }) => (
               <FormItem className="col-start-1 col-end-3">
                 <FormLabel>Description</FormLabel>
-
                 <FormControl>
                   <Textarea
                     placeholder="Description (optional)"
@@ -245,15 +233,13 @@ export function AddItemForm(): JSX.Element {
               </FormItem>
             )}
           />
-        </div>
 
-        <div className="grid grid-cols-2 gap-x-10 gap-y-5">
           <FormField
             control={form.control}
-            name="sellingPrice"
+            name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Selling Price</FormLabel>
+                <FormLabel>Price</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -269,399 +255,155 @@ export function AddItemForm(): JSX.Element {
               </FormItem>
             )}
           />
+        </div>
 
-          <FormField
-            control={form.control}
-            name="purchasePrice"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Purchase Price</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="Cost of acquiring the item"
-                    value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) =>
-                      field.onChange(e.target.valueAsNumber.toString())
+        {/* Variants */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Variants</h2>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                append({
+                  size: "",
+                  color: "",
+                  material: "",
+                  stock: 1,
+                  images: [],
+                })
+              }
+            >
+              Add Variant
+            </Button>
+          </div>
+
+          {fields.map((field, index) => (
+            <div key={field.id} className="space-y-4 rounded-lg border p-4">
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => remove(index)}
+                  disabled={fields.length === 1}
+                >
+                  Remove
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name={`variants.${index}.size`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Size</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`variants.${index}.color`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Color</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`variants.${index}.material`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Material</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`variants.${index}.stock`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Stock</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number.parseInt(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormItem className="flex w-full flex-col gap-1.5">
+                  <FormLabel>Images</FormLabel>
+                  {files && files[index] && isArrayOfFiles(files[index]) ? (
+                    <div className="flex items-center gap-2">
+                      {files[index].map((file: FileWithPreview) => (
+                        <Zoom key={file.name}>
+                          <Image
+                            src={file.preview}
+                            alt={file.name}
+                            className="size-20 shrink-0 rounded-md object-cover object-center"
+                            width={80}
+                            height={80}
+                          />
+                        </Zoom>
+                      ))}
+                    </div>
+                  ) : null}
+                  <FormControl>
+                    <FileDialog
+                      setValue={form.setValue}
+                      name={`variants.${index}.images`}
+                      maxFiles={5}
+                      maxSize={1024 * 1024 * 4}
+                      files={
+                        (files &&
+                          isArrayOfFiles(files[index]) &&
+                          files[index]) ||
+                        []
+                      }
+                      setFiles={(newFiles) =>
+                        setFiles((prev) => ({
+                          ...prev,
+                          [index]: newFiles as FileWithPreview[],
+                        }))
+                      }
+                      isUploading={isUploading}
+                      disabled={isPending}
+                    />
+                  </FormControl>
+                  <UncontrolledFormMessage
+                    message={
+                      form.formState.errors.variants?.[index]?.images?.message
                     }
                   />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="taxRate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tax Rate (%)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="Tax rate"
-                    value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-x-10 gap-y-5">
-          <FormField
-            control={form.control}
-            name="width"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Width</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="Product width"
-                    value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="height"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Height</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="Product height"
-                    value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="depth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Depth</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="Product depth"
-                    value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="dimensionsUnit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Dimensions Unit (width, height, depth)</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={(value: typeof field.value) =>
-                    field.onChange(value)
-                  }
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Object.values(["cm", "m", "in"]).map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="weight"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Weight</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="Product weight"
-                    value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="weightUnit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Weight Unit</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={(value: typeof field.value) =>
-                    field.onChange(value)
-                  }
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Object.values(["kg", "g", "lb"]).map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-x-10 gap-y-5">
-          <FormField
-            control={form.control}
-            name="warehouse"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Warehouse (storage location)</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={(value: typeof field.value) =>
-                    field.onChange(value)
-                  }
-                >
-                  <FormControl>
-                    <SelectTrigger className="capitalize">
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Object.values(["main", "branch 1", "branch 2"]).map(
-                        (option) => (
-                          <SelectItem
-                            key={option}
-                            value={option}
-                            className="capitalize"
-                          >
-                            {option}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="sku"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>SKU</FormLabel>
-
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Stock Keeping Unit"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="pt-2 sm:text-sm" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="quantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Quantity</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="Quantity in stock"
-                    value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="unit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Unit</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={(value: typeof field.value) =>
-                    field.onChange(value)
-                  }
-                >
-                  <FormControl>
-                    <SelectTrigger className="capitalize">
-                      <SelectValue placeholder={field.value} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Object.values(["box", "piece"]).map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="reorderPoint"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Reorder Point</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="Quantity at which to reorder"
-                    value={Number.isNaN(field.value) ? "" : field.value}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="supplier"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Supplier</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Product supplier"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="sm:text-sm" />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="notes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Additional Notes</FormLabel>
-
-              <FormControl>
-                <Textarea
-                  placeholder="Additional notes (optional)"
-                  className="min-h-[120px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="pt-2 sm:text-sm" />
-            </FormItem>
-          )}
-        />
-
-        <FormItem className="flex w-full flex-col gap-1.5">
-          <FormLabel>Images</FormLabel>
-          {files?.length ? (
-            <div className="flex items-center gap-2">
-              {files.map((file, i) => (
-                <Zoom key={i}>
-                  <Image
-                    src={file.preview}
-                    alt={file.name}
-                    className="size-20 shrink-0 rounded-md object-cover object-center"
-                    width={80}
-                    height={80}
-                  />
-                </Zoom>
-              ))}
+                </FormItem>
+              </div>
             </div>
-          ) : null}
-          <FormControl>
-            <FileDialog
-              setValue={form.setValue}
-              name="images"
-              maxFiles={5}
-              maxSize={1024 * 1024 * 4}
-              files={files}
-              setFiles={setFiles}
-              isUploading={isUploading}
-              disabled={isPending}
-            />
-          </FormControl>
-          <UncontrolledFormMessage
-            message={form.formState.errors.images?.message}
-          />
-        </FormItem>
+          ))}
+        </div>
 
-        <div className=" flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2 pt-2">
           <Button disabled={isPending} aria-label="Add Item" className="w-fit">
             {isPending ? (
               <>

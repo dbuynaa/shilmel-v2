@@ -8,7 +8,7 @@ import { YnsLink } from "@/components/store/yns-link"
 
 export const Nav = async () => {
   return (
-    <header className="backdrop-blur-xs nav-border-reveal sticky top-0 z-50 bg-white/90 py-4">
+    <header className="backdrop-blur-xs nav-border-reveal sticky top-0 z-50 bg-background/90 py-4">
       <div className="mx-auto flex max-w-7xl flex-row items-center gap-2 px-4 sm:px-6 lg:px-8">
         <YnsLink href="/">
           <SeoH1 className="-mt-0.5 whitespace-nowrap text-xl font-bold">

@@ -7,9 +7,7 @@ import { eq } from "drizzle-orm"
 
 import { deslugify } from "@/lib/utils"
 
-export async function getProductsByCategory(
-  categorySlug: string
-): Promise<Product[]> {
+export async function getProductsByCategory(categorySlug: string) {
   noStore()
   try {
     // First get the category ID from the slug
@@ -23,10 +21,17 @@ export async function getProductsByCategory(
     }
 
     // Then get all products in that category
-    const results = await db
-      .select()
-      .from(products)
-      .where(eq(products.categoryId, category.id))
+    const results = await db.query.products.findMany({
+      where: eq(products.categoryId, category.id),
+      with: {
+        category: true,
+        variants: {
+          with: {
+            images: true,
+          },
+        },
+      },
+    })
 
     return results
   } catch (error) {
@@ -35,13 +40,23 @@ export async function getProductsByCategory(
   }
 }
 
-export async function getProductBySlug(slug: string): Promise<Product | null> {
+export async function getProductBySlug(slug: string) {
   noStore()
   try {
-    const [product] = await db
-      .select()
-      .from(products)
-      .where(eq(products.id, deslugify(slug).toLowerCase()))
+    const product = await db.query.products.findFirst({
+      where: eq(products.slug, deslugify(slug).toLowerCase()),
+      with: {
+        category: true,
+        variants: {
+          with: {
+            images: true,
+          },
+        },
+      },
+    })
+    // .select()
+    // .from(products)
+    // .where(eq(products.slug, deslugify(slug).toLowerCase()))
 
     return product || null
   } catch (error) {
