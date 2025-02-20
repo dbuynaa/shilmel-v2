@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         destructive:
-          "shadow-xs bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "shadow-2xs bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "shadow-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "shadow-2xs border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "shadow-xs bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "shadow-2xs bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         navbarIcon:

@@ -3,18 +3,19 @@
   "style": "new-york",
   "rsc": true,
   "tsx": true,
-  "iconLibrary": "lucide",
-
   "tailwind": {
-    "config": "tailwind.config.ts",
+    "config": "",
     "css": "src/styles/globals.css",
     "baseColor": "neutral",
-    "cssVariables": true
+    "cssVariables": true,
+    "prefix": ""
   },
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
-    "hooks": "@/ui/shadcn/hooks",
-    "lib": "@/lib"
-  }
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "iconLibrary": "lucide"
 }

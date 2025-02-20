@@ -5,7 +5,6 @@ import { categories, products, users } from "@/db/schema"
 import { neon } from "@neondatabase/serverless"
 import bcryptjs from "bcryptjs"
 import { drizzle } from "drizzle-orm/neon-http"
-import { reset } from "drizzle-seed"
 
 async function main() {
   console.log("🌱 Seeding database...")
@@ -15,7 +14,11 @@ async function main() {
 
   const db = drizzle(sql, { schema })
 
-  await reset(db, schema)
+  // Delete existing data
+  await db.delete(products)
+  await db.delete(categories)
+  await db.delete(users)
+
   // Create admin userschema
   const hashedPassword = await bcryptjs.hash("password123", 10)
   const [adminUser] = await db
@@ -43,6 +46,7 @@ async function main() {
     .values(
       categoryData.map((cat) => ({
         name: cat.name.toLowerCase(),
+        slug: cat.name.toLowerCase().replace(/\s+/g, "-"),
         description: cat.description,
         icon: "default-icon", // You might want to update this with actual icons
       }))
@@ -61,6 +65,23 @@ async function main() {
       description: "A comfortable cotton t-shirt for everyday wear",
       price: 2499, // $24.99
       categoryId: createdCategories[0].id, // Apparel
+      variants: [
+        {
+          size: "S",
+          color: "Blue",
+          stock: 10,
+        },
+        {
+          size: "M",
+          color: "Red",
+          stock: 15,
+        },
+        {
+          size: "L",
+          color: "Green",
+          stock: 8,
+        },
+      ],
     },
     {
       name: "Designer Watch",

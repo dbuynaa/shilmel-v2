@@ -12,7 +12,7 @@ export async function CartEmpty() {
         <p className="text-neutral-500">{t("description")}</p>
       </div>
       <YnsLink
-        className="focus-visible:outline-hidden inline-flex h-10 items-center justify-center rounded-md bg-neutral-900 px-6 text-sm font-medium text-neutral-50 shadow-sm transition-colors hover:bg-neutral-900/90 focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:pointer-events-none disabled:opacity-50"
+        className="focus-visible:outline-hidden inline-flex h-10 items-center justify-center rounded-md bg-neutral-900 px-6 text-sm font-medium text-neutral-50 shadow-xs transition-colors hover:bg-neutral-900/90 focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:pointer-events-none disabled:opacity-50"
         href="/"
       >
         {t("continueShoppingButton")}

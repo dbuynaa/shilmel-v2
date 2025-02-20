@@ -72,6 +72,8 @@ export const categories = pgTable("Category", {
     .$defaultFn(() => createId())
     .unique(),
   name: text("name").notNull(),
+  slug: text("slug").notNull(),
+  image: text("image"),
   description: text("description"),
   parentId: text("parentId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

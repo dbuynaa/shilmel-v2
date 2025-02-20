@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 import { db } from "@/db"
 import { env } from "@/env"
-import StoreConfig from "@/store.config"
+import { getStoreConfig } from "@/store.config"
 
 type Item = MetadataRoute.Sitemap[number]
 
@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dbProducts = await db.query.products.findMany({
     limit: 100,
   })
-
+  const { categories } = await getStoreConfig()
   const productUrls = dbProducts.map(
     (product) =>
       ({
@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }) satisfies Item
   )
 
-  const categoryUrls = StoreConfig.categories.map(
+  const categoryUrls = categories.map(
     (category) =>
       ({
         url: `${env.NEXT_PUBLIC_APP_URL}/category/${category.slug}`,

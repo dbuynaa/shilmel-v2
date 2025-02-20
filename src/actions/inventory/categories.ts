@@ -87,6 +87,10 @@ export async function addCategory(
       .insert(categories)
       .values({
         name: validatedInput.data.name.toLowerCase().trim(),
+        slug: validatedInput.data.name
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, "-"),
         description: validatedInput.data.description,
       })
       .returning()

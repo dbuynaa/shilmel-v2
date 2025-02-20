@@ -18,7 +18,7 @@ export function InstantHelperMenu(): JSX.Element {
           <Icons.helpBadge className="size-5 text-foreground" />
         </CustomTooltip>
       </SheetTrigger>
-      <SheetContent className="z-[99]">
+      <SheetContent className="z-99">
         <SheetHeader>
           <SheetTitle>TODO: Instant Helper Menu</SheetTitle>
         </SheetHeader>

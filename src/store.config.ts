@@ -8,10 +8,12 @@ export async function getStoreConfig() {
   return {
     categories: categories.map((category) => ({
       name: category.name,
-      slug: category.name.toLowerCase(),
+      slug: category.slug,
       // You might want to add a proper image field to your categories table
       // For now, using a default image
-      image: AccessoriesImage,
+      image:
+        category.image ||
+        (category.name === "Apparel" ? ApparelImage : AccessoriesImage),
     })),
 
     social: {

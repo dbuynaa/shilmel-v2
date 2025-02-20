@@ -29,7 +29,7 @@ export function CustomTooltip({
         <TooltipTrigger asChild className={triggerStyles}>
           {children}
         </TooltipTrigger>
-        <TooltipContent className={cn("z-[99]", contentStyles)}>
+        <TooltipContent className={cn("z-99", contentStyles)}>
           <p>{text}</p>
         </TooltipContent>
       </Tooltip>

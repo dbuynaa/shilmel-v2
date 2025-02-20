@@ -24,7 +24,7 @@ export const Banner = () => {
 						</p>
 						<YnsLink
 							href="/product/horizon-gaze-sunglasses"
-							className="flex-none rounded-full bg-indigo-500 px-3 py-1 text-sm font-semibold text-white shadow-xs hover:bg-indigo-600"
+							className="flex-none rounded-full bg-indigo-500 px-3 py-1 text-sm font-semibold text-white shadow-2xs hover:bg-indigo-600"
 						>
 							Check it out
 						</YnsLink>
@@ -32,7 +32,7 @@ export const Banner = () => {
 				</div>
 				<button
 					onClick={handleClose}
-					className="flex-none rounded-full justify-self-end bg-indigo-500 p-1 text-white shadow-xs hover:bg-indigo-600"
+					className="flex-none rounded-full justify-self-end bg-indigo-500 p-1 text-white shadow-2xs hover:bg-indigo-600"
 					aria-label="Close banner"
 					type="button"
 				>

@@ -278,7 +278,7 @@ export default async function SingleProductPage(props: {
 //           return (
 //             <div
 //               key={product.tracking_id}
-//               className="group overflow-hidden rounded bg-card shadow-sm"
+//               className="group overflow-hidden rounded bg-card shadow-xs"
 //             >
 //               {trieveMetadata.image_url && (
 //                 <YnsLink
