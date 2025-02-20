@@ -4,7 +4,6 @@ import Image from "next/image"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next/types"
 import { getProductBySlug } from "@/actions/products"
-import { ProductImageModal } from "@/admin/(store)/product/[slug]/product-image-modal"
 import { env } from "@/env"
 import { getLocale, getTranslations } from "@/i18n/server"
 
@@ -22,6 +21,7 @@ import { JsonLd, mappedProductToJsonLd } from "@/components/store/json-ld"
 import { MainProductImage } from "@/components/store/products/main-product-image"
 import { StickyBottom } from "@/components/store/sticky-bottom"
 import { YnsLink } from "@/components/store/yns-link"
+import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal"
 
 export const generateMetadata = async (props: {
   params: Promise<{ slug: string }>
@@ -124,7 +124,7 @@ export default async function SingleProductPage(props: {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <StickyBottom product={product} locale={locale}>
+      <StickyBottom product={product} variant={selectedVariant.sku}>
         <div className="mt-4 grid gap-4 lg:grid-cols-12">
           <div className="lg:col-span-5 lg:col-start-8">
             <h1 className="text-foreground text-3xl leading-none font-bold tracking-tight">
@@ -241,6 +241,7 @@ export default async function SingleProductPage(props: {
 
             <AddToCartButton
               productId={product.id}
+              variant={selectedVariant?.sku || ""}
               disabled={selectedVariant?.stock <= 0}
             />
           </div>
@@ -255,7 +256,7 @@ export default async function SingleProductPage(props: {
         <ProductImageModal images={images.map((image) => image.url)} />
       </Suspense>
 
-      {/* <JsonLd jsonLd={mappedProductToJsonLd(product)} /> */}
+      <JsonLd jsonLd={mappedProductToJsonLd(product)} />
     </article>
   )
 }

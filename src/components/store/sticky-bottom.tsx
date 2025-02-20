@@ -2,18 +2,18 @@
 
 // import type * as Commerce from "commerce-kit";
 import { useEffect, useState } from "react"
-import { Product } from "@/db/schema"
+import { ProudctWithVariants } from "@/db/schema"
 
 import { ProductBottomStickyCard } from "./product-bottom-sticky-card"
 
 export const StickyBottom = ({
   children,
   product,
-  locale,
+  variant,
 }: Readonly<{
   children: React.ReactNode
-  product: Product
-  locale: string
+  product: ProudctWithVariants
+  variant: string
 }>) => {
   const [show, setShow] = useState(false)
   useEffect(() => {
@@ -40,7 +40,11 @@ export const StickyBottom = ({
   return (
     <>
       {children}
-      {/* <ProductBottomStickyCard product={product} locale={locale} show={show} /> */}
+      <ProductBottomStickyCard
+        product={product}
+        variant={variant}
+        show={show}
+      />
     </>
   )
 }

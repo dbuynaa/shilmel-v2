@@ -22,6 +22,8 @@ import {
 } from "@/validations/inventory"
 import { eq } from "drizzle-orm"
 
+import { slugify } from "@/lib/utils"
+
 export async function getCategoryByName(
   rawInput: GetCategoryByNameFormInput
 ): Promise<Category | null> {
@@ -87,10 +89,7 @@ export async function addCategory(
       .insert(categories)
       .values({
         name: validatedInput.data.name.toLowerCase().trim(),
-        slug: validatedInput.data.name
-          .toLowerCase()
-          .trim()
-          .replace(/\s+/g, "-"),
+        slug: slugify(validatedInput.data.name.toLowerCase().trim()),
         description: validatedInput.data.description,
       })
       .returning()

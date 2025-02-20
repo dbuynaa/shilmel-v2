@@ -11,19 +11,17 @@ import { YnsLink } from "@/components/store/yns-link"
 import { CartAsideContainer } from "./cart-aside"
 
 export async function CartModalPage() {
-  // const searchParams = await props.searchParams;
-  const originalCart = await getCartFromCookiesAction()
-  // TODO fix type
-  // const cart = await Commerce.cartAddOptimistic({ add: searchParams.add, cart: originalCart! });
-  const cart = originalCart
+  const cart = await getCartFromCookiesAction()
 
   if (!cart || cart.items.length === 0) {
     return null
   }
 
   const currency = "USD"
-  // const total = calculateCartTotalNetWithoutShipping(cart)
-  const total = 4
+  const total = cart.items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  )
   const t = await getTranslations("/cart.modal")
   const locale = await getLocale()
 
@@ -37,7 +35,7 @@ export async function CartModalPage() {
           <YnsLink
             replace
             href="/cart"
-            className="text-sm text-muted-foreground underline"
+            className="text-muted-foreground text-sm underline"
           >
             {t("openFullView")}
           </YnsLink>
@@ -45,16 +43,16 @@ export async function CartModalPage() {
 
         <div className="mt-8">
           <ul role="list" className="-my-6 divide-y divide-neutral-200">
-            {/* {cart.lines.map((line) => (
+            {cart.items.map((item) => (
               <li
-                key={line.product.id}
+                key={item.variant?.sku}
                 className="grid grid-cols-[4rem_1fr_max-content] grid-rows-[auto_auto] gap-x-4 gap-y-2 py-6"
               >
-                {line.product.images[0] ? (
+                {item.variant?.image ? (
                   <div className="col-span-1 row-span-2 bg-neutral-100">
                     <Image
                       className="aspect-square rounded-md object-cover"
-                      src={line.product.images[0]}
+                      src={item.variant.image}
                       width={80}
                       height={80}
                       alt=""
@@ -64,24 +62,21 @@ export async function CartModalPage() {
                   <div className="col-span-1 row-span-2" />
                 )}
 
-                <h3 className="-mt-1 font-semibold leading-tight">
-                  {formatProductName(
-                    line.product.name,
-                    line.product.metadata.variant
-                  )}
+                <h3 className="-mt-1 leading-tight font-semibold">
+                  {formatProductName(item.name, item.variant?.sku)}
                 </h3>
-                <p className="text-sm font-medium leading-none">
+                <p className="text-sm leading-none font-medium">
                   {formatMoney({
-                    amount: line.product.default_price.unit_amount ?? 0,
-                    currency: line.product.default_price.currency,
+                    amount: item.price ?? 0,
+                    currency: currency,
                     locale,
                   })}
                 </p>
-                <p className="self-end text-sm font-medium text-muted-foreground">
-                  {t("quantity", { quantity: line.quantity })}
+                <p className="text-muted-foreground self-end text-sm font-medium">
+                  {t("quantity", { quantity: item.quantity })}
                 </p>
               </li>
-            ))} */}
+            ))}
           </ul>
         </div>
       </div>

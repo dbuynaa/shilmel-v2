@@ -1,9 +1,7 @@
 import Link from "next/link"
-import { getAllCategories } from "@/actions/inventory/categories"
 import { getStoreConfig } from "@/store.config"
 
-// import StoreConfig from "@/store.config"
-
+import { deslugify, slugify } from "@/lib/utils"
 import { NavMobileMenu } from "@/components/store/nav/nav-mobile-menu.client"
 
 const { categories } = await getStoreConfig()
@@ -13,13 +11,9 @@ const links = [
     label: "Home",
     href: "/",
   },
-  // ...(categories?.map(({ name }) => ({
-  //   label: name,
-  //   href: `/category/${name}`,
-  // })) || []),
   ...categories.map(({ name, slug }) => ({
     label: name,
-    href: `/category/${slug}`,
+    href: `/category/${slugify(slug).toLowerCase()}`,
   })),
 ]
 
@@ -32,7 +26,7 @@ export const NavMenu = () => {
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="focus:outline-hidden group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                className="group hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-hidden"
               >
                 {link.label}
               </Link>
@@ -47,7 +41,7 @@ export const NavMenu = () => {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="focus:outline-hidden group inline-flex h-9 w-full items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                  className="group hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground inline-flex h-9 w-full items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-hidden"
                 >
                   {link.label}
                 </Link>

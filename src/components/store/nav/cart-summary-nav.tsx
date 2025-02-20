@@ -33,14 +33,12 @@ const CartSummaryNavInner = async () => {
   if (!cart) {
     return <CartFallback />
   }
-  if (!cart.lines.length) {
+  if (!cart.items.length) {
     return <CartFallback />
   }
 
-  // const total = calculateCartTotalNetWithoutShipping(cart)
-  const total = 2
-  // const totalItems = cart.lines.reduce((acc, line) => acc + line.quantity, 0)
-  const totalItems = ""
+  const total = cart.total
+  const totalItems = cart.items.reduce((acc, item) => acc + item.quantity, 0)
 
   const t = await getTranslations("Global.nav.cartSummary")
   const locale = await getLocale()
@@ -52,7 +50,7 @@ const CartSummaryNavInner = async () => {
           <div>
             <CartLink>
               <ShoppingBagIcon />
-              <span className="absolute bottom-0 right-0 inline-flex h-5 w-5 translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full border-2 bg-white text-center text-xs">
+              <span className="absolute right-0 bottom-0 inline-flex h-5 w-5 translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full border-2 bg-white text-center text-xs">
                 <span className="sr-only">{t("itemsInCart")}: </span>
                 {totalItems}
               </span>
@@ -60,7 +58,7 @@ const CartSummaryNavInner = async () => {
                 {t("total")}:{" "}
                 {formatMoney({
                   amount: total,
-                  currency: cart.cart.currency,
+                  currency: "USD",
                   locale,
                 })}
               </span>
@@ -73,7 +71,7 @@ const CartSummaryNavInner = async () => {
             {t("total")}:{" "}
             {formatMoney({
               amount: total,
-              currency: cart.cart.currency,
+              currency: "USD",
               locale,
             })}
           </p>

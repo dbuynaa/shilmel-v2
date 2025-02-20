@@ -4,13 +4,9 @@ import { Cart, CartItem } from "@/types/cart"
 
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
-import { psGetProductsById } from "@/db/prepared/product.statements"
+import { psGetProductVariantBySku } from "@/db/prepared/product.statements"
 
-import {
-  clearCartCookie,
-  getCartCookieJson,
-  setCartCookieJson,
-} from "@/lib/cart"
+import { clearCartCookie, setCartCookieJson } from "@/lib/cart"
 
 const CART_DATA_COOKIE = "yns_cart_data"
 
@@ -25,7 +21,7 @@ async function getCartData(): Promise<Cart | null> {
   }
 }
 
-async function setCartData(cart: Cart) {
+export async function setCartData(cart: Cart) {
   const cookieStore = await cookies()
   cookieStore.set(CART_DATA_COOKIE, JSON.stringify(cart))
 }
@@ -43,7 +39,6 @@ export async function setInitialCartCookiesAction() {
   const emptyCart: Cart = {
     items: [],
     total: 0,
-    currency: "USD", // You might want to make this configurable
   }
   await setCartData(emptyCart)
   await setCartCookieJson({
@@ -70,15 +65,24 @@ export async function clearCartCookieAction() {
 }
 
 export async function addToCartAction(formData: FormData) {
-  const productId = formData.get("productId")
-  if (!productId || typeof productId !== "string") {
+  // const productId = formData.get("productId")
+  const sku = formData.get("sku")
+  // if (!productId || typeof productId !== "string") {
+  //   throw new Error("Invalid product ID")
+  // }
+
+  if (!sku || typeof sku !== "string") {
     throw new Error("Invalid product ID")
   }
 
-  const product = await psGetProductsById.execute({ id: productId })
-  if (!product || product.length === 0) {
+  const [productVariant] = await psGetProductVariantBySku.execute({
+    sku: sku,
+  })
+
+  if (!productVariant || !productVariant.product) {
     throw new Error("Product not found")
   }
+  const product = productVariant.product
 
   const cart = (await getCartData()) || {
     items: [],
@@ -86,18 +90,24 @@ export async function addToCartAction(formData: FormData) {
     currency: "USD",
   }
 
-  const existingItem = cart.items.find((item) => item.id === productId)
+  const existingItem = cart.items.find(
+    (item) => item.variant?.sku === productVariant.sku
+  )
   if (existingItem) {
     existingItem.quantity += 1
   } else {
     const newItem: CartItem = {
-      id: product[0].id,
-      name: product[0].name,
-      price: Number(product[0].price),
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
       quantity: 1,
-      currency: "USD",
+      variant: {
+        sku: productVariant.sku,
+        image: productVariant.images[0].url,
+        size: productVariant.size || undefined,
+      },
     }
-    cart.items.push(newItem)
+    cart.items = [...cart.items, newItem]
   }
 
   cart.total = cart.items.reduce(

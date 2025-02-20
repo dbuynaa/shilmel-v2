@@ -1,7 +1,6 @@
 "use server"
 
 import { getCartFromCookiesAction } from "@/actions/cart-actions"
-import * as Commerce from "commerce-kit"
 
 import type { AddressSchema } from "@/components/store/checkout/checkout-form-schema"
 
@@ -19,7 +18,8 @@ export const saveShippingRateAction = async ({
     throw new Error("Invalid shipping rate id")
   }
 
-  await Commerce.cartSaveShipping({ cartId: cart.cart.id, shippingRateId })
+  // TODO: Implement local shipping rate calculation
+  return
 }
 
 export const saveBillingAddressAction = async ({
@@ -32,8 +32,6 @@ export const saveBillingAddressAction = async ({
     throw new Error("No cart id found in cookies")
   }
 
-  await Commerce.cartSaveBillingAddress({
-    cartId: cart.cart.id,
-    billingAddress,
-  })
+  // TODO: Implement local billing address saving
+  return
 }

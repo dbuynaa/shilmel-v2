@@ -14,7 +14,7 @@ export async function getProductsByCategory(categorySlug: string) {
     const [category] = await db
       .select()
       .from(categories)
-      .where(eq(categories.name, deslugify(categorySlug).toLowerCase()))
+      .where(eq(categories.slug, categorySlug))
 
     if (!category) {
       return []

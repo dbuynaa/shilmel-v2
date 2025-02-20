@@ -7,7 +7,6 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import type { getAllCategories } from "@/actions/inventory/categories"
 import { addItem, checkItem } from "@/actions/inventory/items"
-import type { UploadFilesRouter } from "@/admin/api/uploadthing/core"
 import type { FileWithPreview } from "@/types"
 import { itemSchema, type AddItemFormInput } from "@/validations/inventory"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -40,6 +39,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { FileDialog } from "@/components/file-dialog"
 import { Icons } from "@/components/icons"
 import { Zoom } from "@/components/image-zoom"
+import type { UploadFilesRouter } from "@/app/api/uploadthing/core"
 
 type AddItemFormInputs = z.infer<typeof itemSchema>
 

@@ -1,15 +1,15 @@
 "use client"
 
-import { useOptimistic } from "react"
-import Image from "next/image"
-import { useTranslations } from "@/i18n/client"
-import type * as Commerce from "commerce-kit"
+import type { Cart } from "@/types/cart"
 
-import {
-  calculateCartTotalPossiblyWithTax,
-  formatMoney,
-  formatProductName,
-} from "@/lib/utils"
+import { startTransition, useOptimistic } from "react"
+import Image from "next/image"
+import { decreaseQuantity, increaseQuantity } from "@/actions/cart-actions"
+import { useTranslations } from "@/i18n/client"
+import { Minus, Plus } from "lucide-react"
+
+import { formatMoney } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -19,174 +19,166 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  CartAmountWithSpinner,
-  CartItemLineTotal,
-  CartItemQuantity,
-} from "@/components/store/checkout/cart-items.client"
-import { FormatDeliveryEstimate } from "@/components/store/checkout/shipping-rates-section"
-import { YnsLink } from "@/components/store/yns-link"
 
 export const CartSummaryTable = ({
   cart,
   locale,
 }: {
-  cart: Commerce.Cart
+  cart: Cart
   locale: string
 }) => {
   const t = useTranslations("/cart.page.summaryTable")
-
   const [optimisticCart, dispatchOptimisticCartAction] = useOptimistic(
     cart,
     (
       prevCart,
-      action: { productId: string; action: "INCREASE" | "DECREASE" }
+      action: {
+        productId: string
+        variant: string
+        action: "INCREASE" | "DECREASE"
+      }
     ) => {
       const modifier = action.action === "INCREASE" ? 1 : -1
 
+      const updatedItems = prevCart.items.map((item) => {
+        if (
+          item.id === action.productId &&
+          item.variant?.sku === action.variant
+        ) {
+          const newQuantity = Math.max(0, item.quantity + modifier)
+          return { ...item, quantity: newQuantity }
+        }
+        return item
+      })
+
       return {
         ...prevCart,
-        lines: prevCart.lines.map((line) => {
-          if (line.product.id === action.productId) {
-            return { ...line, quantity: line.quantity + modifier }
-          }
-          return line
-        }),
+        items: updatedItems.filter((item) => item.quantity > 0),
+        total: updatedItems.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        ),
       }
     }
   )
 
-  const currency = optimisticCart.lines[0]!.product.default_price.currency
-  const total = calculateCartTotalPossiblyWithTax(optimisticCart)
+  const handleQuantityChange = async (
+    productId: string,
+    variant: string,
+    action: "INCREASE" | "DECREASE"
+  ) => {
+    startTransition(() => {
+      dispatchOptimisticCartAction({ productId, action, variant })
+    })
+    try {
+      if (action === "INCREASE") {
+        await increaseQuantity(productId)
+      } else {
+        await decreaseQuantity(productId)
+      }
+    } catch (error) {
+      // If the server action fails, the optimistic state will be rolled back automatically
+      console.error("Failed to update quantity:", error)
+    }
+  }
 
   return (
-    <form>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="hidden w-24 sm:table-cell">
-              <span className="sr-only">{t("imageCol")}</span>
-            </TableHead>
-            <TableHead className="">{t("productCol")}</TableHead>
-            <TableHead className="w-1/6 min-w-32">{t("priceCol")}</TableHead>
-            <TableHead className="w-1/6 min-w-32">{t("quantityCol")}</TableHead>
-            <TableHead className="w-1/6 min-w-32 text-right">
-              {t("totalCol")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {optimisticCart.lines.map((line) => {
-            // @todo figure out what to do with this object; how to diplay it nicely
-            // do some research
-            // const _taxLine = optimisticCart.taxCalculation?.line_items?.data.find(
-            // 	(taxLine) => taxLine.product === line.product.id,
-            // );
-            return (
-              <TableRow key={line.product.id}>
-                <TableCell className="hidden sm:table-cell sm:w-24">
-                  {line.product.images[0] && (
-                    <Image
-                      className="aspect-square rounded-md object-cover"
-                      src={line.product.images[0]}
-                      width={96}
-                      height={96}
-                      alt=""
-                    />
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">
-                  <YnsLink
-                    className="transition-colors hover:text-muted-foreground"
-                    href={`/product/${line.product.metadata.slug}`}
-                  >
-                    {formatProductName(
-                      line.product.name,
-                      line.product.metadata.variant
-                    )}
-                  </YnsLink>
-                </TableCell>
-                <TableCell>
-                  {formatMoney({
-                    amount: line.product.default_price.unit_amount ?? 0,
-                    currency: line.product.default_price.currency,
-                    locale,
-                  })}
-                </TableCell>
-                <TableCell>
-                  <CartItemQuantity
-                    cartId={cart.cart.id}
-                    quantity={line.quantity}
-                    productId={line.product.id}
-                    onChange={dispatchOptimisticCartAction}
-                  />
-                </TableCell>
-                <TableCell className="text-right">
-                  <CartItemLineTotal
-                    currency={line.product.default_price.currency}
-                    quantity={line.quantity}
-                    unitAmount={line.product.default_price.unit_amount ?? 0}
-                    productId={line.product.id}
-                    locale={locale}
-                  />
-                </TableCell>
-              </TableRow>
-            )
-          })}
-          {cart.shippingRate && (
-            <TableRow>
-              <TableCell className="hidden sm:table-cell sm:w-24"></TableCell>
-              <TableCell className="font-medium" colSpan={3}>
-                {cart.shippingRate.display_name}{" "}
-                <span className="text-muted-foreground">
-                  <FormatDeliveryEstimate
-                    estimate={cart.shippingRate.delivery_estimate}
-                  />
-                </span>
-              </TableCell>
-              <TableCell className="text-right">
-                {cart.shippingRate.fixed_amount &&
-                  formatMoney({
-                    amount: cart.shippingRate.fixed_amount.amount,
-                    currency: cart.shippingRate.fixed_amount.currency,
-                    locale,
-                  })}
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-        <TableFooter>
-          {optimisticCart.cart.taxBreakdown.map((tax, idx) => (
-            <TableRow key={idx + tax.taxAmount} className="font-normal">
-              <TableCell className="hidden w-24 sm:table-cell"></TableCell>
-              <TableCell colSpan={3} className="text-right">
-                {tax.taxType.toString().toLocaleUpperCase()} {tax.taxPercentage}
-                %
-              </TableCell>
-              <TableCell className="text-right">
-                <CartAmountWithSpinner
-                  total={tax.taxAmount}
-                  currency={currency}
-                  locale={locale}
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="hidden w-24 sm:table-cell">
+            <span className="sr-only">{t("imageCol")}</span>
+          </TableHead>
+          <TableHead>{t("productCol")}</TableHead>
+          <TableHead className="w-1/6 min-w-32">{t("priceCol")}</TableHead>
+          <TableHead className="w-1/6 min-w-32">{t("quantityCol")}</TableHead>
+          <TableHead className="w-1/6 min-w-32 text-right">
+            {t("totalCol")}
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+
+      <TableBody>
+        {optimisticCart.items.map((item) => (
+          <TableRow key={item.variant?.sku}>
+            <TableCell className="hidden sm:table-cell sm:w-24">
+              {item.variant?.image && (
+                <Image
+                  className="aspect-square rounded-md object-cover"
+                  src={item.variant.image}
+                  width={96}
+                  height={96}
+                  alt=""
                 />
-              </TableCell>
-            </TableRow>
-          ))}
-          <TableRow className="text-lg font-bold">
-            <TableCell className="hidden w-24 sm:table-cell"></TableCell>
-            <TableCell colSpan={3} className="text-right">
-              {t("totalSummary")}
+              )}
+            </TableCell>
+            <TableCell className="font-medium">
+              {item.name}
+              {item.variant?.size && (
+                <span className="text-muted-foreground ml-1">
+                  ({item.variant.size})
+                </span>
+              )}
+            </TableCell>
+            <TableCell>
+              {formatMoney({
+                amount: item.price,
+                currency: "USD",
+                locale,
+              })}
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() =>
+                    handleQuantityChange(item.id, item.variant!.sku, "DECREASE")
+                  }
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="w-8 text-center tabular-nums">
+                  {item.quantity}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() =>
+                    handleQuantityChange(item.id, item.variant!.sku, "INCREASE")
+                  }
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
             </TableCell>
             <TableCell className="text-right">
-              <CartAmountWithSpinner
-                total={total}
-                currency={currency}
-                locale={locale}
-              />
+              {formatMoney({
+                amount: item.price * item.quantity,
+                currency: "USD",
+                locale,
+              })}
             </TableCell>
           </TableRow>
-        </TableFooter>
-      </Table>
-    </form>
+        ))}
+      </TableBody>
+
+      <TableFooter>
+        <TableRow>
+          <TableCell colSpan={4} className="text-right font-semibold">
+            {t("totalSummary")}
+          </TableCell>
+          <TableCell className="text-right font-semibold">
+            {formatMoney({
+              amount: optimisticCart.total,
+              currency: "USD",
+              locale,
+            })}
+          </TableCell>
+        </TableRow>
+      </TableFooter>
+    </Table>
   )
 }

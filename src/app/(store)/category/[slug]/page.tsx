@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation"
 import type { Metadata } from "next/types"
 import { getProductsByCategory } from "@/actions/products"
 import { env } from "@/env"
@@ -11,12 +10,6 @@ export const generateMetadata = async (props: {
   params: Promise<{ slug: string }>
 }): Promise<Metadata> => {
   const params = await props.params
-  const products = await getProductsByCategory(params.slug)
-
-  if (products.length === 0) {
-    return notFound()
-  }
-
   const t = await getTranslations("/category.metadata")
 
   return {
@@ -32,27 +25,27 @@ export default async function CategoryPage(props: {
 }) {
   const params = await props.params
   const products = await getProductsByCategory(params.slug)
+
   const t = await getTranslations("/category.page")
 
   if (!products || products.length === 0) {
-    return notFound()
-    // return (
-    //   <div className="pb-8 text-center">
-    //     <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
-    //       {deslugify(params.slug)}
-    //       <div className="text-lg font-semibold text-muted-foreground">
-    //         No products found
-    //       </div>
-    //     </h1>
-    //   </div>
-    // )
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center pb-8 text-center">
+        <h1 className="text-foreground text-3xl leading-none font-bold tracking-tight">
+          {deslugify(params.slug)}
+          <div className="text-muted-foreground text-lg font-semibold">
+            No products found
+          </div>
+        </h1>
+      </div>
+    )
   }
 
   return (
     <main className="pb-8">
-      <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
+      <h1 className="text-foreground text-3xl leading-none font-bold tracking-tight">
         {deslugify(params.slug)}
-        <div className="text-lg font-semibold text-muted-foreground">
+        <div className="text-muted-foreground text-lg font-semibold">
           {t("title", { categoryName: deslugify(params.slug) })}
         </div>
       </h1>

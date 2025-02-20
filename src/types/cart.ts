@@ -3,15 +3,14 @@ export interface CartItem {
   name: string
   price: number
   quantity: number
-  image?: string
-  currency: string
-  metadata?: {
-    variant?: string
+  variant?: {
+    sku: string
+    image?: string
+    size?: string
   }
 }
 
 export interface Cart {
   items: CartItem[]
   total: number
-  currency: string
 }

@@ -6,6 +6,8 @@ import { neon } from "@neondatabase/serverless"
 import bcryptjs from "bcryptjs"
 import { drizzle } from "drizzle-orm/neon-http"
 
+import { slugify } from "@/lib/utils"
+
 async function main() {
   console.log("🌱 Seeding database...")
   const sql = neon(
@@ -46,7 +48,7 @@ async function main() {
     .values(
       categoryData.map((cat) => ({
         name: cat.name.toLowerCase(),
-        slug: cat.name.toLowerCase().replace(/\s+/g, "-"),
+        slug: slugify(cat.name).toLowerCase(),
         description: cat.description,
         icon: "default-icon", // You might want to update this with actual icons
       }))

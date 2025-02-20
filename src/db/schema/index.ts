@@ -9,6 +9,8 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core"
 
+import { InferResultType } from "./utils"
+
 // Enums
 export const userRoleEnum = pgEnum("UserRole", ["USER", "ADMIN"])
 export const orderStatusEnum = pgEnum("OrderStatus", [
@@ -363,8 +365,19 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
 
 export type User = typeof users.$inferSelect
 export type Product = typeof products.$inferSelect
+export type ProudctWithVariants = InferResultType<
+  "products",
+  { variants: { with: { images: true } } }
+>
 // export type Cart = typeof carts.$inferSelect
-// export type CartItem = typeof cartItems.$inferSelect
+export type Cart = InferResultType<
+  "carts",
+  { items: { with: { variant: true } } }
+>
+export type CartItem = InferResultType<
+  "cartItems",
+  { variant: { with: { images: true; product: true } } }
+>
 export type Order = typeof orders.$inferSelect
 export type OrderItem = typeof orderItems.$inferSelect
 export type Category = typeof categories.$inferSelect

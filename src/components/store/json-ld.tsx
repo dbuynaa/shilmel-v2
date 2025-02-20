@@ -1,6 +1,11 @@
-// import type * as Commerce from "commerce-kit";
-// import { getDecimalFromStripeAmount } from "commerce-kit/currencies"
-import type { ItemList, Product, Thing, WebSite, WithContext } from "schema-dts"
+import type { InferResultType } from "@/db/schema/utils"
+import type {
+  ItemList,
+  Product as SchemaProduct,
+  Thing,
+  WebSite,
+  WithContext,
+} from "schema-dts"
 
 import { formatProductName } from "@/lib/utils"
 
@@ -17,27 +22,33 @@ export const JsonLd = <T extends Thing>({
   )
 }
 
+type ProductWithVariants = InferResultType<
+  "products",
+  { variants: { with: { images: true } } }
+>
+
 export const mappedProductToJsonLd = (
-  product: Commerce.MappedProduct
-): WithContext<Product> => {
-  const productName = formatProductName(product.name, product.metadata.variant)
+  product: ProductWithVariants
+): WithContext<SchemaProduct> => {
+  const variant = product.variants[0]
+  const productName = formatProductName(
+    product.name,
+    variant?.size ?? undefined
+  )
 
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: productName,
-    image: product.images[0],
+    image: variant?.images[0]?.url,
     description: product.description ?? undefined,
     sku: product.id,
     offers: {
       "@type": "Offer",
-      price: getDecimalFromStripeAmount({
-        amount: product.default_price.unit_amount ?? 0,
-        currency: product.default_price.currency,
-      }),
-      priceCurrency: product.default_price.currency,
+      price: product.price.toString(),
+      priceCurrency: "USD",
       availability:
-        product.metadata.stock > 0
+        (variant?.stock ?? 0) > 0
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
     },
@@ -45,7 +56,7 @@ export const mappedProductToJsonLd = (
 }
 
 export const mappedProductsToJsonLd = (
-  products: readonly Commerce.MappedProduct[]
+  products: readonly ProductWithVariants[]
 ): WithContext<ItemList> => {
   return {
     "@context": "https://schema.org",
@@ -54,11 +65,18 @@ export const mappedProductsToJsonLd = (
   }
 }
 
+type Account = {
+  business_profile?: {
+    name?: string
+    url?: string
+  }
+}
+
 export const accountToWebsiteJsonLd = ({
   account,
   logoUrl,
 }: {
-  account: Stripe.Account | null | undefined
+  account: Account | null | undefined
   logoUrl: string | null | undefined
 }): WithContext<WebSite> => {
   return {
