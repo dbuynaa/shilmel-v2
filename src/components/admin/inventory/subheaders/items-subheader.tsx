@@ -8,19 +8,19 @@ import { buttonVariants } from "@/components/ui/button"
 import { ItemsDropdown } from "@/components/admin/inventory/dropdowns/items-dropdown"
 import { ItemsSelect } from "@/components/admin/inventory/selects/items-select"
 import { ViewToggle } from "@/components/admin/inventory/view-toggle"
-import { InstantHelperMenu } from "@/components/admin/nav/app/menus/instant-helper-menu"
+import { InstantHelperMenu } from "@/components/admin/nav/admin/menus/instant-helper-menu"
 import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
 
 export function ItemsSubheader(): JSX.Element {
   return (
-    <div className="flex h-20 w-full items-center justify-between border-b bg-tertiary px-5">
+    <div className="bg-tertiary flex h-20 w-full items-center justify-between border-b px-5">
       <ItemsSelect />
 
       <div className="flex items-center gap-2">
         <CustomTooltip text="Add New Item">
           <Link
-            href="/app/inventory/items/new-item"
+            href="/admin/inventory/items/new-item"
             className={cn(buttonVariants(), "gap-1")}
             aria-label="Add new item"
           >

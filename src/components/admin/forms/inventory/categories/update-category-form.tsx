@@ -1,6 +1,6 @@
 "use client"
 
-import React, { type JSX } from "react";
+import React, { type JSX } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { updateCategory } from "@/actions/inventory/categories"
@@ -41,7 +41,7 @@ export function UpdateCategoryForm({
   const form = useForm<UpdateCategoryFormInput>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      id: category.id ,
+      id: category.id,
       name: category.name,
       description: category.description || "",
     },
@@ -62,7 +62,7 @@ export function UpdateCategoryForm({
               title: "Success!",
               description: "Category updated",
             })
-            router.push("/app/inventory/categories")
+            router.push("/admin/inventory/categories")
             break
           case "exists":
             toast({
@@ -127,7 +127,7 @@ export function UpdateCategoryForm({
           )}
         />
 
-        <div className=" flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isPending}
             aria-label="Update Category"
@@ -148,7 +148,7 @@ export function UpdateCategoryForm({
           </Button>
 
           <Link
-            href="/app/inventory/categories"
+            href="/admin/inventory/categories"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
           >
             Cancel

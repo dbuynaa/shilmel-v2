@@ -122,7 +122,7 @@ export function CategoriesTableShell({
               <Button
                 aria-label="Open menu"
                 variant="ghost"
-                className="flex size-8 p-0 data-[state=open]:bg-muted"
+                className="data-[state=open]:bg-muted flex size-8 p-0"
               >
                 <Icons.moreHorizontal className="size-4" aria-hidden="true" />
               </Button>
@@ -130,7 +130,7 @@ export function CategoriesTableShell({
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link
-                  href={`/app/inventory/categories/${row.original.id}`}
+                  href={`/admin/inventory/categories/${row.original.id}`}
                   className="text-sm"
                 >
                   Edit
@@ -139,7 +139,7 @@ export function CategoriesTableShell({
               <DropdownMenuSeparator />
 
               <AlertDialog>
-                <AlertDialogTrigger className="flex w-full cursor-pointer rounded-sm px-2 py-1.5 text-sm hover:bg-accent">
+                <AlertDialogTrigger className="hover:bg-accent flex w-full cursor-pointer rounded-sm px-2 py-1.5 text-sm">
                   Delete
                 </AlertDialogTrigger>
                 <AlertDialogContent>

@@ -11,28 +11,28 @@ export const inventoryOptions = [
     description: "Create standalone items and services that you buy and sell",
     buttonText: "New Item",
     icon: "items",
-    href: "/app/inventory/items/new-item",
+    href: "/admin/inventory/items/new-item",
   },
   {
     title: "Item groups",
     description: "Create multiple variants of the same item using Item Groups",
     buttonText: "New Item Group",
     icon: "itemGroups",
-    href: "/app/inventory/item-groups/new-item-group",
+    href: "/admin/inventory/item-groups/new-item-group",
   },
   {
     title: "Composite Items",
     description: "Bundle different items together and sell them as kits",
     buttonText: "New Composite Item",
     icon: "compositeItems",
-    href: "/app/inventory/composite-items/new-composite-item",
+    href: "/admin/inventory/composite-items/new-composite-item",
   },
   {
     title: "Price Lists",
     description: "Tweak your item prices for specific contacts or transactions",
     buttonText: "New Price List",
     icon: "priceLists",
-    href: "/app/inventory/price-lists/new-list",
+    href: "/admin/inventory/price-lists/new-list",
   },
 ] satisfies InventoryOption[]
 

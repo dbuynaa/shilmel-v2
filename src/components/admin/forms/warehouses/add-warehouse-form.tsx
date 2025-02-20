@@ -1,6 +1,6 @@
 "use client"
 
-import React, { type JSX } from "react";
+import React, { type JSX } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { addWarehouse } from "@/actions/warehouses"
@@ -58,7 +58,7 @@ export function AddWarehouseForm(): JSX.Element {
           toast({ title: "Success!", description: "New warehouse added" })
         }
 
-        router.push("/app/warehouses")
+        router.push("/admin/warehouses")
       } catch (error) {
         toast({
           title: "Something wend wrong",
@@ -163,7 +163,7 @@ export function AddWarehouseForm(): JSX.Element {
           )}
         />
 
-        <div className=" flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isPending}
             aria-label="Add Warehouse"
@@ -184,7 +184,7 @@ export function AddWarehouseForm(): JSX.Element {
           </Button>
 
           <Link
-            href="/app/warehouses"
+            href="/admin/warehouses"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
           >
             Cancel

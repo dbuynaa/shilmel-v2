@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server"
 import { auth } from "./auth"
 
 // 1. Specify protected and public routes
-const protectedRoutes = ["/app"]
+const protectedRoutes = ["/admin"]
 const publicRoutes = ["/signin", "/signup", "/"]
 
 export default async function middleware(req: NextRequest) {
@@ -22,12 +22,8 @@ export default async function middleware(req: NextRequest) {
   }
 
   // 5. Redirect to /app if the user is authenticated
-  if (
-    isPublicRoute &&
-    session?.user &&
-    req.nextUrl.pathname.startsWith("/app")
-  ) {
-    return NextResponse.redirect(new URL("/app/home/dashboard", req.nextUrl))
+  if (isProtectedRoute && session?.user && req.nextUrl.pathname === "/admin") {
+    return NextResponse.redirect(new URL("/admin/home/dashboard", req.nextUrl))
   }
 
   return NextResponse.next()

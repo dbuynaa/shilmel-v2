@@ -7,7 +7,7 @@ import Link from "next/link"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { SidebarNav } from "@/components/admin/nav/app/sidebar-nav"
+import { SidebarNav } from "@/components/admin/nav/admin/sidebar-nav"
 import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
 
@@ -17,20 +17,20 @@ export function Sidebar(): JSX.Element {
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col justify-between border-r bg-tertiary transition-all duration-300 ease-in-out",
+        "bg-tertiary flex h-screen flex-col justify-between border-r transition-all duration-300 ease-in-out",
         collapsed ? "w-fit" : "w-66 shrink-0"
       )}
     >
       <div>
         <div className="flex h-20 items-center">
           <Link
-            href="/app/home/dashboard"
+            href="/admin/home/dashboard"
             className="flex w-full items-center justify-center gap-2"
           >
             <Icons.logo className="size-5" />
             <span
               className={cn(
-                "whitespace-nowrap font-bold leading-none tracking-wide",
+                "leading-none font-bold tracking-wide whitespace-nowrap",
                 collapsed && "hidden"
               )}
             >

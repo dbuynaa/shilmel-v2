@@ -1,16 +1,17 @@
-"use client";
+"use client"
+
+import type { JSX } from "react"
 import { signOut } from "next-auth/react"
 
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
-
-import type { JSX } from "react";
 
 export function SignOutButton(): JSX.Element {
   return (
     <Button
       aria-label="Sign Out"
       variant="ghost"
+      size="sm"
       className="w-full justify-start text-sm"
       onClick={() =>
         void signOut({

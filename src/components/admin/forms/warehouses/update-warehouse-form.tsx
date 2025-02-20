@@ -1,6 +1,6 @@
 "use client"
 
-import React, { type JSX } from "react";
+import React, { type JSX } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { deleteWarehouse, updateWarehouse } from "@/actions/warehouses"
@@ -75,7 +75,7 @@ export function UpdateWarehouseForm({
               title: "Success!",
               description: "Warehouse updated",
             })
-            router.push("/app/warehouses")
+            router.push("/admin/warehouses")
             break
           case "exists":
             toast({
@@ -196,7 +196,7 @@ export function UpdateWarehouseForm({
           )}
         />
 
-        <div className=" flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isDeleting || isUpdating}
             aria-label="Update Warehouse"
@@ -232,7 +232,7 @@ export function UpdateWarehouseForm({
                     title: "Success!",
                     description: "Selected warehouse has been deleted",
                   })
-                  router.push("/app/warehouses")
+                  router.push("/admin/warehouses")
                   router.refresh()
                 } else {
                   toast({
@@ -259,7 +259,7 @@ export function UpdateWarehouseForm({
           </Button>
 
           <Link
-            href="/app/warehouses"
+            href="/admin/warehouses"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
           >
             Cancel

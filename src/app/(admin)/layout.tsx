@@ -1,8 +1,8 @@
 import * as React from "react"
 import type { JSX } from "react"
 
-import { Header } from "@/components/admin/nav/app/header"
-import { Sidebar } from "@/components/admin/nav/app/sidebar"
+import { Header } from "@/components/admin/nav/admin/header"
+import { Sidebar } from "@/components/admin/nav/admin/sidebar"
 
 interface AppLayoutProps {
   children: React.ReactNode

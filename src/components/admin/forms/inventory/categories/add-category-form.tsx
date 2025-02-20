@@ -1,6 +1,6 @@
 "use client"
 
-import React, { type JSX } from "react";
+import React, { type JSX } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { addCategory } from "@/actions/inventory/categories"
@@ -60,7 +60,7 @@ export function AddCategoryForm(): JSX.Element {
               title: "Success!",
               description: "New category added",
             })
-            router.push("/app/inventory/categories")
+            router.push("/admin/inventory/categories")
             router.refresh()
             break
           default:
@@ -118,7 +118,7 @@ export function AddCategoryForm(): JSX.Element {
           )}
         />
 
-        <div className=" flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isPending}
             aria-label="Add Category"
@@ -139,7 +139,7 @@ export function AddCategoryForm(): JSX.Element {
           </Button>
 
           <Link
-            href="/app/inventory/categories"
+            href="/admin/inventory/categories"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
           >
             Cancel

@@ -91,14 +91,14 @@ export function SidebarNav({
                     {isCollapsibleOpen ? (
                       <Icons.chevronUp
                         className={cn(
-                          "size-4 text-muted-foreground",
+                          "text-muted-foreground size-4",
                           collapsed && "hidden"
                         )}
                       />
                     ) : (
                       <Icons.chevronDown
                         className={cn(
-                          "size-4 text-muted-foreground",
+                          "text-muted-foreground size-4",
                           collapsed && "hidden"
                         )}
                       />
@@ -130,7 +130,7 @@ export function SidebarNav({
                       {subitem.hrefPlus && (
                         <Link
                           href={subitem.hrefPlus}
-                          className="hidden text-muted-foreground hover:text-foreground group-hover:flex"
+                          className="text-muted-foreground hover:text-foreground hidden group-hover:flex"
                         >
                           <Icons.plusCircle className="size-4" />
                         </Link>
@@ -144,8 +144,8 @@ export function SidebarNav({
                 <Link
                   href={item.href}
                   className={cn(
-                    (pathname.startsWith("/app/home") &&
-                      item.href.startsWith("/app/home")) ||
+                    (pathname.startsWith("/admin/home") &&
+                      item.href.startsWith("/admin/home")) ||
                       pathname === item.href
                       ? buttonVariants({ variant: "secondary" })
                       : buttonVariants({ variant: "ghost" }),
@@ -155,8 +155,8 @@ export function SidebarNav({
                   <Icon className="size-4" />
                   <span
                     className={cn(
-                      (pathname.startsWith("/app/home") &&
-                        item.href.startsWith("/app/home")) ||
+                      (pathname.startsWith("/admin/home") &&
+                        item.href.startsWith("/admin/home")) ||
                         pathname === item.href
                         ? "text-foreground"
                         : "text-muted-foreground",

@@ -7,6 +7,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import type { getAllCategories } from "@/actions/inventory/categories"
 import { addItem, checkItem } from "@/actions/inventory/items"
+import type { UploadFilesRouter } from "@/admin/api/uploadthing/core"
 import type { FileWithPreview } from "@/types"
 import { itemSchema, type AddItemFormInput } from "@/validations/inventory"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -39,7 +40,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { FileDialog } from "@/components/file-dialog"
 import { Icons } from "@/components/icons"
 import { Zoom } from "@/components/image-zoom"
-import type { UploadFilesRouter } from "@/app/api/uploadthing/core"
 
 type AddItemFormInputs = z.infer<typeof itemSchema>
 
@@ -148,7 +148,7 @@ export function AddItemForm({
 
         form.reset()
         setFiles({})
-        router.push("/app/inventory/items")
+        router.push("/admin/inventory/items")
       } catch (error) {
         console.log(error)
         toast({
@@ -420,7 +420,7 @@ export function AddItemForm({
           </Button>
 
           <Link
-            href="/app/inventory/items"
+            href="/admin/inventory/items"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
           >
             Cancel

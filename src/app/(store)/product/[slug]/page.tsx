@@ -1,9 +1,10 @@
-// import { ProductModel3D } from "@/app/(store)/product/[slug]/product-model3d";
+// import { ProductModel3D } from "@/admin/(store)/product/[slug]/product-model3d";
 import { Suspense } from "react"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next/types"
 import { getProductBySlug } from "@/actions/products"
+import { ProductImageModal } from "@/admin/(store)/product/[slug]/product-image-modal"
 import { env } from "@/env"
 import { getLocale, getTranslations } from "@/i18n/server"
 
@@ -21,7 +22,6 @@ import { JsonLd, mappedProductToJsonLd } from "@/components/store/json-ld"
 import { MainProductImage } from "@/components/store/products/main-product-image"
 import { StickyBottom } from "@/components/store/sticky-bottom"
 import { YnsLink } from "@/components/store/yns-link"
-import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal"
 
 export const generateMetadata = async (props: {
   params: Promise<{ slug: string }>
@@ -127,11 +127,11 @@ export default async function SingleProductPage(props: {
       <StickyBottom product={product} locale={locale}>
         <div className="mt-4 grid gap-4 lg:grid-cols-12">
           <div className="lg:col-span-5 lg:col-start-8">
-            <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
+            <h1 className="text-foreground text-3xl leading-none font-bold tracking-tight">
               {product.name}
             </h1>
             {product.price && (
-              <p className="mt-2 text-2xl font-medium leading-none tracking-tight text-foreground/70">
+              <p className="text-foreground/70 mt-2 text-2xl leading-none font-medium tracking-tight">
                 {formatMoney({
                   amount: parseInt(product.price),
                   currency: "USD",
@@ -223,7 +223,7 @@ export default async function SingleProductPage(props: {
                             prefetch={true}
                             href={`/product/${product.slug}?variant=${variant.sku}`}
                             className={cn(
-                              "flex cursor-pointer items-center justify-center gap-2 rounded-md border p-2 transition-colors hover:bg-secondary/30",
+                              "hover:bg-secondary/30 flex cursor-pointer items-center justify-center gap-2 rounded-md border p-2 transition-colors",
                               isSelected &&
                                 "border-primary bg-tertiary font-medium"
                             )}

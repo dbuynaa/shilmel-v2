@@ -35,13 +35,13 @@ export default async function AppInventoryCategoriesUpdateCategoryPage(
   if (!session) redirect("/signin")
 
   const category = await getCategoryById({ id: Number(params.categoryId) })
-  if (!category) redirect("/app/inventory/categories")
+  if (!category) redirect("/admin/inventory/categories")
 
   return (
     <div>
       <SubSubHeader />
       <div className="p-5">
-        <Card className="max-w-5xl rounded-md bg-tertiary">
+        <Card className="bg-tertiary max-w-5xl rounded-md">
           <CardHeader className="px-5 pt-5">
             <CardTitle className="text-2xl">Update Category</CardTitle>
             <CardDescription className="text-base">

@@ -1,8 +1,7 @@
 import { auth } from "@/auth"
 import { UserIcon } from "lucide-react"
 
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { UserMenu } from "@/components/admin/nav/app/menus/user-menu"
+import { UserMenu } from "@/components/admin/nav/admin/menus/user-menu"
 import { CartSummaryNav } from "@/components/store/nav/cart-summary-nav"
 import { NavMenu } from "@/components/store/nav/nav-menu"
 import { SearchNav } from "@/components/store/nav/search-nav"
@@ -29,7 +28,7 @@ export const Nav = async () => {
         <CartSummaryNav />
         {/* <UserMenu /> */}
         {user ? (
-          <UserMenu user={user.user} />
+          <UserMenu session={user} />
         ) : (
           <YnsLink href="/signin">
             <UserIcon className="hover:text-neutral-500" />

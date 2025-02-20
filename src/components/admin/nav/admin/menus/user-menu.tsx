@@ -1,18 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
-import { User } from "next-auth"
-import {
-  Bolt,
-  BookOpen,
-  CircleUserRound,
-  Layers2,
-  LogOut,
-  Pin,
-  UserIcon,
-  UserPen,
-} from "lucide-react"
+import { Session } from "next-auth"
+import { Bolt, BookOpen, Layers2, Pin, UserIcon, UserPen } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,8 +12,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { SignOutButton } from "@/components/auth/signout-button"
 
-export function UserMenu({ user }: { user: User }) {
+export function UserMenu({ session }: { session: Session }) {
+  const user = session.user
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,45 +23,58 @@ export function UserMenu({ user }: { user: User }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-64">
         <DropdownMenuLabel className="flex items-start gap-3">
-          <Image
-            src={user.image ?? ""}
-            alt="Avatar"
-            width={32}
-            height={32}
-            sizes="32px"
-            className="shrink-0 rounded-full"
-          />
+          {user?.image ? (
+            <Image
+              src={user.image ?? ""}
+              alt="Avatar"
+              width={32}
+              height={32}
+              sizes="32px"
+              className="shrink-0 rounded-full"
+            />
+          ) : (
+            <h1 className="bg-muted flex h-8 w-8 items-center justify-center rounded-full">
+              {user?.name?.slice(0, 1)}
+            </h1>
+          )}
           <div className="flex min-w-0 flex-col">
             <span className="text-foreground truncate text-sm font-medium">
-              {user.name}
+              {user?.name}
             </span>
             <span className="text-muted-foreground truncate text-xs font-normal">
-              {user.email}
+              {user?.email}
             </span>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/admin">
-              <Bolt
-                size={16}
-                strokeWidth={2}
-                className="opacity-60"
-                aria-hidden="true"
-              />
-              <span>Admin</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Layers2
-              size={16}
-              strokeWidth={2}
-              className="opacity-60"
-              aria-hidden="true"
-            />
-            <span>Option 2</span>
-          </DropdownMenuItem>
+          {user.role === "ADMIN" && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href="/admin">
+                  <Bolt
+                    size={16}
+                    strokeWidth={2}
+                    className="opacity-60"
+                    aria-hidden="true"
+                  />
+                  <span>Admin</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/">
+                  <Layers2
+                    size={16}
+                    strokeWidth={2}
+                    className="opacity-60"
+                    aria-hidden="true"
+                  />
+                  <span>Landing</span>
+                </Link>
+              </DropdownMenuItem>
+            </>
+          )}
+
           <DropdownMenuItem>
             <BookOpen
               size={16}
@@ -98,18 +103,12 @@ export function UserMenu({ user }: { user: User }) {
               className="opacity-60"
               aria-hidden="true"
             />
-            <span>Option 5</span>
+            <span>Profile</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <LogOut
-            size={16}
-            strokeWidth={2}
-            className="opacity-60"
-            aria-hidden="true"
-          />
-          <span>Logout</span>
+          <SignOutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

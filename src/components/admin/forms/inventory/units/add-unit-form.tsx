@@ -1,6 +1,6 @@
 "use client"
 
-import React, { type JSX } from "react";
+import React, { type JSX } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { addUnit } from "@/actions/inventory/units"
@@ -50,7 +50,7 @@ export function AddUnitForm(): JSX.Element {
           toast({ title: "Success!", description: "New unit added" })
         }
 
-        router.push("/app/inventory/units")
+        router.push("/admin/inventory/units")
       } catch (error) {
         toast({
           title: "Something wend wrong",
@@ -95,7 +95,7 @@ export function AddUnitForm(): JSX.Element {
           )}
         />
 
-        <div className=" flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2 pt-2">
           <Button disabled={isPending} aria-label="Add Unit" className="w-fit">
             {isPending ? (
               <>
@@ -112,7 +112,7 @@ export function AddUnitForm(): JSX.Element {
           </Button>
 
           <Link
-            href="/app/inventory/units"
+            href="/admin/inventory/units"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
           >
             Cancel

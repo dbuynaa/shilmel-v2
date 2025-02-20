@@ -79,7 +79,7 @@ export default async function AppInventoryCategoriesPage(
     <div>
       <Subheader
         buttonText="New Category"
-        buttonLink="/app/inventory/categories/new-category"
+        buttonLink="/admin/inventory/categories/new-category"
       />
       <div className="p-5">
         <React.Suspense
