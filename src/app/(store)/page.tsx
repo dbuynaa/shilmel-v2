@@ -21,17 +21,17 @@ export default async function Home() {
 
   return (
     <main>
-      <section className="rounded bg-tertiary py-8 sm:py-12">
+      <section className="bg-tertiary rounded py-8 sm:py-12">
         <div className="mx-auto grid grid-cols-1 items-center justify-items-center gap-8 px-8 sm:px-16 md:grid-cols-2">
           <div className="max-w-md space-y-4">
-            <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-balance md:text-4xl">
               {t("hero.title")}
             </h2>
-            <p className="text-pretty text-muted-foreground">
+            <p className="text-muted-foreground text-pretty">
               {t("hero.description")}
             </p>
             <YnsLink
-              className="focus:outline-hidden inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:ring-1 focus:ring-primary"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary inline-flex h-10 items-center justify-center rounded-full px-6 font-medium transition-colors focus:ring-1 focus:outline-hidden"
               href={t("hero.link")}
             >
               {t("hero.action")}
@@ -44,7 +44,7 @@ export default async function Home() {
             className="rounded"
             height={450}
             width={450}
-            src="https://img.freepik.com/free-photo/side-view-woman-looking-clothes_23-2150746358.jpg"
+            src="https://150597104.v2.pressablecdn.com/wp-content/uploads/2023/02/%EF%BE%8E%EF%BE%9B%EF%BD%B1%EF%BD%B8%EF%BE%98%EF%BE%99%EF%BD%BD%EF%BE%80%EF%BE%9D%EF%BE%84%EF%BE%9E_MUMEI_2.png"
             style={{
               objectFit: "cover",
             }}

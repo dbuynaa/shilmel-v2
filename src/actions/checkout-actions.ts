@@ -1,8 +1,15 @@
 "use server"
 
 import { getCartFromCookiesAction } from "@/actions/cart-actions"
+import { auth } from "@/auth"
 import { db } from "@/db"
-import { orderItems, orders, payments, productVariants } from "@/db/schema"
+import {
+  addresses,
+  orderItems,
+  orders,
+  payments,
+  productVariants,
+} from "@/db/schema"
 import { createId } from "@paralleldrive/cuid2"
 import { and, eq, gte } from "drizzle-orm"
 import { z } from "zod"
@@ -36,6 +43,12 @@ const checkoutSchema = z.object({
 export type CheckoutData = z.infer<typeof checkoutSchema>
 
 export async function processCheckoutAction(data: CheckoutData) {
+  const session = await auth()
+
+  if (!session || !session.user) {
+    throw new Error("Not authenticated")
+  }
+  const userId = session.user.id!
   // Validate input data
   const validationResult = checkoutSchema.safeParse(data)
   if (!validationResult.success) {
@@ -48,15 +61,23 @@ export async function processCheckoutAction(data: CheckoutData) {
     throw new Error("Cart is empty")
   }
 
-  // Start a transaction
-  return await db.transaction(async (tx) => {
+  // Store IDs for potential rollback
+  const orderId = createId()
+  const paymentId = createId()
+  const stockUpdates: Array<{
+    sku: string
+    originalStock: number
+    newStock: number
+  }> = []
+
+  try {
     // Check stock availability and reserve items
     for (const item of cart.items) {
       if (!item.variant?.sku) {
         throw new Error(`Invalid product variant in cart`)
       }
 
-      const variant = await tx
+      const variant = await db
         .select()
         .from(productVariants)
         .where(eq(productVariants.sku, item.variant.sku))
@@ -68,8 +89,15 @@ export async function processCheckoutAction(data: CheckoutData) {
         )
       }
 
+      // Store original stock for potential rollback
+      stockUpdates.push({
+        sku: item.variant.sku,
+        originalStock: variant.stock,
+        newStock: variant.stock - item.quantity,
+      })
+
       // Update stock
-      await tx
+      await db
         .update(productVariants)
         .set({ stock: variant.stock - item.quantity })
         .where(
@@ -80,12 +108,39 @@ export async function processCheckoutAction(data: CheckoutData) {
         )
     }
 
+    // Process payment before creating order records
+    const paymentResult = await processPayment({
+      amount: cart.total,
+      currency: "USD",
+      cardNumber: validationResult.data.cardNumber,
+      expiry: validationResult.data.expiry,
+      cvc: validationResult.data.cvc,
+    })
+
+    if (!paymentResult.success) {
+      // Rollback stock updates if payment fails
+      await rollbackStockUpdates(stockUpdates)
+      throw new Error(paymentResult.error || "Payment failed")
+    }
+
+    // Create shippingAddressId for the order
+    const [shippingAddress] = await db
+      .insert(addresses)
+      .values({
+        userId: userId,
+        city: "Anytown",
+        state: "CA",
+        country: "US",
+        postalCode: "12345",
+        street: "123 Main St",
+      })
+      .returning()
+
     // Create order
-    const orderId = createId()
-    await tx.insert(orders).values({
+    await db.insert(orders).values({
       id: orderId,
-      userId: "guest", // For now, we'll use a guest user
-      shippingAddressId: "default", // For now, we'll use a default address
+      userId: userId,
+      shippingAddressId: shippingAddress.id,
       totalAmount: cart.total.toString(),
       status: "PENDING",
       paymentMethod: "card",
@@ -100,7 +155,7 @@ export async function processCheckoutAction(data: CheckoutData) {
         }
 
         // Get variant ID from SKU
-        const variant = await tx
+        const variant = await db
           .select()
           .from(productVariants)
           .where(eq(productVariants.sku, item.variant.sku))
@@ -110,7 +165,7 @@ export async function processCheckoutAction(data: CheckoutData) {
           throw new Error(`Product variant not found: ${item.variant.sku}`)
         }
 
-        return tx.insert(orderItems).values({
+        return db.insert(orderItems).values({
           orderId,
           productId: item.id,
           variantId: variant.id,
@@ -120,23 +175,9 @@ export async function processCheckoutAction(data: CheckoutData) {
       })
     )
 
-    // Process payment (mock implementation)
-    const paymentResult = await processPayment({
-      amount: cart.total,
-      currency: "USD",
-      cardNumber: validationResult.data.cardNumber,
-      expiry: validationResult.data.expiry,
-      cvc: validationResult.data.cvc,
-    })
-
-    if (!paymentResult.success) {
-      // Rollback will happen automatically due to transaction
-      throw new Error(paymentResult.error || "Payment failed")
-    }
-
     // Create payment record
-    const paymentId = createId()
-    await tx.insert(payments).values({
+    await db.insert(payments).values({
+      id: paymentId,
       orderId,
       amount: cart.total.toString(),
       status: "COMPLETED",
@@ -144,7 +185,7 @@ export async function processCheckoutAction(data: CheckoutData) {
     })
 
     // Update order with payment ID and status
-    await tx
+    await db
       .update(orders)
       .set({ paymentId, paymentStatus: "COMPLETED" })
       .where(eq(orders.id, orderId))
@@ -154,7 +195,61 @@ export async function processCheckoutAction(data: CheckoutData) {
       orderId,
       paymentId,
     }
-  })
+  } catch (error) {
+    // Rollback all changes if any operation fails
+    await rollbackCheckout({
+      orderId,
+      paymentId,
+      stockUpdates,
+    })
+    throw error
+  }
+}
+
+async function rollbackStockUpdates(
+  updates: Array<{
+    sku: string
+    originalStock: number
+    newStock: number
+  }>
+) {
+  for (const update of updates) {
+    await db
+      .update(productVariants)
+      .set({ stock: update.originalStock })
+      .where(eq(productVariants.sku, update.sku))
+  }
+}
+
+async function rollbackCheckout({
+  orderId,
+  paymentId,
+  stockUpdates,
+}: {
+  orderId: string
+  paymentId: string
+  stockUpdates: Array<{
+    sku: string
+    originalStock: number
+    newStock: number
+  }>
+}) {
+  try {
+    // Rollback stock updates
+    await rollbackStockUpdates(stockUpdates)
+
+    // Delete payment record if it exists
+    await db.delete(payments).where(eq(payments.id, paymentId))
+
+    // Delete order items
+    await db.delete(orderItems).where(eq(orderItems.orderId, orderId))
+
+    // Delete order
+    await db.delete(orders).where(eq(orders.id, orderId))
+  } catch (rollbackError) {
+    // Log rollback errors but don't throw - we want to surface the original error
+    console.error("Error during rollback:", rollbackError)
+  }
 }
 
 // Mock payment processing function

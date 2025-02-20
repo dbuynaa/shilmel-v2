@@ -114,9 +114,9 @@ export const CartSummaryTable = ({
             </TableCell>
             <TableCell className="font-medium">
               {item.name}
-              {item.variant?.size && (
+              {item.variant?.sku && (
                 <span className="text-muted-foreground ml-1">
-                  ({item.variant.size})
+                  ({item.variant.sku})
                 </span>
               )}
             </TableCell>
