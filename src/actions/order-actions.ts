@@ -1,20 +1,13 @@
 "use server"
 
-import { unstable_noStore as noStore } from "next/cache"
 import { auth } from "@/auth"
 import { db } from "@/db"
-import {
-  addresses,
-  orderItems,
-  orders,
-  payments,
-  products,
-  productVariants,
-  users,
-} from "@/db/schema"
+import { orders } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 export async function getOrderById(orderId: string) {
+  // noStore()
+
   try {
     // Get order with all related data
     const order = await db.query.orders.findFirst({
@@ -99,7 +92,7 @@ export async function getOrderById(orderId: string) {
 }
 
 export async function getUserOrders() {
-  noStore()
+  // noStore()
   try {
     const session = await auth()
     if (!session?.user?.id) {

@@ -61,13 +61,9 @@ export async function getCategoryById(
   }
 }
 
-export async function getAllCategories(options?: {
-  static?: boolean
-}): Promise<Category[] | null> {
+export async function getAllCategories(): Promise<Category[] | null> {
   try {
-    if (!options?.static) {
-      noStore()
-    }
+    noStore()
     const categories = await psGetAllCategories.execute()
     return categories || null
   } catch (error) {

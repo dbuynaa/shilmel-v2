@@ -1,23 +1,22 @@
 import Link from "next/link"
-import { getStoreConfig } from "@/store.config"
+import { psGetAllCategories } from "@/db/prepared/inventory.statements"
+import StoreConfig from "@/store.config"
 
 import { deslugify, slugify } from "@/lib/utils"
 import { NavMobileMenu } from "@/components/store/nav/nav-mobile-menu.client"
 
-const { categories } = await getStoreConfig()
-
-const links = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  ...categories.map(({ name, slug }) => ({
-    label: name,
-    href: `/category/${slugify(slug).toLowerCase()}`,
-  })),
-]
-
-export const NavMenu = () => {
+export const NavMenu = async () => {
+  const categories = await psGetAllCategories.execute()
+  const links = [
+    {
+      label: "Home",
+      href: "/",
+    },
+    ...categories.map(({ name, slug }) => ({
+      label: name,
+      href: `/category/${slugify(slug).toLowerCase()}`,
+    })),
+  ]
   return (
     <>
       <div className="hidden sm:block">

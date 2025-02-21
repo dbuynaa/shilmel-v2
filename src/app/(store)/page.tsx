@@ -2,7 +2,7 @@ import type { Metadata } from "next/types"
 import { psGetAllProducts } from "@/db/prepared/product.statements"
 import { env } from "@/env"
 import { getTranslations } from "@/i18n/server"
-import { getStoreConfig } from "@/store.config"
+import StoreConfig from "@/store.config"
 
 import { CategoryBox } from "@/components/store/category-box"
 import { ProductList } from "@/components/store/products/product-list"
@@ -18,8 +18,7 @@ export default async function Home() {
     limit: 10,
   })
   const t = await getTranslations("/")
-  const config = await getStoreConfig()
-
+  const config = StoreConfig
   return (
     <main>
       <section className="bg-tertiary rounded py-8 sm:py-12">
