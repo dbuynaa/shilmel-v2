@@ -2,9 +2,6 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { auth } from "./auth"
 
-// Specify Node.js runtime
-export const runtime = "nodejs"
-
 // 1. Specify protected and public routes
 const protectedRoutes = ["/admin"]
 const publicRoutes = ["/signin", "/signup", "/"]

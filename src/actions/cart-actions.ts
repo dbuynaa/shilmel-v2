@@ -8,9 +8,6 @@ import { psGetProductVariantBySku } from "@/db/prepared/product.statements"
 
 import { clearCartCookie, setCartCookieJson } from "@/lib/cart"
 
-// Specify Node.js runtime
-export const runtime = "nodejs"
-
 const CART_DATA_COOKIE = "yns_cart_data"
 
 // Cache cart data for 1 minute
