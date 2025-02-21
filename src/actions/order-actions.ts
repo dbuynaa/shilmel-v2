@@ -1,6 +1,7 @@
 "use server"
 
 import { unstable_noStore as noStore } from "next/cache"
+import { auth } from "@/auth"
 import { db } from "@/db"
 import {
   addresses,
@@ -13,8 +14,13 @@ import {
 } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
-export async function getOrderById(orderId: string) {
-  noStore()
+export async function getOrderById(
+  orderId: string,
+  options?: { static?: boolean }
+) {
+  if (!options?.static) {
+    noStore()
+  }
   try {
     // Get order with all related data
     const order = await db.query.orders.findFirst({
@@ -95,5 +101,50 @@ export async function getOrderById(orderId: string) {
   } catch (error) {
     console.error("Error getting order:", error)
     return null
+  }
+}
+
+export async function getUserOrders() {
+  noStore()
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return []
+    }
+
+    const userOrders = await db.query.orders.findMany({
+      where: eq(orders.userId, session.user.id),
+      with: {
+        items: {
+          with: {
+            product: true,
+            variant: {
+              with: {
+                images: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: (orders, { desc }) => [desc(orders.createdAt)],
+    })
+
+    return userOrders.map((order) => ({
+      id: order.id,
+      date: order.createdAt,
+      total: Number(order.totalAmount),
+      status: order.status,
+      items: order.items.map((item) => ({
+        quantity: item.quantity,
+        price: Number(item.price),
+        product: {
+          name: item.product.name,
+          image: item.variant?.images[0]?.url,
+        },
+      })),
+    }))
+  } catch (error) {
+    console.error("Error getting user orders:", error)
+    return []
   }
 }

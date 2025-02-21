@@ -10,6 +10,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     limit: 100,
   })
   const { categories } = await getStoreConfig({ static: true })
+
+  const dbOrders = await db.query.orders.findMany({
+    limit: 100,
+  })
+
   const productUrls = dbProducts.map(
     (product) =>
       ({
@@ -30,6 +35,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }) satisfies Item
   )
 
+  const orderUrls = dbOrders.map(
+    (order) =>
+      ({
+        url: `${env.NEXT_PUBLIC_APP_URL}/order/${order.id}`,
+        lastModified: new Date(order.updatedAt),
+        changeFrequency: "daily",
+        priority: 0.3,
+      }) satisfies Item
+  )
+
   return [
     {
       url: env.NEXT_PUBLIC_APP_URL,
@@ -39,5 +54,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...productUrls,
     ...categoryUrls,
+    ...orderUrls,
   ]
 }
