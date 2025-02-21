@@ -11,9 +11,6 @@ import { formatMoney } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { ClearCookieClientComponent } from "@/components/store/checkout/clear-cookie-client-component"
 
-// Force dynamic rendering for this page since it depends on query params
-export const dynamic = "force-dynamic"
-
 export const generateMetadata = async (): Promise<Metadata> => {
   const t = await getTranslations("/order.metadata")
   return {

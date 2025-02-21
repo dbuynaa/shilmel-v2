@@ -1,5 +1,6 @@
 import type { Metadata } from "next/types"
 import { psGetAllProducts } from "@/db/prepared/product.statements"
+import { env } from "@/env"
 import { getTranslations } from "@/i18n/server"
 import { getStoreConfig } from "@/store.config"
 
@@ -8,7 +9,7 @@ import { ProductList } from "@/components/store/products/product-list"
 import { YnsLink } from "@/components/store/yns-link"
 
 export const metadata = {
-  //   alternates: { canonical: env.NEXT_PUBLIC_SITE_URL },
+  alternates: { canonical: env.NEXT_PUBLIC_APP_URL },
 } satisfies Metadata
 
 export default async function Home() {
