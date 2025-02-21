@@ -7,6 +7,7 @@ import { updateCategory } from "@/actions/inventory/categories"
 import type { Category } from "@/db/schema"
 import {
   categorySchema,
+  updateCategorySchema,
   type UpdateCategoryFormInput,
 } from "@/validations/inventory"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -39,10 +40,11 @@ export function UpdateCategoryForm({
   const [isPending, startTransition] = React.useTransition()
 
   const form = useForm<UpdateCategoryFormInput>({
-    resolver: zodResolver(categorySchema),
+    resolver: zodResolver(updateCategorySchema),
     defaultValues: {
       id: category.id,
       name: category.name,
+      image: category.image || undefined,
       description: category.description || "",
     },
   })

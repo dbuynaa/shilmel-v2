@@ -1,6 +1,6 @@
 import { redirect, RedirectType } from "next/navigation"
 import type { Metadata } from "next/types"
-import { publicUrl } from "@/env"
+import { env } from "@/env"
 import { getTranslations } from "@/i18n/server"
 
 import { Search } from "@/lib/api"
@@ -16,7 +16,7 @@ export const generateMetadata = async (props: {
   const t = await getTranslations("/search.metadata")
   return {
     title: t("title", { query: searchParams.q }),
-    alternates: { canonical: `${publicUrl}/search` },
+    alternates: { canonical: `${env.NEXT_PUBLIC_APP_URL}/search` },
   }
 }
 
@@ -38,7 +38,7 @@ export default async function SearchPage(props: {
 
   return (
     <main>
-      <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
+      <h1 className="text-foreground text-3xl leading-none font-bold tracking-tight">
         {t("title", { query })}
       </h1>
       {products?.length ? (

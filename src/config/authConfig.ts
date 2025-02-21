@@ -13,11 +13,11 @@ import { MagicLinkEmail } from "@/components/admin/emails/magic-link-email"
 
 export default {
   providers: [
-    GoogleProvider({
-      clientId: env.GOOGLE_ID,
-      clientSecret: env.GOOGLE_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
+    // GoogleProvider({
+    //   clientId: env.GOOGLE_ID,
+    //   clientSecret: env.GOOGLE_SECRET,
+    //   allowDangerousEmailAccountLinking: true,
+    // }),
     ResendProvider({
       server: {
         host: env.RESEND_HOST,

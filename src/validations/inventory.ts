@@ -3,6 +3,7 @@ import * as z from "zod"
 // CATEGORIES
 export const categorySchema = z.object({
   name: z.string(),
+  image: z.string().optional(),
   description: z.string(),
 })
 

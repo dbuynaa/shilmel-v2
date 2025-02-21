@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 interface AppInventoryCategoriesUpdateCategoryPageProps {
   params: Promise<{
-    categoryId: number
+    categoryId: string
   }>
 }
 
@@ -34,7 +34,7 @@ export default async function AppInventoryCategoriesUpdateCategoryPage(
   const session = await auth()
   if (!session) redirect("/signin")
 
-  const category = await getCategoryById({ id: Number(params.categoryId) })
+  const category = await getCategoryById({ id: params.categoryId })
   if (!category) redirect("/admin/inventory/categories")
 
   return (

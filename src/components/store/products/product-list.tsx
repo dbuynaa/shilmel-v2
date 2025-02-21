@@ -1,23 +1,15 @@
 import Image from "next/image"
-import { InferResultType } from "@/db/schema/utils"
-// import { Product } from "@/db/schema"
+import { ProudctWithVariants } from "@/db/schema"
 import { getLocale } from "@/i18n/server"
-
-// import type * as Commerce from "commerce-kit"
 
 import { formatMoney } from "@/lib/utils"
 import { JsonLd, mappedProductsToJsonLd } from "@/components/store/json-ld"
 import { YnsLink } from "@/components/store/yns-link"
 
-type ProductWithVariants = InferResultType<
-  "products",
-  { variants: { with: { images: true } } }
->
-
 export const ProductList = async ({
   products,
 }: {
-  products: ProductWithVariants[]
+  products: ProudctWithVariants[]
 }) => {
   const locale = await getLocale()
 
@@ -28,11 +20,11 @@ export const ProductList = async ({
           return (
             <li key={product.id} className="group">
               <YnsLink href={`/product/${product.slug}`}>
-                <article className="overflow-hidden bg-card">
+                <article className="bg-card overflow-hidden">
                   {product?.variants?.[0]?.images[0] && (
-                    <div className="aspect-square h-full overflow-hidden rounded-lg bg-tertiary">
+                    <div className="bg-tertiary aspect-square h-full overflow-hidden rounded-lg">
                       <Image
-                        className="group-hover:rotate hover-perspective h-full w-full bg-tertiary object-cover object-center transition-opacity group-hover:opacity-75"
+                        className="group-hover:rotate hover-perspective bg-tertiary h-full w-full object-cover object-center transition-opacity group-hover:opacity-75"
                         src={product.variants[0].images[0].url}
                         width={768}
                         height={768}
@@ -44,10 +36,10 @@ export const ProductList = async ({
                     </div>
                   )}
                   <div className="p-2">
-                    <h2 className="text-xl font-medium text-primary">
+                    <h2 className="text-primary text-xl font-medium">
                       {product.name}
                     </h2>
-                    <footer className="text-base font-normal text-muted-foreground/80">
+                    <footer className="text-muted-foreground/80 text-base font-normal">
                       {product.price && (
                         <p>
                           {formatMoney({
@@ -65,7 +57,7 @@ export const ProductList = async ({
           )
         })}
       </ul>
-      {/* <JsonLd jsonLd={mappedProductsToJsonLd(products)} /> */}
+      <JsonLd jsonLd={mappedProductsToJsonLd(products)} />
     </>
   )
 }

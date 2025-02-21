@@ -42,6 +42,7 @@ export const psGetAllProducts = db.query.products
     limit: sql.placeholder("limit"),
     offset: sql.placeholder("offset"),
     with: {
+      category: true,
       variants: {
         with: {
           images: true,

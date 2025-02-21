@@ -367,7 +367,7 @@ export type User = typeof users.$inferSelect
 export type Product = typeof products.$inferSelect
 export type ProudctWithVariants = InferResultType<
   "products",
-  { variants: { with: { images: true } } }
+  { category: true; variants: { with: { images: true } } }
 >
 // export type Cart = typeof carts.$inferSelect
 export type Cart = InferResultType<

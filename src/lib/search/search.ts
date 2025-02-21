@@ -1,23 +1,19 @@
-// import * as Commerce from "commerce-kit";
 import { unstable_cache } from "next/cache"
 import { db } from "@/db"
-import { products as Product } from "@/db/schema"
-import { eq } from "drizzle-orm"
+import { ProudctWithVariants } from "@/db/schema"
 
-// import { simpleSearch } from "./simplesearch"
+import { simpleSearch } from "./simplesearch"
 
 export const searchProducts = unstable_cache(
-  async (query: string) => {
-    const products = await db
-      .select()
-      .from(Product)
-      .where(eq(Product.name, query))
-    // const searchResults = simpleSearch(products, query)
-    // return searchResults
-    //   .map((sr) => products.find((p) => p.id === sr.id))
-    //   .filter(Boolean)
-
-    return products
+  async (query: string): Promise<ProudctWithVariants[]> => {
+    const products = await db.query.products.findMany({
+      limit: 100,
+      with: { variants: { with: { images: true } }, category: true },
+    })
+    const searchResults = simpleSearch(products, query)
+    return searchResults
+      .map((sr) => products.find((p) => p.id === sr.id))
+      .filter((p): p is ProudctWithVariants => p !== undefined)
   },
   ["search", "products"],
   {
