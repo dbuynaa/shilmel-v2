@@ -2,8 +2,8 @@ import { getAllCategories } from "@/actions/inventory/categories"
 import AccessoriesImage from "@/images/accessories.jpg"
 import ApparelImage from "@/images/apparel.jpg"
 
-export async function getStoreConfig() {
-  const categories = (await getAllCategories()) ?? []
+export async function getStoreConfig(options?: { static?: boolean }) {
+  const categories = (await getAllCategories({ static: options?.static })) ?? []
 
   return {
     categories: categories.map((category) => ({

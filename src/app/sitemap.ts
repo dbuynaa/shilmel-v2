@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dbProducts = await db.query.products.findMany({
     limit: 100,
   })
-  const { categories } = await getStoreConfig()
+  const { categories } = await getStoreConfig({ static: true })
   const productUrls = dbProducts.map(
     (product) =>
       ({
