@@ -26,7 +26,7 @@ export default async function OrderDetailsPage(props: {
     return notFound()
   }
 
-  const order = await getOrderById(order_id, { static: true })
+  const order = await getOrderById(order_id)
   if (!order) {
     return notFound()
   }

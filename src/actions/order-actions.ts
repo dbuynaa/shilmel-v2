@@ -14,13 +14,7 @@ import {
 } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
-export async function getOrderById(
-  orderId: string,
-  options?: { static?: boolean }
-) {
-  if (!options?.static) {
-    noStore()
-  }
+export async function getOrderById(orderId: string) {
   try {
     // Get order with all related data
     const order = await db.query.orders.findFirst({
