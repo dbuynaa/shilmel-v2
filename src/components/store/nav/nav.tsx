@@ -1,12 +1,12 @@
 import { auth } from "@/auth"
 import { UserIcon } from "lucide-react"
 
-import { UserMenu } from "@/components/admin/nav/admin/menus/user-menu"
 import { CartSummaryNav } from "@/components/store/nav/cart-summary-nav"
 import { NavMenu } from "@/components/store/nav/nav-menu"
 import { SearchNav } from "@/components/store/nav/search-nav"
 import { SeoH1 } from "@/components/store/seo-h1"
 import { YnsLink } from "@/components/store/yns-link"
+import { UserMenu } from "@/components/user-menu"
 
 export const Nav = async () => {
   const user = await auth()

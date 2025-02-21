@@ -9,10 +9,10 @@ import { NotificationsMenu } from "@/components/admin/nav/admin/menus/notificati
 import { OrganizationMenu } from "@/components/admin/nav/admin/menus/organization-menu"
 import { QuickCreateMenu } from "@/components/admin/nav/admin/menus/quick-create-menu"
 import { ReferAndEarnMenu } from "@/components/admin/nav/admin/menus/refer-and-earn-menu"
-import { UserMenu } from "@/components/admin/nav/admin/menus/user-menu"
 import { CustomTooltip } from "@/components/custom-tooltip"
 import { Icons } from "@/components/icons"
 import { Search } from "@/components/search"
+import { UserMenu } from "@/components/user-menu"
 
 export async function Header(): Promise<JSX.Element> {
   const session = await auth()

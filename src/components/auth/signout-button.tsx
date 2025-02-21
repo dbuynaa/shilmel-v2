@@ -6,7 +6,11 @@ import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 
-export function SignOutButton(): JSX.Element {
+export function SignOutButton({
+  title = "Sign out",
+}: {
+  title?: string
+}): JSX.Element {
   return (
     <Button
       aria-label="Sign Out"
@@ -21,7 +25,7 @@ export function SignOutButton(): JSX.Element {
       }
     >
       <Icons.logout className="mr-2 size-4" aria-hidden="true" />
-      Sign out
+      {title}
     </Button>
   )
 }

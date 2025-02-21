@@ -1,7 +1,15 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Session } from "next-auth"
-import { Bolt, BookOpen, Layers2, Pin, UserIcon, UserPen } from "lucide-react"
+import { getTranslations } from "@/i18n/server"
+import {
+  Bolt,
+  BookOpen,
+  Layers2,
+  NotebookTabs,
+  UserIcon,
+  UserPen,
+} from "lucide-react"
 
 import {
   DropdownMenu,
@@ -14,8 +22,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { SignOutButton } from "@/components/auth/signout-button"
 
-export function UserMenu({ session }: { session: Session }) {
+export async function UserMenu({ session }: { session: Session }) {
   const user = session.user
+  const t = await getTranslations("Global.userMenu")
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -75,7 +84,7 @@ export function UserMenu({ session }: { session: Session }) {
             </>
           )}
 
-          <DropdownMenuItem>
+          {/* <DropdownMenuItem>
             <BookOpen
               size={16}
               strokeWidth={2}
@@ -83,18 +92,20 @@ export function UserMenu({ session }: { session: Session }) {
               aria-hidden="true"
             />
             <span>Option 3</span>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Pin
-              size={16}
-              strokeWidth={2}
-              className="opacity-60"
-              aria-hidden="true"
-            />
-            <span>Option 4</span>
+          <DropdownMenuItem asChild>
+            <Link href="/orders">
+              <NotebookTabs
+                size={16}
+                strokeWidth={2}
+                className="opacity-60"
+                aria-hidden="true"
+              />
+              <span>{t("orders")}</span>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <UserPen
@@ -103,12 +114,12 @@ export function UserMenu({ session }: { session: Session }) {
               className="opacity-60"
               aria-hidden="true"
             />
-            <span>Profile</span>
+            <span>{t("account")}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <SignOutButton />
+        <DropdownMenuItem asChild>
+          <SignOutButton title={t("logout")} />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
