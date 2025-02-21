@@ -8,8 +8,12 @@ import { psGetProductVariantBySku } from "@/db/prepared/product.statements"
 
 import { clearCartCookie, setCartCookieJson } from "@/lib/cart"
 
+// Specify Node.js runtime
+export const runtime = "nodejs"
+
 const CART_DATA_COOKIE = "yns_cart_data"
 
+// Cache cart data for 1 minute
 async function getCartData(): Promise<Cart | null> {
   const cookieStore = await cookies()
   const cartData = cookieStore.get(CART_DATA_COOKIE)?.value
@@ -23,12 +27,16 @@ async function getCartData(): Promise<Cart | null> {
 
 export async function setCartData(cart: Cart) {
   const cookieStore = await cookies()
-  cookieStore.set(CART_DATA_COOKIE, JSON.stringify(cart))
+  cookieStore.set(CART_DATA_COOKIE, JSON.stringify(cart), {
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    httpOnly: true,
+  })
 }
 
 async function clearCartData() {
   const cookieStore = await cookies()
-  cookieStore.set(CART_DATA_COOKIE, "", { maxAge: 0 })
+  cookieStore.delete(CART_DATA_COOKIE)
 }
 
 export async function getCartFromCookiesAction() {
@@ -65,12 +73,7 @@ export async function clearCartCookieAction() {
 }
 
 export async function addToCartAction(formData: FormData) {
-  // const productId = formData.get("productId")
   const sku = formData.get("sku")
-  // if (!productId || typeof productId !== "string") {
-  //   throw new Error("Invalid product ID")
-  // }
-
   if (!sku || typeof sku !== "string") {
     throw new Error("Invalid product ID")
   }
