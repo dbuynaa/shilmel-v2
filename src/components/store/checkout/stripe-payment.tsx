@@ -8,6 +8,7 @@ import {
   type FormEventHandler,
 } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { clearCartCookieAction } from "@/actions/cart-actions"
 import { processCheckoutAction } from "@/actions/checkout-actions"
 import { useTranslations } from "@/i18n/client"
@@ -81,6 +82,7 @@ const PaymentForm = ({
 }) => {
   const t = useTranslations("/cart.page.stripePayment")
   const ft = useTranslations("/cart.page.formErrors")
+  const user = useSession().data?.user
   const addressSchema = getAddressSchema({
     cityRequired: ft("cityRequired"),
     countryRequired: ft("countryRequired"),

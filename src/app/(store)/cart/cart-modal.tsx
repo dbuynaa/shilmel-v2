@@ -29,7 +29,7 @@ export async function CartModalPage() {
     <CartAsideContainer>
       <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-neutral-700">
+          <h2 className="text-accent-foreground/80 text-lg font-semibold">
             {t("title")}
           </h2>
           <YnsLink
@@ -42,14 +42,14 @@ export async function CartModalPage() {
         </div>
 
         <div className="mt-8">
-          <ul role="list" className="-my-6 divide-y divide-neutral-200">
+          <ul role="list" className="divide-secondary -my-6 divide-y">
             {cart.items.map((item) => (
               <li
                 key={item.variant?.sku}
                 className="grid grid-cols-[4rem_1fr_max-content] grid-rows-[auto_auto] gap-x-4 gap-y-2 py-6"
               >
                 {item.variant?.image ? (
-                  <div className="col-span-1 row-span-2 bg-neutral-100">
+                  <div className="bg-accent col-span-1 row-span-2">
                     <Image
                       className="aspect-square rounded-md object-cover"
                       src={item.variant.image}
@@ -81,10 +81,10 @@ export async function CartModalPage() {
         </div>
       </div>
 
-      <div className="border-t border-neutral-200 px-4 py-6 sm:px-6">
+      <div className="border-accent border-t px-4 py-6 sm:px-6">
         <div
           id="cart-overlay-description"
-          className="flex justify-between text-base font-medium text-neutral-900"
+          className="text-foreground flex justify-between text-base font-medium"
         >
           <p>{t("total")}</p>
           <p>
@@ -95,7 +95,7 @@ export async function CartModalPage() {
             })}
           </p>
         </div>
-        <p className="mt-0.5 text-sm text-neutral-500">
+        <p className="text-muted-foreground mt-0.5 text-sm">
           {t("shippingAndTaxesInfo")}
         </p>
         <Button

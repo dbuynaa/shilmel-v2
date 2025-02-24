@@ -33,7 +33,7 @@ export const users = pgTable("User", {
     .primaryKey()
     .$defaultFn(() => createId())
     .unique(),
-  name: text("name"),
+  name: text("name").notNull(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   role: userRoleEnum("role").default("USER").notNull(),
@@ -381,3 +381,4 @@ export type CartItem = InferResultType<
 export type Order = typeof orders.$inferSelect
 export type OrderItem = typeof orderItems.$inferSelect
 export type Category = typeof categories.$inferSelect
+export type Address = typeof addresses.$inferSelect

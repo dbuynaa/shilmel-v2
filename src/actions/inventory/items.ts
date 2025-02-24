@@ -106,6 +106,7 @@ export async function addItem(
     return "error"
   }
 }
+
 export async function checkItem(input: {
   name: string
   id?: string
@@ -155,15 +156,86 @@ export async function getItems() {
 export async function getItemById(id: string) {
   noStore()
   try {
-    const item = await db
-      .select()
-      .from(products)
-      .where(eq(products.id, id))
-      .limit(1)
+    const item = await db.query.products.findFirst({
+      where: eq(products.id, id),
+      with: {
+        category: true,
+        variants: {
+          with: {
+            images: true,
+          },
+        },
+      },
+    })
 
-    return item[0] ?? null
+    return item ?? null
   } catch (error) {
     console.error("Error fetching item:", error)
     return null
+  }
+}
+
+export async function updateItem(
+  id: string,
+  input: z.infer<typeof itemSchema>
+): Promise<"success" | "error"> {
+  try {
+    // Update the base product
+    await db
+      .update(products)
+      .set({
+        name: input.name,
+        description: input.description,
+        price: input.price,
+        slug: input.name.toLowerCase().replace(/\s+/g, "-"),
+        categoryId: input.category,
+      })
+      .where(eq(products.id, id))
+
+    // Get existing variants
+    const existingVariants = await db
+      .select()
+      .from(productVariants)
+      .where(eq(productVariants.productId, id))
+
+    // Delete existing variants and their images
+    for (const variant of existingVariants) {
+      await db.delete(images).where(eq(images.variantId, variant.id))
+    }
+    await db.delete(productVariants).where(eq(productVariants.productId, id))
+
+    // Insert new variants
+    for (const variant of input.variants) {
+      // Insert variant
+      const newVariant = await db
+        .insert(productVariants)
+        .values({
+          productId: id,
+          size: variant.size,
+          color: variant.color,
+          sku: `${input.name.substring(0, 3).toUpperCase()}-${variant.color?.substring(0, 3).toUpperCase()}-${variant.size?.substring(0, 2).toUpperCase()}-${Math.floor(
+            Math.random() * 1000
+          )
+            .toString()
+            .padStart(3, "0")}`,
+          material: variant.material,
+          stock: variant.stock,
+        })
+        .returning()
+
+      // Insert images
+      for (const image of variant.images ?? []) {
+        await db.insert(images).values({
+          url: (image as { url?: string }).url ?? "",
+          variantId: newVariant[0].id,
+        })
+      }
+    }
+
+    revalidatePath("/inventory/items")
+    return "success"
+  } catch (error) {
+    console.error("Error updating product:", error)
+    return "error"
   }
 }

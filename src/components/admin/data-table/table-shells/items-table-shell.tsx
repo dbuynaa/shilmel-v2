@@ -127,7 +127,7 @@ export function ItemsTableShell({
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link
-                  href={`/admin/inventory/Items/${row.original.id}`}
+                  href={`/admin/inventory/items/${row.original.id}`}
                   className="text-sm"
                 >
                   Edit
@@ -146,7 +146,7 @@ export function ItemsTableShell({
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                       This action cannot be undone. This will permanently delete
-                      your category from the database.
+                      your item from the database.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -169,7 +169,7 @@ export function ItemsTableShell({
                                 break
                               default:
                                 toast({
-                                  title: "Error deleting category",
+                                  title: "Error deleting item",
                                   description: "Please try again",
                                   variant: "destructive",
                                 })

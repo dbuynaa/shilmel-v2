@@ -166,12 +166,6 @@ importers:
       drizzle-orm:
         specifier: ^0.39.3
         version: 0.39.3(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(pg@8.13.3)
-      drizzle-seed:
-        specifier: ^0.3.1
-        version: 0.3.1(drizzle-orm@0.39.3(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(pg@8.13.3))
-      drizzle-zod:
-        specifier: ^0.7.0
-        version: 0.7.0(drizzle-orm@0.39.3(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(pg@8.13.3))(zod@3.24.2)
       i18next:
         specifier: ^24.2.2
         version: 24.2.2(typescript@5.7.3)
@@ -208,6 +202,9 @@ importers:
       react-dropzone:
         specifier: ^14.3.5
         version: 14.3.5(react@19.0.0)
+      react-error-boundary:
+        specifier: ^5.0.0
+        version: 5.0.0(react@19.0.0)
       react-hook-form:
         specifier: ^7.54.2
         version: 7.54.2(react@19.0.0)
@@ -2185,20 +2182,6 @@ packages:
       sqlite3:
         optional: true
 
-  drizzle-seed@0.3.1:
-    resolution: {integrity: sha512-F/0lgvfOAsqlYoHM/QAGut4xXIOXoE5VoAdv2FIl7DpGYVXlAzKuJO+IphkKUFK3Dz+rFlOsQLnMNrvoQ0cx7g==}
-    peerDependencies:
-      drizzle-orm: '>=0.36.4'
-    peerDependenciesMeta:
-      drizzle-orm:
-        optional: true
-
-  drizzle-zod@0.7.0:
-    resolution: {integrity: sha512-xgCRYYVEzRkeXTS33GSMgoowe3vKsMNBjSI+cwG1oLQVEhAWWbqtb/AAMlm7tkmV4fG/uJjEmWzdzlEmTgWOoQ==}
-    peerDependencies:
-      drizzle-orm: '>=0.36.0'
-      zod: '>=3.0.0'
-
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
@@ -3283,6 +3266,11 @@ packages:
     engines: {node: '>= 10.13'}
     peerDependencies:
       react: '>= 16.8 || 18.0.0'
+
+  react-error-boundary@5.0.0:
+    resolution: {integrity: sha512-tnjAxG+IkpLephNcePNA7v6F/QpWLH8He65+DmedchDwg162JZqx4NmbXj0mlAYVVEd81OW7aFhmbsScYfiAFQ==}
+    peerDependencies:
+      react: '>=16.13.1'
 
   react-hook-form@7.54.2:
     resolution: {integrity: sha512-eHpAUgUjWbZocoQYUHposymRb4ZP6d0uwUnooL2uOybA9/3tPUvoAKqEWK1WaSiTxxOfTpffNZP7QwlnM3/gEg==}
@@ -5471,17 +5459,6 @@ snapshots:
       '@types/pg': 8.11.6
       pg: 8.13.3
 
-  drizzle-seed@0.3.1(drizzle-orm@0.39.3(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(pg@8.13.3)):
-    dependencies:
-      pure-rand: 6.1.0
-    optionalDependencies:
-      drizzle-orm: 0.39.3(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(pg@8.13.3)
-
-  drizzle-zod@0.7.0(drizzle-orm@0.39.3(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(pg@8.13.3))(zod@3.24.2):
-    dependencies:
-      drizzle-orm: 0.39.3(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(pg@8.13.3)
-      zod: 3.24.2
-
   dunder-proto@1.0.1:
     dependencies:
       call-bind-apply-helpers: 1.0.2
@@ -6651,6 +6628,11 @@ snapshots:
       attr-accept: 2.2.5
       file-selector: 2.1.2
       prop-types: 15.8.1
+      react: 19.0.0
+
+  react-error-boundary@5.0.0(react@19.0.0):
+    dependencies:
+      '@babel/runtime': 7.26.9
       react: 19.0.0
 
   react-hook-form@7.54.2(react@19.0.0):
