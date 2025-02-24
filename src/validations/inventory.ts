@@ -31,7 +31,7 @@ export type GetCategoryByIdFormInput = z.infer<typeof getCategoryByIdSchema>
 
 // Schema for product variant
 const productVariantSchema = z.object({
-  // sku: z.string().min(1, "SKU is required"),
+  id: z.string().optional(),
   size: z.string().optional(),
   color: z.string().optional(),
   material: z.string().optional(),

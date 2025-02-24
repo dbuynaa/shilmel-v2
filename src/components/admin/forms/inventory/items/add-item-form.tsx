@@ -9,6 +9,7 @@ import type { getAllCategories } from "@/actions/inventory/categories"
 import {
   addItem,
   checkItem,
+  deleteImage,
   getItemById,
   updateItem,
 } from "@/actions/inventory/items"
@@ -53,9 +54,9 @@ const { useUploadThing } = generateReactHelpers<UploadFilesRouter>()
 
 export function AddItemForm({
   categories,
-  itemId,
+  item,
 }: {
-  itemId?: string
+  item?: Awaited<ReturnType<typeof getItemById>>
   categories: Awaited<ReturnType<typeof getAllCategories>>
 }): JSX.Element {
   const router = useRouter()
@@ -64,7 +65,6 @@ export function AddItemForm({
   const [files, setFiles] = React.useState<Record<number, FileWithPreview[]>>(
     {}
   )
-  const [isLoading, setIsLoading] = React.useState(true)
 
   const { isUploading, startUpload } = useUploadThing("productImage", {
     onClientUploadComplete: () => {
@@ -91,16 +91,23 @@ export function AddItemForm({
   const form = useForm<AddItemFormInput>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
-      name: "",
-      category: "",
-      description: "",
-      price: "",
-      variants: [
+      name: item?.name ?? "",
+      description: item?.description ?? "",
+      price: item?.price ?? "",
+      category: item?.category.id ?? "",
+      variants: item?.variants?.map((variant) => ({
+        id: variant.id,
+        size: variant.size ?? undefined, // Changed null to undefined
+        color: variant.color ?? undefined, // Changed null to undefined
+        material: variant.material ?? undefined, // Changed null to undefined
+        stock: variant.stock,
+        images: variant.images ?? [], // Ensure images is an array
+      })) ?? [
         {
           size: "",
           color: "",
           material: "",
-          stock: 1,
+          stock: 0,
           images: [],
         },
       ],
@@ -115,60 +122,22 @@ export function AddItemForm({
   // Load existing item data if we're editing
   React.useEffect(() => {
     async function loadItem() {
-      if (!itemId) {
-        setIsLoading(false)
-        return
-      }
+      if (!item) return
 
       try {
-        const item = await getItemById(itemId)
-        if (!item) {
-          toast({
-            title: "Item not found",
-            description: "The item you're trying to edit doesn't exist",
-            variant: "destructive",
-          })
-          router.push("/admin/inventory/items")
-          return
-        }
-
-        // Reset form with item data
-        form.reset({
-          name: item.name,
-          category: item.categoryId,
-          description: item.description ?? "",
-          price: item.price.toString(),
-          variants:
-            item.variants?.map((variant) => ({
-              size: variant.size ?? "",
-              color: variant.color ?? "",
-              material: variant.material ?? "",
-              stock: variant.stock,
-              images:
-                variant.images?.map((image) => ({
-                  id: image.id,
-                  name: image.id,
-                  url: image.url,
-                })) ?? [],
-            })) ?? [],
-        })
-
         // Set files state for previews
         const newFiles: Record<number, FileWithPreview[]> = {}
         item.variants?.forEach((variant, index) => {
           if (variant.images?.length) {
-            newFiles[index] = variant.images.map((image) => {
-              // Create an empty blob to satisfy File requirements
-              const blob = new Blob([], { type: "image/*" })
-              const file = new File([blob], image.id, {
-                type: "image/*",
-                lastModified: Date.now(),
-              })
-              return Object.assign(file, {
-                preview: image.url,
-                path: image.id,
-              }) as FileWithPreview
-            })
+            newFiles[index] = variant.images.map(({ id, url }) =>
+              Object.assign(
+                new File([new Blob([], { type: "image/*" })], id, {
+                  type: "image/*",
+                  lastModified: Date.now(),
+                }),
+                { preview: url, path: id }
+              )
+            )
           }
         })
         setFiles(newFiles)
@@ -179,23 +148,21 @@ export function AddItemForm({
           description: "There was an error loading the item",
           variant: "destructive",
         })
-      } finally {
-        setIsLoading(false)
       }
     }
 
     void loadItem()
-  }, [itemId, form, router, toast])
+  }, [item, form, router, toast])
 
   function onSubmit(formData: AddItemFormInputs) {
     startTransition(async () => {
       try {
         const exists = await checkItem({
           name: formData.name,
-          ...(itemId ? { id: itemId } : {}),
+          ...(item?.id ? { id: item.id } : {}),
         })
 
-        if (exists && !itemId) {
+        if (exists && !item?.id) {
           toast({
             title: "This item already exists",
             description: "Please use a different name",
@@ -205,9 +172,15 @@ export function AddItemForm({
         }
 
         const variants = await Promise.all(
-          formData.variants.map(async (variant) => {
-            if (!isArrayOfFiles(variant.images)) return variant
-            const res = await startUpload(variant.images)
+          formData.variants.map(async (variant, index) => {
+            const existingImages = item?.variants[index]?.images ?? []
+
+            console.log("existingImages", existingImages)
+            const newImages = files[index].filter((file) =>
+              existingImages.every((image) => image.id !== file.name)
+            )
+            console.log("new", newImages)
+            const res = await startUpload(newImages)
             const formattedImages =
               res?.map((image) => ({
                 id: image.key,
@@ -217,13 +190,13 @@ export function AddItemForm({
 
             return {
               ...variant,
-              images: formattedImages,
+              images: [...existingImages, ...formattedImages],
             }
           })
         )
 
-        const result = itemId
-          ? await updateItem(itemId, {
+        const result = item?.id
+          ? await updateItem(item.id, {
               ...formData,
               variants,
             })
@@ -234,7 +207,7 @@ export function AddItemForm({
 
         if (result === "success") {
           toast({
-            title: `Product ${itemId ? "updated" : "added"} successfully`,
+            title: `Product ${item ? "updated" : "added"} successfully`,
           })
 
           form.reset()
@@ -252,14 +225,6 @@ export function AddItemForm({
         })
       }
     })
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Icons.spinner className="size-6 animate-spin" />
-      </div>
-    )
   }
 
   return (
@@ -509,7 +474,7 @@ export function AddItemForm({
         <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isPending}
-            aria-label={itemId ? "Update Item" : "Add Item"}
+            aria-label={item ? "Update Item" : "Add Item"}
             className="w-fit cursor-pointer"
             type="submit"
           >
@@ -519,14 +484,12 @@ export function AddItemForm({
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span>{itemId ? "Updating..." : "Adding..."}</span>
+                <span>{item ? "Updating..." : "Adding..."}</span>
               </>
             ) : (
-              <span>{itemId ? "Update Item" : "Add Item"}</span>
+              <span>{item ? "Update Item" : "Add Item"}</span>
             )}
-            <span className="sr-only">
-              {itemId ? "Update Item" : "Add Item"}
-            </span>
+            <span className="sr-only">{item ? "Update Item" : "Add Item"}</span>
           </Button>
 
           <Link

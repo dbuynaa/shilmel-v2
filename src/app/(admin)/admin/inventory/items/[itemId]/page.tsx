@@ -1,6 +1,7 @@
 import type { JSX } from "react"
 import { Metadata } from "next"
 import { getAllCategories } from "@/actions/inventory/categories"
+import { getItemById } from "@/actions/inventory/items"
 import { env } from "@/env"
 
 import {
@@ -31,6 +32,7 @@ export default async function InventoryItemsUpdateItemPage(
   const params = await props.params
 
   const categories = await getAllCategories()
+  const product = await getItemById(params.itemId)
   return (
     <div className="relative">
       <SubSubHeader />
@@ -44,7 +46,7 @@ export default async function InventoryItemsUpdateItemPage(
             </CardDescription>
           </CardHeader>
           <CardContent className="px-5 pt-2">
-            <AddItemForm itemId={params.itemId} categories={categories} />
+            <AddItemForm item={product} categories={categories} />
           </CardContent>
         </Card>
       </div>

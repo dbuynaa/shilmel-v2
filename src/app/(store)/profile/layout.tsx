@@ -28,8 +28,7 @@ export type NavItem = {
   icon: React.ComponentType<{ className?: string }>
   section?: "main" | "help"
 }
-
-export const navigationItems: NavItem[] = [
+const navigationItems: NavItem[] = [
   {
     title: "Account overview",
     href: "/profile",

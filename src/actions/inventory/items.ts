@@ -239,3 +239,27 @@ export async function updateItem(
     return "error"
   }
 }
+
+export async function getImagesByVariantId(slug: string) {
+  noStore()
+  try {
+    const variantImages = await db
+      .select()
+      .from(images)
+      .where(eq(images.variantId, slug))
+    return variantImages
+  } catch (error) {
+    console.error("Error fetching images:", error)
+    return []
+  }
+}
+
+export async function deleteImage(imageId: string) {
+  try {
+    await db.delete(images).where(eq(images.id, imageId))
+    return "success"
+  } catch (error) {
+    console.error("Error deleting image:", error)
+    return "error"
+  }
+}
