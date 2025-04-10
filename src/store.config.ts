@@ -2,6 +2,8 @@ import AccessoriesImage from "@/images/accessories.jpg";
 import ApparelImage from "@/images/apparel.jpg";
 
 export const config = {
+	storeName: "Shilmel Store",
+	storeDescription: "Your Store Description",
 	categories: [
 		{ name: "Apparel", slug: "apparel", image: ApparelImage },
 		{ name: "Accessories", slug: "accessories", image: AccessoriesImage },
