@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useTranslations } from "@/i18n/client"
+import { useTranslations } from "@/i18n/client";
+import { useEffect } from "react";
 
-import { Button } from "@/components/ui/button"
-import { YnsLink } from "@/components/store/yns-link"
+import { YnsLink } from "@/components/store/yns-link";
+import { Button } from "@/components/ui/button";
 
 export default function Error({
-  error,
+	error,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+	error: Error & { digest?: string };
+	reset: () => void;
 }) {
-  useEffect(() => {
-    console.error(error)
-  }, [error])
+	useEffect(() => {
+		console.error(error);
+	}, [error]);
 
-  const t = useTranslations("Global.error")
+	const t = useTranslations("Global.error");
 
-  return (
-    <main className="mx-auto max-w-xl flex-auto text-center">
-      <h1 className="mb-8 mt-8 text-4xl font-black">{t("title")}</h1>
-      <Button variant="link" asChild>
-        <YnsLink href="/">{t("goBackLink")}</YnsLink>
-      </Button>
-    </main>
-  )
+	return (
+		<main className="mx-auto max-w-xl flex-auto text-center">
+			<h1 className="mb-8 mt-8 text-4xl font-black">{t("title")}</h1>
+			<Button variant="link" asChild>
+				<YnsLink href="/">{t("goBackLink")}</YnsLink>
+			</Button>
+		</main>
+	);
 }

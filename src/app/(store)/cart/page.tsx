@@ -1,21 +1,21 @@
-import type { Metadata } from "next/types"
-import { getCartFromCookiesAction } from "@/actions/cart-actions"
-import { getTranslations } from "@/i18n/server"
+import { getCartFromCookiesAction } from "@/actions/cart-actions";
+import { getTranslations } from "@/i18n/server";
+import type { Metadata } from "next/types";
 
-import { CheckoutCard } from "@/components/store/checkout/checkout-card"
+import { CheckoutCard } from "@/components/store/checkout/checkout-card";
 
 export const generateMetadata = async (): Promise<Metadata> => {
-  const t = await getTranslations("/cart.metadata")
-  return {
-    title: t("title"),
-  }
-}
+	const t = await getTranslations("/cart.metadata");
+	return {
+		title: t("title"),
+	};
+};
 
 export default async function CartPage() {
-  const cart = await getCartFromCookiesAction()
-  if (!cart) {
-    return null
-  }
+	const cart = await getCartFromCookiesAction();
+	if (!cart) {
+		return null;
+	}
 
-  return <CheckoutCard cart={cart} />
+	return <CheckoutCard cart={cart} />;
 }

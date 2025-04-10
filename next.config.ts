@@ -1,4 +1,4 @@
-import type { NextConfig } from "next/types"
+import type { NextConfig } from "next/types";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   experimental: {
     scrollRestoration: true,
     inlineCss: true,
+    ppr: true,
   },
   images: {
     remotePatterns: [
@@ -30,6 +31,24 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-}
+  webpack: (config) => {
+    return {
+      ...config,
+      resolve: {
+        ...config.resolve,
+        extensionAlias: {
+          ".js": [".js", ".ts"],
+          ".jsx": [".jsx", ".tsx"],
+        },
+      },
+    };
+  },
+  rewrites: async () => [
+    {
+      source: "/stats/:match*",
+      destination: "https://eu.umami.is/:match*",
+    },
+  ],
+};
 
-export default nextConfig
+export default nextConfig;

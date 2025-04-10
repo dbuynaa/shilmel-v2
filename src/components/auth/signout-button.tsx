@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import type { JSX } from "react"
-import { signOut } from "next-auth/react"
+import { signOut } from "next-auth/react";
+import type { JSX } from "react";
 
-import { Button } from "@/components/ui/button"
-import { Icons } from "@/components/icons"
+import { Icons } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 
 export function SignOutButton({
-  title = "Sign out",
+	title = "Sign out",
 }: {
-  title?: string
+	title?: string;
 }): JSX.Element {
-  return (
-    <Button
-      aria-label="Sign Out"
-      variant="ghost"
-      size="sm"
-      className="w-full justify-start text-sm"
-      onClick={() =>
-        void signOut({
-          callbackUrl: "/",
-          redirect: true,
-        })
-      }
-    >
-      <Icons.logout className="mr-2 size-4" aria-hidden="true" />
-      {title}
-    </Button>
-  )
+	return (
+		<Button
+			aria-label="Sign Out"
+			variant="ghost"
+			size="sm"
+			className="w-full justify-start text-sm"
+			onClick={() =>
+				void signOut({
+					callbackUrl: "/",
+					redirect: true,
+				})
+			}
+		>
+			<Icons.logout className="mr-2 size-4" aria-hidden="true" />
+			{title}
+		</Button>
+	);
 }

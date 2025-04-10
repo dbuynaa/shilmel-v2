@@ -1,24 +1,21 @@
-import { db } from "@/db"
-import { categories,products } from "@/db/schema"
-import { eq, sql } from "drizzle-orm"
+import { db } from "@/db";
+import { categories, products } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 // CATEGORIES
 export const psGetCategoryByName = db
-  .select()
-  .from(categories)
-  .where(eq(categories.name, sql.placeholder("name")))
-  .prepare("psGetCategoryNyName")
+	.select()
+	.from(categories)
+	.where(eq(categories.name, sql.placeholder("name")))
+	.prepare("psGetCategoryNyName");
 
 export const psGetCategoryById = db
-  .select()
-  .from(categories)
-  .where(eq(categories.id, sql.placeholder("id")))
-  .prepare("psGetCategoryById")
+	.select()
+	.from(categories)
+	.where(eq(categories.id, sql.placeholder("id")))
+	.prepare("psGetCategoryById");
 
-export const psGetAllCategories = db
-  .select()
-  .from(categories)
-  .prepare("psGetAllCategories")
+export const psGetAllCategories = db.select().from(categories).prepare("psGetAllCategories");
 
 // BRANDS
 // export const psGetBrandByName = db
@@ -52,15 +49,15 @@ export const psGetAllCategories = db
 
 // ITEMS
 export const psGetItemByName = db
-  .select()
-  .from(products)
-  .where(eq(products.name, sql.placeholder("name")))
-  .prepare("psGetItemByName")
+	.select()
+	.from(products)
+	.where(eq(products.name, sql.placeholder("name")))
+	.prepare("psGetItemByName");
 
 export const psGetItemById = db
-  .select()
-  .from(products)
-  .where(eq(products.id, sql.placeholder("id")))
-  .prepare("psGetItemById")
+	.select()
+	.from(products)
+	.where(eq(products.id, sql.placeholder("id")))
+	.prepare("psGetItemById");
 
-export const psGetAllItems = db.select().from(products).prepare("psGetAllItems")
+export const psGetAllItems = db.select().from(products).prepare("psGetAllItems");
