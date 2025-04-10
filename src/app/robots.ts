@@ -1,4 +1,4 @@
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {

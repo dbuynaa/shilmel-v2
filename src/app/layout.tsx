@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 import { auth } from "@/auth";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import { IntlClientProvider } from "@/i18n/client";
 import { getLocale, getMessages } from "@/i18n/server";
 import type { Metadata, Viewport } from "next";

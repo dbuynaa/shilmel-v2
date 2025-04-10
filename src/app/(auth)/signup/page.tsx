@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";

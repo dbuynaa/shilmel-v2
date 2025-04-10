@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import type { MetadataRoute } from "next";
 
 type Item = MetadataRoute.Sitemap[number];

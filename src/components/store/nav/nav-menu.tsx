@@ -3,10 +3,11 @@ import StoreConfig from "@/store.config";
 import Link from "next/link";
 
 import { NavMobileMenu } from "@/components/store/nav/nav-mobile-menu.client";
+import { db } from "@/db";
 import { deslugify, slugify } from "@/lib/utils";
 
 export const NavMenu = async () => {
-	const categories = await psGetAllCategories.execute();
+	const categories = await db.query.categories.findMany();
 	const links = [
 		{
 			label: "Home",

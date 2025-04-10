@@ -1,6 +1,6 @@
 import { markEmailAsVerified } from "@/actions/emails";
 import { getUserByEmailVerificationToken } from "@/actions/users";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";

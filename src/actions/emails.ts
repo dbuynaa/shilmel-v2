@@ -6,7 +6,7 @@ import { getUserByEmail } from "@/actions/users";
 import { db } from "@/db";
 import { psMarkEmailAsVerified, psUpdateUserEmailVerificationToken } from "@/db/prepared/auth.statements";
 import { users } from "@/db/schema";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import { eq } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
 

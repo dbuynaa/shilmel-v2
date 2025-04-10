@@ -1,4 +1,4 @@
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import type { JSX } from "react";
 
 export function TailwindIndicator(): JSX.Element | null {

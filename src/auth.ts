@@ -7,7 +7,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import NextAuth from "next-auth";
 
 import authConfig from "./config/authConfig";
-import { env } from "./env";
+import { env } from "./env.mjs";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
 	debug: env.NODE_ENV === "development",

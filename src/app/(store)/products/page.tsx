@@ -1,5 +1,5 @@
 import { psGetAllProducts } from "@/db/prepared/product.statements";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import { getTranslations } from "@/i18n/server";
 import type { Metadata } from "next/types";
 

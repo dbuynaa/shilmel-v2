@@ -1,6 +1,6 @@
 import { getAllCategories } from "@/actions/inventory/categories";
 import { getItemById } from "@/actions/inventory/items";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import type { Metadata } from "next";
 import type { JSX } from "react";
 

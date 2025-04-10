@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db/index";
 import { type Category, categories } from "@/db/schema";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import type { SearchParams } from "@/types";
 import { categoriesSearchParamsSchema } from "@/validations/params";
 import { asc, desc, like, sql } from "drizzle-orm";

@@ -1,5 +1,5 @@
 import { psGetAllProducts } from "@/db/prepared/product.statements";
-import { env } from "@/env";
+import { env } from "@/env.mjs";
 import { getTranslations } from "@/i18n/server";
 import StoreConfig from "@/store.config";
 import type { Metadata } from "next/types";
@@ -7,16 +7,26 @@ import type { Metadata } from "next/types";
 import { CategoryBox } from "@/components/store/category-box";
 import { ProductList } from "@/components/store/products/product-list";
 import { YnsLink } from "@/components/store/yns-link";
+import { db } from "@/db";
 
 export const metadata = {
 	alternates: { canonical: env.NEXT_PUBLIC_APP_URL },
 } satisfies Metadata;
 
 export default async function Home() {
-	const products = await psGetAllProducts.execute({
-		offset: 0,
-		limit: 10,
-	});
+	const products =
+		(await db.query.products.findMany({
+			offset: 0,
+			limit: 10,
+			with: {
+				category: true,
+				variants: {
+					with: {
+						images: true,
+					},
+				},
+			},
+		})) || [];
 	const t = await getTranslations("/");
 	const config = StoreConfig;
 	return (
