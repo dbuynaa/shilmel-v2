@@ -19,46 +19,33 @@ interface SidebarNavProps {
 
 export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): JSX.Element {
 	const pathname = usePathname();
-	const router = useRouter();
-	const [openCollapsible, setOpenCollapsible] = React.useState<string | null>();
-
-	const handleCollapsibleToggle = (href: string): void => {
-		router.push(href);
-		setOpenCollapsible((prev) => (prev === href ? null : href));
-	};
-
 	return (
 		<nav className="max-h-[79vh] space-y-2 overflow-y-auto px-2 py-5">
 			{sidebarItems.map((item) => {
 				const Icon = Icons[item.icon as keyof typeof Icons];
 
-				const isCollapsibleOpen = pathname === item.href || openCollapsible === item.href;
+				const isCollapsibleOpen = !collapsed && (pathname.startsWith(item.href) || pathname === item.href);
 
 				return (
 					<div key={item.href}>
 						{item.subitems && item.subitems.length > 0 && item.title !== "Home" ? (
-							<Collapsible
-								open={isCollapsibleOpen}
-								onOpenChange={(open) => {
-									if (open) {
-										handleCollapsibleToggle(item.href);
-									}
-								}}
-							>
+							<Collapsible open={isCollapsibleOpen}>
 								<CollapsibleTrigger
 									className={cn(
-										pathname === item.href
+										pathname === item.href || (pathname.startsWith(item.href) && collapsed)
 											? buttonVariants({ variant: "secondary" })
 											: buttonVariants({ variant: "ghost" }),
 										"flex w-full items-center text-sm",
 										collapsed ? "justify-center " : "justify-between",
 									)}
-									onClick={() => setCollapsedAction(false)}
+									onClick={() => {
+										setCollapsedAction(false);
+									}}
 								>
-									<div className="flex items-center gap-2">
+									<Link href={item.href} className="flex w-full items-center gap-2">
 										<Icon className="size-4" />
 										<span className={cn("text-sidebar-foreground", collapsed && "hidden")}>{item.title}</span>
-									</div>
+									</Link>
 								</CollapsibleTrigger>
 
 								<CollapsibleContent className="w-full space-y-1 py-1 pl-6">
@@ -98,7 +85,6 @@ export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): 
 											: buttonVariants({ variant: "ghost" }),
 										"group flex w-full justify-start gap-2 text-sm",
 									)}
-									onClick={() => setOpenCollapsible(item.href)}
 								>
 									<Icon className="size-4" />
 									<span
