@@ -2,14 +2,10 @@ import { auth } from "@/auth";
 import Link from "next/link";
 import type { JSX } from "react";
 
-import { AppsMenu } from "@/components/admin/nav/admin/menus/apps-menu";
 import { NotificationsMenu } from "@/components/admin/nav/admin/menus/notifications-menu";
 import { OrganizationMenu } from "@/components/admin/nav/admin/menus/organization-menu";
-import { QuickCreateMenu } from "@/components/admin/nav/admin/menus/quick-create-menu";
-import { ReferAndEarnMenu } from "@/components/admin/nav/admin/menus/refer-and-earn-menu";
 import { CustomTooltip } from "@/components/custom-tooltip";
 import { Icons } from "@/components/icons";
-import { Search } from "@/components/search";
 import { buttonVariants } from "@/components/ui/button";
 import { UserMenu } from "@/components/user-menu";
 import { cn } from "@/lib/utils";
@@ -18,25 +14,11 @@ export async function Header(): Promise<JSX.Element> {
 	const session = await auth();
 
 	return (
-		<header className="bg-tertiary sticky top-0 z-50 flex h-20 items-center justify-between gap-8 border-b px-5">
-			<div className="flex h-full items-center gap-2">
-				<CustomTooltip text="Recent Activity">
-					<Link
-						aria-label="Recent Activity"
-						href="/admin/home/updates"
-						className={cn(buttonVariants({ variant: "outline" }), "p-3")}
-					>
-						<Icons.recentActivities aria-hidden="true" className="size-4" />
-					</Link>
-				</CustomTooltip>
-
-				<Search />
-			</div>
+		<header className="bg-tertiary bg-secondary sticky top-0 z-50 flex h-14 items-center justify-between gap-8 border-b px-5">
+			<div className="flex h-full items-center gap-2"></div>
 
 			<div className="flex items-center justify-center gap-2">
 				<div className="flex items-center justify-center">
-					<QuickCreateMenu />
-					<ReferAndEarnMenu />
 					<NotificationsMenu />
 
 					<CustomTooltip text="Settings">
@@ -52,10 +34,6 @@ export async function Header(): Promise<JSX.Element> {
 
 				<OrganizationMenu />
 				<UserMenu session={session!} />
-
-				<div className="flex items-center justify-center">
-					<AppsMenu />
-				</div>
 			</div>
 		</header>
 	);

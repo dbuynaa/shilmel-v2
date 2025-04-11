@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import type { JSX } from "react";
 
@@ -14,68 +14,52 @@ import { cn } from "@/lib/utils";
 
 interface SidebarNavProps {
 	collapsed: boolean;
-	setCollapsed: (collapsed: boolean) => void;
+	setCollapsedAction: (collapsed: boolean) => void;
 }
 
-export function SidebarNav({ collapsed, setCollapsed }: SidebarNavProps): JSX.Element {
+export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): JSX.Element {
 	const pathname = usePathname();
-
-	const [openCollapsible, setOpenCollapsible] = React.useState<string | null>(null);
+	const router = useRouter();
+	const [openCollapsible, setOpenCollapsible] = React.useState<string | null>();
 
 	const handleCollapsibleToggle = (href: string): void => {
+		router.push(href);
 		setOpenCollapsible((prev) => (prev === href ? null : href));
 	};
-
-	React.useEffect((): void => {
-		const collapsibleItem = sidebarItems.find((item) =>
-			item.subitems?.some((subitem) => subitem.href === pathname),
-		);
-
-		if (collapsibleItem) {
-			setOpenCollapsible(collapsibleItem.href);
-		} else {
-			setOpenCollapsible(null);
-		}
-
-		return;
-	}, [pathname]);
 
 	return (
 		<nav className="max-h-[79vh] space-y-2 overflow-y-auto px-2 py-5">
 			{sidebarItems.map((item) => {
 				const Icon = Icons[item.icon as keyof typeof Icons];
 
-				const isCollapsibleOpen = openCollapsible === item.href;
+				const isCollapsibleOpen = pathname === item.href || openCollapsible === item.href;
 
 				return (
 					<div key={item.href}>
 						{item.subitems && item.subitems.length > 0 && item.title !== "Home" ? (
-							<Collapsible open={isCollapsibleOpen} onOpenChange={() => handleCollapsibleToggle(item.href)}>
-								<CustomTooltip text={item.title}>
-									<CollapsibleTrigger
-										className={cn(
-											buttonVariants({ variant: "ghost" }),
-											"flex w-full items-center text-base",
-											collapsed ? "justify-center" : "justify-between",
-										)}
-										onClick={() => setCollapsed(false)}
-									>
-										<div className="flex items-center gap-2">
-											<Icon className="size-4" />
-											<span className={cn("text-muted-foreground", collapsed && "hidden")}>{item.title}</span>
-										</div>
-
-										{isCollapsibleOpen ? (
-											<Icons.chevronUp
-												className={cn("text-muted-foreground size-4", collapsed && "hidden")}
-											/>
-										) : (
-											<Icons.chevronDown
-												className={cn("text-muted-foreground size-4", collapsed && "hidden")}
-											/>
-										)}
-									</CollapsibleTrigger>
-								</CustomTooltip>
+							<Collapsible
+								open={isCollapsibleOpen}
+								onOpenChange={(open) => {
+									if (open) {
+										handleCollapsibleToggle(item.href);
+									}
+								}}
+							>
+								<CollapsibleTrigger
+									className={cn(
+										pathname === item.href
+											? buttonVariants({ variant: "secondary" })
+											: buttonVariants({ variant: "ghost" }),
+										"flex w-full items-center text-sm",
+										collapsed ? "justify-center " : "justify-between",
+									)}
+									onClick={() => setCollapsedAction(false)}
+								>
+									<div className="flex items-center gap-2">
+										<Icon className="size-4" />
+										<span className={cn("text-sidebar-foreground", collapsed && "hidden")}>{item.title}</span>
+									</div>
+								</CollapsibleTrigger>
 
 								<CollapsibleContent className="w-full space-y-1 py-1 pl-6">
 									{item.subitems.map((subitem) => (
@@ -83,7 +67,7 @@ export function SidebarNav({ collapsed, setCollapsed }: SidebarNavProps): JSX.El
 											variant={pathname === subitem.href ? "secondary" : "ghost"}
 											key={subitem.href}
 											className={cn(
-												"group flex w-full items-center justify-between gap-2 text-base",
+												"group flex w-full items-center justify-between gap-2 text-sm",
 												pathname === subitem.href ? "text-foreground" : "text-muted-foreground",
 											)}
 										>
@@ -94,7 +78,7 @@ export function SidebarNav({ collapsed, setCollapsed }: SidebarNavProps): JSX.El
 											{subitem.hrefPlus && (
 												<Link
 													href={subitem.hrefPlus}
-													className="text-muted-foreground hover:text-foreground hidden group-hover:flex"
+													className="text-sidebar-border hover:text-foreground hidden group-hover:flex"
 												>
 													<Icons.plusCircle className="size-4" />
 												</Link>
@@ -112,8 +96,9 @@ export function SidebarNav({ collapsed, setCollapsed }: SidebarNavProps): JSX.El
 											pathname === item.href
 											? buttonVariants({ variant: "secondary" })
 											: buttonVariants({ variant: "ghost" }),
-										"group flex w-full justify-start gap-2 text-base",
+										"group flex w-full justify-start gap-2 text-sm",
 									)}
+									onClick={() => setOpenCollapsible(item.href)}
 								>
 									<Icon className="size-4" />
 									<span
@@ -121,7 +106,7 @@ export function SidebarNav({ collapsed, setCollapsed }: SidebarNavProps): JSX.El
 											(pathname.startsWith("/admin/home") && item.href.startsWith("/admin/home")) ||
 												pathname === item.href
 												? "text-foreground"
-												: "text-muted-foreground",
+												: "text-sidebar-foreground",
 											"group-hover:text-foreground",
 											collapsed && "hidden",
 										)}

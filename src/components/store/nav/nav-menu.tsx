@@ -1,19 +1,18 @@
-import { psGetAllCategories } from "@/db/prepared/inventory.statements";
-import StoreConfig from "@/store.config";
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
+import type { getAllCategories } from "@/actions/inventory/categories";
 import { NavMobileMenu } from "@/components/store/nav/nav-mobile-menu.client";
-import { db } from "@/db";
-import { deslugify, slugify } from "@/lib/utils";
+import { cn, deslugify, slugify } from "@/lib/utils";
 
-export const NavMenu = async () => {
-	const categories = await db.query.categories.findMany();
+export const NavMenu = ({ categories }: { categories: Awaited<ReturnType<typeof getAllCategories>> }) => {
+	const pathname = usePathname();
+
+	// const categories = await db.query.categories.findMany();
 	const links = [
-		{
-			label: "Home",
-			href: "/",
-		},
-		...categories.map(({ name, slug }) => ({
+		...categories!.map(({ name, slug }) => ({
 			label: name,
 			href: `/category/${slugify(slug).toLowerCase()}`,
 		})),
@@ -26,7 +25,10 @@ export const NavMenu = async () => {
 						<li key={link.href}>
 							<Link
 								href={link.href}
-								className="group hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-hidden"
+								className={cn(
+									"group hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-hidden",
+									link.href === pathname ? "bg-accent text-accent-foreground" : "text-foreground",
+								)}
 							>
 								{link.label}
 							</Link>

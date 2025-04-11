@@ -4,12 +4,11 @@ import { signInWithPasswordSchema } from "@/validations/auth";
 import { compare } from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
 import ResendProvider from "next-auth/providers/resend";
 
 import { MagicLinkEmail } from "@/components/admin/emails/magic-link-email";
 import { resend } from "@/config/email";
-import { siteConfig } from "@/config/site";
+import config from "@/config/store.config";
 
 export default {
 	providers: [
@@ -38,7 +37,7 @@ export default {
 					await resend.emails.send({
 						from: env.RESEND_EMAIL_FROM,
 						to: [identifier],
-						subject: `${siteConfig.name} magic link sign in`,
+						subject: `${config.storeName} magic link sign in`,
 						react: MagicLinkEmail({ identifier, url }),
 					});
 

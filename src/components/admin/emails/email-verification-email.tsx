@@ -10,7 +10,7 @@ import { Tailwind } from "@react-email/tailwind";
 import { Text } from "@react-email/text";
 import type { JSX } from "react";
 
-import { siteConfig } from "@/config/site";
+import config from "@/config/store.config";
 
 interface EmailVerificationEmailProps {
 	email: string;
@@ -21,7 +21,7 @@ export function EmailVerificationEmail({
 	email,
 	emailVerificationToken,
 }: Readonly<EmailVerificationEmailProps>): JSX.Element {
-	const previewText = `${siteConfig.name} email verification.`;
+	const previewText = `${config.storeName} email verification.`;
 	return (
 		<Html lang="en">
 			<Head>
@@ -35,7 +35,7 @@ export function EmailVerificationEmail({
 							<Text className="text-xl">Hi,</Text>
 							<Text className="text-base">
 								Your email address, {email}, was recently used to sign up at{" "}
-								<span className="font-semibold tracking-wide">{siteConfig.name}</span>.
+								<span className="font-semibold tracking-wide">{config.storeName}</span>.
 							</Text>
 							<Text className="text-base">Please verify this address by clicking the button below</Text>
 							<Button href={`${env.NEXT_PUBLIC_APP_URL}/signup/verify-email?token=${emailVerificationToken}`}>
@@ -45,10 +45,10 @@ export function EmailVerificationEmail({
 
 						<Section>
 							<Text className="text-xs">
-								If you didn&apos;t sign up at {siteConfig.name}, just ignore and delete this message.
+								If you didn&apos;t sign up at {config.storeName}, just ignore and delete this message.
 							</Text>
 							<Text className="text-base font-medium">
-								Enjoy <span className="font-semibold tracking-wide">{siteConfig.name}</span> and have a nice
+								Enjoy <span className="font-semibold tracking-wide">{config.storeName}</span> and have a nice
 								day!
 							</Text>
 						</Section>

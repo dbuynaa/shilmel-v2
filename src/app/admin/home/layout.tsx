@@ -9,7 +9,7 @@ interface AppHomeLayoutProps {
 export default function AppHomeLayout({ children }: AppHomeLayoutProps): JSX.Element {
 	return (
 		<div>
-			<Subheader />
+			{/* <Subheader /> */}
 			<div>{children}</div>
 		</div>
 	);

@@ -36,7 +36,7 @@ export const ProductList = async ({
 										</div>
 									)}
 									<div className="p-2">
-										<h2 className="text-primary text-xl font-medium">{product.name}</h2>
+										<h2 className="text-primary-foreground text-xl font-medium">{product.name}</h2>
 										<footer className="text-muted-foreground/80 text-base font-normal">
 											{product.price && (
 												<p>

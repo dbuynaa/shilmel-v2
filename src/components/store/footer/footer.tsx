@@ -1,6 +1,6 @@
+import StoreConfig from "@/config/store.config";
 // import { getStoreConfig } from "@/actions/inventory/categories"
 import { getTranslations } from "@/i18n/server";
-import StoreConfig from "@/store.config";
 import type { SVGAttributes } from "react";
 
 // import { Newsletter } from "@/components/store/footer/newsletter.client"

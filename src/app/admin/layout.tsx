@@ -8,7 +8,7 @@ interface AppLayoutProps {
 	children: React.ReactNode;
 }
 
-export default async function AppLayout({ children }: AppLayoutProps): Promise<JSX.Element> {
+export default async function AdminLayout({ children }: AppLayoutProps): Promise<JSX.Element> {
 	return (
 		<div className="flex">
 			<Sidebar />

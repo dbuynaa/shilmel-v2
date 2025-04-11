@@ -25,24 +25,29 @@ export const sidebarItems = [
 		],
 	},
 	{
-		title: "Inventory",
-		href: "/admin/inventory",
+		title: "Products",
+		href: "/admin/products",
 		icon: "inventory",
 		subitems: [
 			{
+				title: "Inventory",
+				href: "/admin/products/inventory",
+				hrefPlus: "/admin/products/inventory/new-product",
+			},
+			{
 				title: "Categories",
-				href: "/admin/inventory/categories",
-				hrefPlus: "/admin/inventory/categories/new-category",
+				href: "/admin/products/categories",
+				hrefPlus: "/admin/products/categories/new-category",
 			},
 			{
 				title: "Items",
-				href: "/admin/inventory/items",
-				hrefPlus: "/admin/inventory/items/new-item",
+				href: "/admin/products/items",
+				hrefPlus: "/admin/products/items/new-item",
 			},
 			{
-				title: "Inventory Adjustments",
-				href: "/admin/inventory/inventory-adjustments",
-				hrefPlus: "/admin/inventory/inventory-adjustments/new-adjustment",
+				title: "products Adjustments",
+				href: "/admin/products/inventory-adjustments",
+				hrefPlus: "/admin/products/inventory-adjustments/new-adjustment",
 			},
 		],
 	},
@@ -122,42 +127,12 @@ export const sidebarItems = [
 				href: "/admin/purchases/purchase-receives",
 				hrefPlus: "/admin/purchases/purchase-receives/new-receive",
 			},
-			{
-				title: "Bills",
-				href: "/admin/purchases/bills",
-				hrefPlus: "/admin/purchases/bills/new-bill",
-			},
-			{
-				title: "Payments Made",
-				href: "/admin/purchases/payments-made",
-				hrefPlus: "/admin/purchases/payments-made/record-payment",
-			},
-			{
-				title: "Vendor Credits",
-				href: "/admin/purchases/vendor-credits",
-				hrefPlus: "/admin/purchases/vendor-credits/new-credit",
-			},
 		],
-	},
-	// {
-	//   title: "Warehouses",
-	//   href: "/admin/warehouses",
-	//   icon: "warehouse",
-	// },
-	{
-		title: "Integrations",
-		href: "/admin/integrations",
-		icon: "integrations",
 	},
 	{
 		title: "Reports",
 		href: "/admin/reports",
 		icon: "barChart",
-	},
-	{
-		title: "Documents",
-		href: "/admin/documents",
-		icon: "documents",
 	},
 ] satisfies AppSidebarNavItem[];
 

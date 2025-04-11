@@ -8,7 +8,7 @@ import { Section } from "@react-email/section";
 import { Tailwind } from "@react-email/tailwind";
 import { Text } from "@react-email/text";
 
-import { siteConfig } from "@/config/site";
+import config from "@/config/store.config";
 import { absoluteUrl } from "@/lib/utils";
 
 import type { JSX } from "react";
@@ -22,7 +22,7 @@ export function ResetPasswordEmail({
 	email,
 	resetPasswordToken,
 }: Readonly<ResetPasswordEmailProps>): JSX.Element {
-	const previewText = `${siteConfig.name} password reset.`;
+	const previewText = `${config.storeName} password reset.`;
 
 	return (
 		<Html lang="en">
@@ -36,7 +36,7 @@ export function ResetPasswordEmail({
 						<Section>
 							<Text className="text-xl">Hi,</Text>
 							<Text className="text-base">
-								Someone just requested a password change for your {siteConfig.name}
+								Someone just requested a password change for your {config.storeName}
 								account associated with {email}.
 							</Text>
 							<Text className="text-base">If this was you, you can set a new password here:</Text>
@@ -55,7 +55,7 @@ export function ResetPasswordEmail({
 						</Section>
 						<Section>
 							<Text className="text-base font-medium">
-								Enjoy <span className="font-semibold tracking-wide">{siteConfig.name}</span> and have a nice
+								Enjoy <span className="font-semibold tracking-wide">{config.storeName}</span> and have a nice
 								day!
 							</Text>
 						</Section>
