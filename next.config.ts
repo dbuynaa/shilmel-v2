@@ -5,7 +5,11 @@ const nextConfig: NextConfig = {
 	eslint: {
 		ignoreDuringBuilds: true,
 	},
-	pageExtensions: ["tsx", "ts", "js"],
+	logging: {
+		fetches: {
+			fullUrl: true,
+		},
+	},
 	experimental: {
 		scrollRestoration: true,
 		inlineCss: true,

@@ -75,7 +75,7 @@ export async function addItem(input: z.infer<typeof itemSchema>): Promise<"succe
 			const newVariant = await db
 				.insert(productVariants)
 				.values({
-					productId: product[0].id,
+					productId: product[0]?.id ?? "",
 					size: variant.size,
 					color: variant.color,
 					sku: `${input.name.substring(0, 3).toUpperCase()}-${variant.color?.substring(0, 3).toUpperCase()}-${variant.size?.substring(0, 2).toUpperCase()}-${Math.floor(
@@ -92,7 +92,7 @@ export async function addItem(input: z.infer<typeof itemSchema>): Promise<"succe
 			for (const image of variant.images ?? []) {
 				await db.insert(images).values({
 					url: (image as { url?: string }).url ?? "",
-					variantId: newVariant[0].id,
+					variantId: newVariant[0]?.id ?? "",
 				});
 			}
 		}
@@ -220,7 +220,7 @@ export async function updateItem(
 			for (const image of variant.images ?? []) {
 				await db.insert(images).values({
 					url: (image as { url?: string }).url ?? "",
-					variantId: newVariant[0].id,
+					variantId: newVariant[0]!.id,
 				});
 			}
 		}
