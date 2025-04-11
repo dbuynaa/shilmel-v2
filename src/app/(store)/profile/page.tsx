@@ -133,11 +133,11 @@ export default async function AccountOverviewPage() {
 						{addresses.length > 0 ? (
 							<div>
 								<p className="font-medium">{accountDetails.name}</p>
-								<p className="text-muted-foreground text-sm">{addresses[0].street}</p>
+								<p className="text-muted-foreground text-sm">{addresses[0]?.street}</p>
 								<p className="text-muted-foreground text-sm">
-									{addresses[0].city}, {addresses[0].state} {addresses[0].postalCode}
+									{addresses[0]?.city}, {addresses[0]?.state} {addresses[0]?.postalCode}
 								</p>
-								<p className="text-muted-foreground text-sm">{addresses[0].country}</p>
+								<p className="text-muted-foreground text-sm">{addresses[0]?.country}</p>
 							</div>
 						) : (
 							<p className="text-muted-foreground">No addresses found.</p>
@@ -161,10 +161,10 @@ export default async function AccountOverviewPage() {
 						{paymentMethods.length > 0 ? (
 							<div>
 								<p className="font-medium">
-									{paymentMethods[0].type.toUpperCase()} **** {paymentMethods[0].last4}
+									{paymentMethods[0]?.type.toUpperCase()} **** {paymentMethods[0]?.last4}
 								</p>
-								<p className="text-muted-foreground text-sm">Expires: {paymentMethods[0].expiry}</p>
-								<p className="text-muted-foreground text-sm">{paymentMethods[0].name}</p>
+								<p className="text-muted-foreground text-sm">Expires: {paymentMethods[0]?.expiry}</p>
+								<p className="text-muted-foreground text-sm">{paymentMethods[0]?.name}</p>
 							</div>
 						) : (
 							<p className="text-muted-foreground">No payment methods found.</p>

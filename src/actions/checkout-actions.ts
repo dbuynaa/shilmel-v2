@@ -19,6 +19,7 @@ const expirySchema = z
 	.regex(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, "Expiry must be in MM/YY format")
 	.refine((val) => {
 		const [month, year] = val.split("/");
+		if (!month || !year) return false;
 		const expiry = new Date(2000 + parseInt(year), parseInt(month) - 1);
 		return expiry > new Date();
 	}, "Card has expired");
@@ -46,7 +47,7 @@ export async function processCheckoutAction(data: CheckoutData) {
 	// Validate input data
 	const validationResult = checkoutSchema.safeParse(data);
 	if (!validationResult.success) {
-		throw new Error(validationResult.error.errors[0].message);
+		throw new Error(validationResult.error.errors[0]?.message);
 	}
 
 	// Get cart data
@@ -127,7 +128,7 @@ export async function processCheckoutAction(data: CheckoutData) {
 		await db.insert(orders).values({
 			id: orderId,
 			userId: userId,
-			shippingAddressId: shippingAddress.id,
+			shippingAddressId: shippingAddress!.id,
 			totalAmount: cart.total.toString(),
 			status: "PENDING",
 			paymentMethod: "card",

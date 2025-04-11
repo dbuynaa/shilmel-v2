@@ -101,7 +101,7 @@ export async function addToCartAction(formData: FormData) {
 			quantity: 1,
 			variant: {
 				sku: productVariant.sku,
-				image: productVariant.images[0].url,
+				image: productVariant.images?.[0]?.url,
 				size: productVariant.size || undefined,
 			},
 		};

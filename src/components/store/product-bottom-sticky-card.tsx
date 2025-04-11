@@ -21,7 +21,7 @@ export const ProductBottomStickyCard = ({
 		<div
 			tabIndex={show ? 0 : -1}
 			className={cn(
-				"fixed right-0 bottom-0 left-0 z-10 max-w-[100vw] border-t bg-white/90 py-2 backdrop-blur-xs transition-all duration-300 ease-out sm:py-4",
+				"fixed right-0 bottom-0 left-0 z-10 max-w-[100vw] border-t bg-background py-2 backdrop-blur-xs transition-all duration-300 ease-out sm:py-4",
 				show
 					? "translate-y-0 transform shadow-[0_-4px_6px_-1px_rgb(0_0_0_/_0.1),_0_-2px_4px_-2px_rgb(0_0_0_/_0.1)]"
 					: "translate-y-full transform",
@@ -33,7 +33,7 @@ export const ProductBottomStickyCard = ({
 						{product.variants.find((v) => v.sku === variant) && (
 							<MainProductImage
 								className="h-16 w-16 rounded-lg bg-neutral-100 object-cover object-center"
-								src={product.variants.find((v) => v.sku === variant)!.images[0].url}
+								src={product.variants.find((v) => v.sku === variant)!.images[0]?.url ?? ""}
 								loading="eager"
 								priority
 								alt=""
