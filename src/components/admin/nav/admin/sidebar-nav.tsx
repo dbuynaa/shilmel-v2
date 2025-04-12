@@ -31,7 +31,9 @@ export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): 
 							<Collapsible open={isCollapsibleOpen}>
 								<CollapsibleTrigger
 									className={cn(
-										pathname.startsWith(item.href) || (pathname.startsWith(item.href) && collapsed)
+										pathname === item.href ||
+											pathname === item.href + "/new" ||
+											(pathname.startsWith(item.href) && collapsed)
 											? buttonVariants({ variant: "default" })
 											: buttonVariants({ variant: "ghost" }),
 										"flex w-full items-center text-sm",
@@ -50,11 +52,13 @@ export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): 
 								<CollapsibleContent className="w-full space-y-1 py-1 pl-6">
 									{item.subitems.map((subitem) => (
 										<Button
-											variant={pathname === subitem.href ? "default" : "ghost"}
+											variant={pathname.startsWith(subitem.href) ? "default" : "ghost"}
 											key={subitem.href}
 											className={cn(
 												"group flex w-full items-center justify-between gap-2 text-sm",
-												pathname === subitem.href ? "text-primary-foreground" : "text-muted-foreground",
+												pathname.startsWith(subitem.href)
+													? "text-primary-foreground"
+													: "text-muted-foreground",
 											)}
 										>
 											<Link href={subitem.href} className="flex flex-1 items-start">

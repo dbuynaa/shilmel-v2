@@ -18,7 +18,7 @@ export function ItemsDropdown(): JSX.Element {
 			>
 				<Icons.moreHorizontal className="size-4" aria-hidden="true" />
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="bg-tertiary">
+			<DropdownMenuContent className="bg-background">
 				<DropdownMenuItem className="flex items-center gap-2">
 					<Icons.download className="size-4 text-muted-foreground" />
 					Import Items

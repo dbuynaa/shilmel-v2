@@ -39,8 +39,6 @@ export default async function AppInventoryCategoriesPage(
 		"desc",
 	];
 
-	// TODO: Convert into a prepared satement
-	noStore();
 	const data = await db
 		.select({
 			id: categories.id,
@@ -59,8 +57,6 @@ export default async function AppInventoryCategoriesPage(
 					: desc(categories[column])
 				: desc(categories.createdAt),
 		);
-
-	// TODO: Convert into a prepared satement
 	noStore();
 	const count = await db
 		.select({

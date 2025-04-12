@@ -12,7 +12,7 @@ interface DataTableSkeletonProps {
 
 export function DataTableSkeleton({
 	columnCount,
-	rowCount = 10,
+	rowCount = 3,
 	isNewRowCreatable = false,
 	isRowsDeletable = false,
 	searchableFieldCount = 1,

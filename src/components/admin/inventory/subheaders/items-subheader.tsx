@@ -5,8 +5,6 @@ import type { JSX } from "react";
 
 import { ItemsDropdown } from "@/components/admin/inventory/dropdowns/items-dropdown";
 import { ItemsSelect } from "@/components/admin/inventory/selects/items-select";
-import { ViewToggle } from "@/components/admin/inventory/view-toggle";
-import { InstantHelperMenu } from "@/components/admin/nav/admin/menus/instant-helper-menu";
 import { CustomTooltip } from "@/components/custom-tooltip";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
@@ -29,9 +27,7 @@ export function ItemsSubheader(): JSX.Element {
 					</Link>
 				</CustomTooltip>
 
-				<ViewToggle />
 				<ItemsDropdown />
-				<InstantHelperMenu />
 			</div>
 		</div>
 	);

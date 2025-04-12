@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { JSX } from "react";
 
 import { NotificationsMenu } from "@/components/admin/nav/admin/menus/notifications-menu";
-import { OrganizationMenu } from "@/components/admin/nav/admin/menus/organization-menu";
 import { CustomTooltip } from "@/components/custom-tooltip";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
@@ -32,7 +31,6 @@ export async function Header(): Promise<JSX.Element> {
 					</CustomTooltip>
 				</div>
 
-				<OrganizationMenu />
 				<UserMenu session={session!} />
 			</div>
 		</header>

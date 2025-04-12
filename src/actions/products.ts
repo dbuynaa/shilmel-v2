@@ -1,11 +1,41 @@
 "use server";
 
 import { db } from "@/db";
-import { categories, products } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { type Product, categories, products } from "@/db/schema";
+import type { SearchParams } from "@/types";
+import { searchParamsSchema } from "@/validations/params";
+import { asc, desc, eq, like } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
 
 import { deslugify } from "@/lib/utils";
+
+export async function getProducts(searchParams: SearchParams) {
+	const { page, per_page, sort, name } = searchParamsSchema.parse(searchParams);
+
+	const fallbackPage = isNaN(page) || page < 1 ? 1 : page;
+	const limit = isNaN(per_page) ? 10 : per_page;
+	const offset = fallbackPage > 0 ? (fallbackPage - 1) * limit : 0;
+
+	const [column, order] = (sort?.split(".") as [keyof Product | undefined, "asc" | "desc" | undefined]) ?? [
+		"createdAt",
+		"desc",
+	];
+
+	noStore();
+	return await db
+		.select()
+		.from(products)
+		.limit(limit)
+		.offset(offset)
+		.where(name ? like(products.name, `%${name}%`) : undefined)
+		.orderBy(
+			column && column in products
+				? order === "asc"
+					? asc(products[column])
+					: desc(products[column])
+				: desc(products.createdAt),
+		);
+}
 
 export async function getProductsByCategory(categorySlug: string) {
 	noStore();
@@ -51,9 +81,6 @@ export async function getProductBySlug(slug: string) {
 				},
 			},
 		});
-		// .select()
-		// .from(products)
-		// .where(eq(products.slug, deslugify(slug).toLowerCase()))
 
 		return product || null;
 	} catch (error) {
