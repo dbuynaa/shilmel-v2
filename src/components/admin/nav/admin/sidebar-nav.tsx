@@ -31,8 +31,8 @@ export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): 
 							<Collapsible open={isCollapsibleOpen}>
 								<CollapsibleTrigger
 									className={cn(
-										pathname === item.href || (pathname.startsWith(item.href) && collapsed)
-											? buttonVariants({ variant: "secondary" })
+										pathname.startsWith(item.href) || (pathname.startsWith(item.href) && collapsed)
+											? buttonVariants({ variant: "default" })
 											: buttonVariants({ variant: "ghost" }),
 										"flex w-full items-center text-sm",
 										collapsed ? "justify-center " : "justify-between",
@@ -43,18 +43,18 @@ export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): 
 								>
 									<Link href={item.href} className="flex w-full items-center gap-2">
 										<Icon className="size-4" />
-										<span className={cn("text-sidebar-foreground", collapsed && "hidden")}>{item.title}</span>
+										<span className={cn(collapsed && "hidden")}>{item.title}</span>
 									</Link>
 								</CollapsibleTrigger>
 
 								<CollapsibleContent className="w-full space-y-1 py-1 pl-6">
 									{item.subitems.map((subitem) => (
 										<Button
-											variant={pathname === subitem.href ? "secondary" : "ghost"}
+											variant={pathname === subitem.href ? "default" : "ghost"}
 											key={subitem.href}
 											className={cn(
 												"group flex w-full items-center justify-between gap-2 text-sm",
-												pathname === subitem.href ? "text-foreground" : "text-muted-foreground",
+												pathname === subitem.href ? "text-primary-foreground" : "text-muted-foreground",
 											)}
 										>
 											<Link href={subitem.href} className="flex flex-1 items-start">
@@ -80,7 +80,7 @@ export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): 
 									className={cn(
 										(pathname.startsWith("/admin/home") && item.href.startsWith("/admin/home")) ||
 											pathname === item.href
-											? buttonVariants({ variant: "secondary" })
+											? buttonVariants({ variant: "default" })
 											: buttonVariants({ variant: "ghost" }),
 										"group flex w-full justify-start gap-2 text-sm",
 									)}
@@ -89,10 +89,7 @@ export function SidebarNav({ collapsed, setCollapsedAction }: SidebarNavProps): 
 									<span
 										className={cn(
 											(pathname.startsWith("/admin/home") && item.href.startsWith("/admin/home")) ||
-												pathname === item.href
-												? "text-foreground"
-												: "text-sidebar-foreground",
-											"group-hover:text-foreground",
+												"group-hover:text-foreground",
 											collapsed && "hidden",
 										)}
 									>
