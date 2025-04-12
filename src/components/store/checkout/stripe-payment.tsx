@@ -21,13 +21,12 @@ import { useTranslations } from "@/i18n/client";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { type ChangeEvent, type FormEventHandler, useRef, useState, useTransition } from "react";
+import { type ChangeEvent, type FormEventHandler, useState, useTransition } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDebouncedValue } from "@/lib/hooks";
 
@@ -37,7 +36,6 @@ import { InputWithErrors } from "../input-errors";
 import { saveBillingAddressAction, saveShippingRateAction } from "./checkout-actions";
 import { type AddressSchema, getAddressSchema } from "./checkout-form-schema";
 import { type ShippingRate, ShippingRatesSection } from "./shipping-rates-section";
-import { saveTaxIdAction } from "./tax-action";
 
 export const StripePayment = ({
 	shippingRateId,

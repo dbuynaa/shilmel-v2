@@ -9,9 +9,6 @@ import link from "@/images/payments/link.svg";
 import mastercard from "@/images/payments/mastercard.svg";
 import p24 from "@/images/payments/p24.svg";
 import visa from "@/images/payments/visa.svg";
-import Image from "next/image";
-
-import { isDefined } from "@/lib/utils";
 
 import type { ShippingRate } from "./shipping-rates-section";
 import { StripePayment } from "./stripe-payment";

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 import type { getAllCategories } from "@/actions/inventory/categories";
 import { NavMobileMenu } from "@/components/store/nav/nav-mobile-menu.client";
-import { cn, deslugify, slugify } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 
 export const NavMenu = ({ categories }: { categories: Awaited<ReturnType<typeof getAllCategories>> }) => {
 	const pathname = usePathname();

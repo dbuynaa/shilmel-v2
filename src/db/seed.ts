@@ -1,4 +1,3 @@
-import { db } from "@/db";
 // import { db } from "."
 import * as schema from "@/db/schema";
 import { categories, products, users } from "@/db/schema";

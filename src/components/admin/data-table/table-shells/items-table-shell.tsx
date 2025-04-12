@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteItem } from "@/actions/inventory/items";
-import type { Category, Product } from "@/db/schema";
+import type { Product } from "@/db/schema";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

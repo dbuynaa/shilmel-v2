@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import * as React from "react";
+import { usePathname } from "next/navigation";
 import type { JSX } from "react";
 
 import { CustomTooltip } from "@/components/custom-tooltip";

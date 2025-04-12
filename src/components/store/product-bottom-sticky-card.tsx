@@ -4,7 +4,7 @@
 import type { ProudctWithVariants } from "@/db/schema";
 
 import { MainProductImage } from "@/components/store/products/main-product-image";
-import { cn, formatMoney } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 import { AddToCartButton } from "./add-to-cart-button";
 

@@ -2,7 +2,7 @@
 
 import { updateCategory } from "@/actions/inventory/categories";
 import type { Category } from "@/db/schema";
-import { type UpdateCategoryFormInput, categorySchema, updateCategorySchema } from "@/validations/inventory";
+import { type UpdateCategoryFormInput, updateCategorySchema } from "@/validations/inventory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

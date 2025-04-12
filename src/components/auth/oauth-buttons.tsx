@@ -2,7 +2,6 @@
 
 import { signIn } from "next-auth/react";
 import { unstable_noStore as noStore } from "next/cache";
-import * as React from "react";
 import type { JSX } from "react";
 
 import { Icons } from "@/components/icons";

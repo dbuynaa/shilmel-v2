@@ -1,20 +1,7 @@
 "use client";
 
-import {
-	CreditCard,
-	Gift,
-	HelpCircle,
-	LogOut,
-	MessageSquare,
-	Package,
-	Settings,
-	ShoppingBag,
-	User,
-	UserPlus,
-	Users,
-} from "lucide-react";
+import { CreditCard, LogOut, Package, Settings, ShoppingBag, User, UserPlus } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type React from "react";

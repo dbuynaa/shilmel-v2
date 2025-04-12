@@ -39,9 +39,17 @@
 				"noEmptyPattern": "off",
 				"noPrecisionLoss": "error",
 				"noUnusedVariables": "off",
-				"useArrayLiterals": "off"
+				"useArrayLiterals": "off",
+				"noUnusedImports": {
+					"level": "error",
+					"fix": "unsafe"
+				}
 			},
 			"style": {
+				"useConst": {
+					"level": "warn",
+					"fix": "unsafe"
+				},
 				"noDefaultExport": "off",
 				"noInferrableTypes": "error",
 				"noNamespace": "error",

@@ -1,8 +1,7 @@
 "use client";
 
 import type { getAllCategories } from "@/actions/inventory/categories";
-import { addItem, checkItem, deleteImage, type getItemById, updateItem } from "@/actions/inventory/items";
-import type { ProudctWithVariants } from "@/db/schema";
+import { addItem, checkItem, type getItemById, updateItem } from "@/actions/inventory/items";
 import type { FileWithPreview } from "@/types";
 import { type AddItemFormInput, itemSchema } from "@/validations/inventory";
 import { zodResolver } from "@hookform/resolvers/zod";

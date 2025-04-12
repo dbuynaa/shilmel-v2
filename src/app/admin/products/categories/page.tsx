@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { db } from "@/db/index";
 import { type Category, categories } from "@/db/schema";
 import { env } from "@/env.mjs";
@@ -7,7 +6,6 @@ import { categoriesSearchParamsSchema } from "@/validations/params";
 import { asc, desc, like, sql } from "drizzle-orm";
 import type { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
-import { redirect } from "next/navigation";
 import * as React from "react";
 import type { JSX } from "react";
 

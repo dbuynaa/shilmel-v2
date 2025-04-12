@@ -1,8 +1,7 @@
 "use client";
 
 import { useTranslations } from "@/i18n/client";
-import { getTranslations } from "@/i18n/server";
-import { Bolt, BookOpen, Layers2, NotebookTabs, ShoppingCart, UserIcon, UserPen } from "lucide-react";
+import { Bolt, Layers2, ShoppingCart, UserPen } from "lucide-react";
 import type { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";

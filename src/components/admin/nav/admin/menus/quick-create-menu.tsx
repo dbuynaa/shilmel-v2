@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import * as React from "react";
 
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";

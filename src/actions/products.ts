@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { type Product, categories, products } from "@/db/schema";
+import { categories, products } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
 

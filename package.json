@@ -33,7 +33,7 @@
 		"prepare": "husky",
 		"packages:update-all": "pnpm update --latest",
 		"typecheck": "tsc --noEmit",
-		"lint": "biome check --write"
+		"lint": "biome check --write --unsafe"
 	},
 	"dependencies": {
 		"@auth/core": "^0.38.0",

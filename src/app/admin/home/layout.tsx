@@ -1,7 +1,5 @@
 import type { JSX, ReactNode } from "react";
 
-import { Subheader } from "@/components/admin/nav/admin/subheader";
-
 interface AppHomeLayoutProps {
 	children: ReactNode;
 }
