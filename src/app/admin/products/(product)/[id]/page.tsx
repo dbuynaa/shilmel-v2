@@ -7,6 +7,7 @@ import type { JSX } from "react";
 import { AddItemForm } from "@/components/admin/forms/inventory/items/add-item-form";
 import { SubSubHeader } from "@/components/admin/nav/subsubheader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { unstable_noStore } from "next/cache";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -20,11 +21,15 @@ interface AppProductPageProps {
 		id: string;
 	}>;
 }
+export async function generateStaticParams() {
+	return [{ id: "new" }];
+}
 
 export default async function ProductPage(props: AppProductPageProps): Promise<JSX.Element> {
 	const params = await props.params;
 
 	const categories = await getAllCategories();
+	unstable_noStore();
 	const product = params.id !== "new" ? await getItemById(params.id) : undefined;
 	if (!product && params.id !== "new") {
 		notFound();
