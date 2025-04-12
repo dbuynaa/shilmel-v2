@@ -32,22 +32,12 @@ export const sidebarItems = [
 			{
 				title: "Inventory",
 				href: "/admin/products/inventory",
-				hrefPlus: "/admin/products/inventory/new-product",
+				hrefPlus: "/admin/products/inventory/new",
 			},
 			{
 				title: "Categories",
 				href: "/admin/products/categories",
-				hrefPlus: "/admin/products/categories/new-category",
-			},
-			{
-				title: "Items",
-				href: "/admin/products/items",
-				hrefPlus: "/admin/products/items/new-item",
-			},
-			{
-				title: "products Adjustments",
-				href: "/admin/products/inventory-adjustments",
-				hrefPlus: "/admin/products/inventory-adjustments/new-adjustment",
+				hrefPlus: "/admin/products/categories/new",
 			},
 		],
 	},

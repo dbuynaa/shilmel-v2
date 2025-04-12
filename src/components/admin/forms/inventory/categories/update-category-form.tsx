@@ -1,6 +1,6 @@
 "use client";
 
-import { updateCategory } from "@/actions/inventory/categories";
+import { addCategory, updateCategory } from "@/actions/inventory/categories";
 import type { Category } from "@/db/schema";
 import { type UpdateCategoryFormInput, updateCategorySchema } from "@/validations/inventory";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,7 @@ import { useToast } from "@/lib/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 interface UpdateCategoryFormProps {
-	category: Category;
+	category: Category | undefined;
 }
 
 export function UpdateCategoryForm({ category }: UpdateCategoryFormProps): JSX.Element {
@@ -29,21 +29,26 @@ export function UpdateCategoryForm({ category }: UpdateCategoryFormProps): JSX.E
 	const form = useForm<UpdateCategoryFormInput>({
 		resolver: zodResolver(updateCategorySchema),
 		defaultValues: {
-			id: category.id,
-			name: category.name,
-			image: category.image || undefined,
-			description: category.description || "",
+			id: category?.id || "",
+			name: category?.name || "",
+			image: category?.image || undefined,
+			description: category?.description || "",
 		},
 	});
 
 	function onSubmit(formData: UpdateCategoryFormInput) {
 		startTransition(async () => {
 			try {
-				const message = await updateCategory({
-					id: category.id,
-					name: formData.name,
-					description: formData.description,
-				});
+				const message = category
+					? await updateCategory({
+							id: category.id,
+							name: formData.name,
+							description: formData.description,
+						})
+					: await addCategory({
+							name: formData.name,
+							description: formData.description,
+						});
 
 				switch (message) {
 					case "success":
@@ -51,7 +56,7 @@ export function UpdateCategoryForm({ category }: UpdateCategoryFormProps): JSX.E
 							title: "Success!",
 							description: "Category updated",
 						});
-						router.push("/admin/inventory/categories");
+						router.back();
 						break;
 					case "exists":
 						toast({

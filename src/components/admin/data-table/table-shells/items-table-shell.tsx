@@ -111,7 +111,7 @@ export function ItemsTableShell({ data, pageCount }: ItemsTableShellProps): JSX.
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-[160px]">
 							<DropdownMenuItem asChild className="cursor-pointer">
-								<Link href={`/admin/inventory/items/${row.original.id}`} className="text-sm">
+								<Link href={`/admin/products/${row.original.id}`} className="text-sm">
 									Edit
 								</Link>
 							</DropdownMenuItem>

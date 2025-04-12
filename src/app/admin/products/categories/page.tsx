@@ -74,7 +74,7 @@ export default async function AppInventoryCategoriesPage(
 
 	return (
 		<div>
-			<Subheader buttonText="New Category" buttonLink="/admin/inventory/categories/new-category" />
+			<Subheader buttonText="New Category" buttonLink="/admin/products/categories/new" />
 			<div className="p-5">
 				<React.Suspense
 					fallback={<DataTableSkeleton columnCount={5} isNewRowCreatable={false} isRowsDeletable={true} />}

@@ -2,7 +2,7 @@ import { getCategoryById } from "@/actions/inventory/categories";
 import { auth } from "@/auth";
 import { env } from "@/env.mjs";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { JSX } from "react";
 
 import { UpdateCategoryForm } from "@/components/admin/forms/inventory/categories/update-category-form";
@@ -28,8 +28,8 @@ export default async function AppInventoryCategoriesUpdateCategoryPage(
 	const session = await auth();
 	if (!session) redirect("/signin");
 
-	const category = await getCategoryById({ id: params.categoryId });
-	if (!category) redirect("/admin/inventory/categories");
+	const category = params.categoryId !== "new" ? await getCategoryById({ id: params.categoryId }) : undefined;
+	if (!category && params.categoryId !== "new") notFound();
 
 	return (
 		<div>
@@ -41,7 +41,7 @@ export default async function AppInventoryCategoriesUpdateCategoryPage(
 						<CardDescription className="text-base">Update this category of items</CardDescription>
 					</CardHeader>
 					<CardContent className="px-5 pt-2">
-						<UpdateCategoryForm category={category} />
+						<UpdateCategoryForm category={category || undefined} />
 					</CardContent>
 				</Card>
 			</div>

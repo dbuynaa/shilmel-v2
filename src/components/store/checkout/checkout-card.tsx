@@ -1,28 +1,9 @@
 import type { Cart } from "@/types/cart";
 
 import { getLocale, getTranslations } from "@/i18n/server";
-import amex from "@/images/payments/amex.svg";
-import blik from "@/images/payments/blik.svg";
-import google_pay from "@/images/payments/google_pay.svg";
-import klarna from "@/images/payments/klarna.svg";
-import link from "@/images/payments/link.svg";
-import mastercard from "@/images/payments/mastercard.svg";
-import p24 from "@/images/payments/p24.svg";
-import visa from "@/images/payments/visa.svg";
 
 import type { ShippingRate } from "./shipping-rates-section";
 import { StripePayment } from "./stripe-payment";
-
-export const paymentMethods = {
-	amex,
-	blik,
-	google_pay,
-	klarna,
-	link,
-	mastercard,
-	p24,
-	visa,
-};
 
 // Mock shipping rates - in a real app, this would come from your shipping provider
 const mockShippingRates: ShippingRate[] = [

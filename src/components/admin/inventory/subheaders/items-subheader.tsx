@@ -20,7 +20,7 @@ export function ItemsSubheader(): JSX.Element {
 			<div className="flex items-center gap-2">
 				<CustomTooltip text="Add New Item">
 					<Link
-						href="/admin/inventory/items/new-item"
+						href="/admin/products/new"
 						className={cn(buttonVariants(), "gap-1")}
 						aria-label="Add new item"
 					>

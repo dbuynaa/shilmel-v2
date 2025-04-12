@@ -7,6 +7,7 @@ import type { JSX } from "react";
 import { AddItemForm } from "@/components/admin/forms/inventory/items/add-item-form";
 import { SubSubHeader } from "@/components/admin/nav/subsubheader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
 	metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -14,19 +15,20 @@ export const metadata: Metadata = {
 	description: "Update your Inventory Item",
 };
 
-interface AppInventoryItemsUpdateItemPageProps {
+interface AppProductPageProps {
 	params: Promise<{
-		itemId: string;
+		id: string;
 	}>;
 }
 
-export default async function InventoryItemsUpdateItemPage(
-	props: AppInventoryItemsUpdateItemPageProps,
-): Promise<JSX.Element> {
+export default async function ProductPage(props: AppProductPageProps): Promise<JSX.Element> {
 	const params = await props.params;
 
 	const categories = await getAllCategories();
-	const product = await getItemById(params.itemId);
+	const product = params.id !== "new" ? await getItemById(params.id) : undefined;
+	if (!product && params.id !== "new") {
+		notFound();
+	}
 	return (
 		<div className="relative">
 			<SubSubHeader />
