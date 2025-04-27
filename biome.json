@@ -71,7 +71,7 @@
 				"useNamespaceKeyword": "error"
 			}
 		},
-		"ignore": ["**/*.js", "**/*.jsx", "**/*.mjs", "src/script/**/*.ts"]
+		"ignore": ["**/*.js", "**/*.jsx", "src/script/**/*.ts"]
 	},
 	"javascript": {
 		"formatter": {

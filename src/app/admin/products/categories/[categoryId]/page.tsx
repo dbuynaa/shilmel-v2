@@ -1,6 +1,6 @@
-import { getCategoryById } from "@/actions/inventory/categories";
+import { getCategoryById } from "@/actions/product/categories";
 import { auth } from "@/auth";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import type { JSX } from "react";

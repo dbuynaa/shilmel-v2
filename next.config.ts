@@ -14,9 +14,9 @@ const nextConfig: NextConfig = {
 		},
 	},
 	experimental: {
+		esmExternals: true,
 		scrollRestoration: true,
 		inlineCss: true,
-		ppr: true,
 	},
 	images: {
 		remotePatterns: [
@@ -38,33 +38,6 @@ const nextConfig: NextConfig = {
 			},
 		],
 	},
-	turbopack: {
-		rules: {
-			"*.svg": {
-				loaders: ["@svgr/webpack"],
-				as: "*.js",
-			},
-		},
-		resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
-	},
-	webpack: (config) => {
-		return {
-			...config,
-			resolve: {
-				...config.resolve,
-				extensionAlias: {
-					".js": [".js", ".ts"],
-					".jsx": [".jsx", ".tsx"],
-				},
-			},
-		};
-	},
-	rewrites: async () => [
-		{
-			source: "/stats/:match*",
-			destination: "https://eu.umami.is/:match*",
-		},
-	],
 };
 
 export default nextConfig;

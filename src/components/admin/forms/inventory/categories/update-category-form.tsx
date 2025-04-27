@@ -1,6 +1,6 @@
 "use client";
 
-import { addCategory, updateCategory } from "@/actions/inventory/categories";
+import { addCategory, updateCategory } from "@/actions/product/categories";
 import type { Category } from "@/db/schema";
 import { type UpdateCategoryFormInput, updateCategorySchema } from "@/validations/inventory";
 import { zodResolver } from "@hookform/resolvers/zod";

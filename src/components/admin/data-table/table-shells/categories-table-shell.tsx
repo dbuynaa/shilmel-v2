@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteCategory } from "@/actions/inventory/categories";
+import { deleteCategory } from "@/actions/product/categories";
 import type { Category } from "@/db/schema";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";

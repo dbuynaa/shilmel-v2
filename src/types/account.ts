@@ -2,8 +2,8 @@ export interface AccountDetails {
 	id: string;
 	name: string | null;
 	email: string;
-	image: string | null;
-	lastActivityDate: Date | null;
+	// image: string | null;
+	// lastActivityDate: Date | null;
 }
 
 export interface Address {

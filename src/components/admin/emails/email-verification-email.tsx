@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { Body } from "@react-email/body";
 import { Button } from "@react-email/button";
 import { Container } from "@react-email/container";

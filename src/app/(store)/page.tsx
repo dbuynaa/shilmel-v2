@@ -1,5 +1,5 @@
 import StoreConfig from "@/config/store.config";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { getTranslations } from "@/i18n/server";
 import type { Metadata } from "next/types";
 
@@ -18,10 +18,11 @@ export default async function Home() {
 			offset: 0,
 			limit: 10,
 			with: {
-				category: true,
-				variants: {
+				productCategories: true,
+				productImages: true,
+				productVariants: {
 					with: {
-						images: true,
+						productImages: true,
 					},
 				},
 			},

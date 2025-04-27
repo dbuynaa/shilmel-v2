@@ -17,36 +17,6 @@ export const psGetCategoryById = db
 
 export const psGetAllCategories = db.select().from(categories).prepare("psGetAllCategories");
 
-// BRANDS
-// export const psGetBrandByName = db
-//   .select()
-//   .from(brands)
-//   .where(eq(brands.name, sql.placeholder("name")))
-//   .prepare("psGetBrandByName")
-
-// export const psGetBrandById = db
-//   .select()
-//   .from(brands)
-//   .where(eq(brands.id, sql.placeholder("id")))
-//   .prepare("psGetBrandById")
-
-// export const psGetAllBrands = db.select().from(brands).prepare("psGetAllBrands")
-
-// UNITS
-// export const psGetUnitByName = db
-//   .select()
-//   .from(units)
-//   .where(eq(units.name, sql.placeholder("name")))
-//   .prepare("psGetUnitByName")
-
-// export const psGetUnitById = db
-//   .select()
-//   .from(units)
-//   .where(eq(units.id, sql.placeholder("id")))
-//   .prepare("psGetUnitById")
-
-// export const psGetAllUnits = db.select().from(units).prepare("psGetAllUnits")
-
 // ITEMS
 export const psGetItemByName = db
 	.select()

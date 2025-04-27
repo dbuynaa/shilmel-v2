@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { IntlMessageFormat } from "intl-messageformat";
 
 import type { IntlNamespaceKeys, NamespacedKeys } from "./types";

@@ -2,8 +2,13 @@
 
 import { getUserByEmail, getUserByResetPasswordToken } from "@/actions/users";
 import { signIn } from "@/auth";
-import { db } from "@/db";
-import { type User as NewUser, users } from "@/db/schema";
+import {
+	psCreateUser,
+	psLinkOAuthAccount,
+	psUpdateUserEmailVerificationToken,
+	psUpdateUserPassword,
+	psUpdateUserResetPasswordToken,
+} from "@/db/prepared/auth.statements";
 import {
 	type SignInWithPasswordFormInput,
 	type SignUpWithPasswordFormInput,
@@ -11,7 +16,6 @@ import {
 	signUpWithPasswordSchema,
 } from "@/validations/auth";
 import bcryptjs from "bcryptjs";
-import { eq } from "drizzle-orm";
 // import crypto from "crypto"
 import { AuthError } from "next-auth";
 
@@ -35,23 +39,26 @@ export async function signUpWithPassword(
 		if (user) return "exists";
 
 		const passwordHash = await bcryptjs.hash(validatedInput.data.password, 10);
+		const userId = crypto.randomUUID();
 
-		const newUserResponse = await db.insert(users).values({
-			id: crypto.randomUUID(),
+		// Use prepared statement to create user
+		const newUserResponse = await psCreateUser.execute({
+			id: userId,
 			email: validatedInput.data.email,
 			password: passwordHash,
-			role: "USER",
-		} as NewUser);
+			role: "CUSTOMER",
+			updatedAt: new Date().toISOString(),
+		});
 
 		if (!newUserResponse) return "error";
 
 		const emailVerificationToken = generateRandomBytes(32).toString();
 
-		// TODO: Replace with prepared statement
-		const updatedUserResponse = await db
-			.update(users)
-			.set({ emailVerificationToken })
-			.where(eq(users.email, validatedInput.data.email));
+		// Using prepared statement
+		const updatedUserResponse = await psUpdateUserEmailVerificationToken.execute({
+			emailVerificationToken,
+			email: validatedInput.data.email,
+		});
 
 		const emailSent = await resend.emails.send({
 			// from: env.RESEND_EMAIL_FROM,
@@ -122,17 +129,15 @@ export async function resetPassword(email: string): Promise<"not-found" | "succe
 
 	const today = new Date();
 	const resetPasswordToken = generateRandomBytes(32).toString();
-	const resetPasswordTokenExpiry = new Date(today.setDate(today.getDate() + 1)); // 24 hours from now
+	const resetPasswordTokenExpiry = new Date(today.setDate(today.getDate() + 1)).toISOString(); // 24 hours from now as ISO string
 
 	try {
-		// TODO: Replace with prepared statement
-		const userUpdatedResponse = await db
-			.update(users)
-			.set({
-				resetPasswordToken,
-				resetPasswordTokenExpiry,
-			})
-			.where(eq(users.email, email));
+		// Using prepared statement
+		const userUpdatedResponse = await psUpdateUserResetPasswordToken.execute({
+			resetPasswordToken,
+			resetPasswordTokenExpiry,
+			email,
+		});
 
 		const emailSent = await resend.emails.send({
 			// from: env.RESEND_EMAIL_FROM,
@@ -160,19 +165,16 @@ export async function updatePassword(
 		if (!user) return "not-found";
 
 		const resetPasswordExpiry = user.resetPasswordTokenExpiry;
-		if (!resetPasswordExpiry || resetPasswordExpiry < new Date()) return "expired";
+		// Convert string date to Date object for comparison if it exists
+		if (!resetPasswordExpiry || new Date(resetPasswordExpiry) < new Date()) return "expired";
 
 		const passwordHash = await bcryptjs.hash(password, 10);
 
-		// TODO: Replace with prepared statement
-		const userUpdatedResponse = await db
-			.update(users)
-			.set({
-				password: passwordHash,
-				resetPasswordToken: null,
-				resetPasswordTokenExpiry: null,
-			})
-			.where(eq(users.id, user.id));
+		// Using prepared statement
+		const userUpdatedResponse = await psUpdateUserPassword.execute({
+			password: passwordHash,
+			id: user.id,
+		});
 
 		return userUpdatedResponse ? "success" : null;
 	} catch (error) {
@@ -183,7 +185,10 @@ export async function updatePassword(
 
 export async function linkOAuthAccount(userId: string): Promise<void> {
 	try {
-		await db.update(users).set({ emailVerified: new Date() }).where(eq(users.id, userId));
+		await psLinkOAuthAccount.execute({
+			emailVerified: new Date().toISOString(),
+			id: userId,
+		});
 	} catch (error) {
 		console.error(error);
 		throw new Error("Error linking OAuth account");

@@ -1,5 +1,5 @@
 import { getUserByEmail } from "@/actions/users";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { signInWithPasswordSchema } from "@/validations/auth";
 import { compare } from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";

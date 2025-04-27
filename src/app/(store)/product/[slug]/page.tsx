@@ -1,5 +1,5 @@
 import { getProductBySlug } from "@/actions/products";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { getLocale, getTranslations } from "@/i18n/server";
 import Image from "next/image";
 import { notFound } from "next/navigation";

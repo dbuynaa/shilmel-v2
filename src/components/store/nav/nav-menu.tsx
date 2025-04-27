@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import type { getAllCategories } from "@/actions/inventory/categories";
+import type { getAllCategories } from "@/actions/product/categories";
 import { NavMobileMenu } from "@/components/store/nav/nav-mobile-menu.client";
 import { cn, slugify } from "@/lib/utils";
 

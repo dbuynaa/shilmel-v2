@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { UserIcon } from "lucide-react";
 
-import { getAllCategories } from "@/actions/inventory/categories";
+import { getAllCategories } from "@/actions/product/categories";
 import { CartSummaryNav } from "@/components/store/nav/cart-summary-nav";
 import { NavMenu } from "@/components/store/nav/nav-menu";
 import { SearchNav } from "@/components/store/nav/search-nav";

@@ -1,16 +1,13 @@
-import { db } from "@/db";
-import { env } from "@/env.mjs";
+import { psGetAllCategories } from "@/db/prepared/inventory.statements";
+import { psGetAllProducts } from "@/db/prepared/product.statements";
+import { env } from "@/env";
 import type { MetadataRoute } from "next";
 
 type Item = MetadataRoute.Sitemap[number];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const dbProducts = await db.query.products.findMany({
-		limit: 100,
-	});
-	const categories = await db.query.products.findMany({
-		limit: 100,
-	});
+	const dbProducts = await psGetAllProducts.execute();
+	const categories = await psGetAllCategories.execute();
 
 	const productUrls = dbProducts.map(
 		(product) =>

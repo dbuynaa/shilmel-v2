@@ -1,4 +1,4 @@
-import type { InferResultType } from "@/db/schema/utils";
+import type { InferResultType } from "@/lib/utils/InferResult";
 import type { ItemList, Product as SchemaProduct, Thing, WebSite, WithContext } from "schema-dts";
 
 import { formatProductName } from "@/lib/utils";
