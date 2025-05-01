@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteCategory } from "@/actions/product/categories";
-import type { Category } from "@/db/schema";
+import type { Category } from "@/db/types";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,7 +34,7 @@ import {
 import { useToast } from "@/lib/hooks/use-toast";
 import { formatDate } from "@/lib/utils";
 
-type AwaitedCategory = Pick<Category, "id" | "name" | "description" | "createdAt">;
+type AwaitedCategory = Pick<Category, "id" | "name" | "slug" | "description" | "createdAt">;
 
 interface CategoriesTableShellProps {
 	data: AwaitedCategory[];
@@ -111,7 +111,7 @@ export function CategoriesTableShell({ data, pageCount }: CategoriesTableShellPr
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-[160px]">
 							<DropdownMenuItem asChild className="cursor-pointer">
-								<Link href={`/admin/inventory/categories/${row.original.id}`} className="text-sm">
+								<Link href={`/admin/categories/${row.original.slug}`} className="text-sm">
 									Edit
 								</Link>
 							</DropdownMenuItem>

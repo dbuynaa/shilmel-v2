@@ -1,27 +1,32 @@
 "use server";
 
 import { db } from "@/db";
-import {
-	psGetAllCategories,
-	psGetCategoryById,
-	psGetCategoryByName,
-} from "@/db/prepared/inventory.statements";
-import { type Category, categories } from "@/db/schema";
+
 import {
 	type AddCategoryFormInput,
 	type DeleteCategoryFormInput,
 	type GetCategoryByIdFormInput,
 	type GetCategoryByNameFormInput,
+	type GetCategoryBySlugFormInput,
 	type UpdateCategoryFormInput,
 	categorySchema,
 	deleteCategorySchema,
 	getCategoryByIdSchema,
 	getCategoryByNameSchema,
+	getCategoryBySlugSchema,
 	updateCategorySchema,
 } from "@/validations/inventory";
 import { eq } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
 
+import {
+	psGetAllCategories,
+	psGetCategoryById,
+	psGetCategoryByName,
+	psGetCategoryBySlug,
+} from "@/db/prepared/category.statements";
+import { categories } from "@/db/schema";
+import type { Category } from "@/db/types";
 import { slugify } from "@/lib/utils";
 
 export async function getCategoryByName(rawInput: GetCategoryByNameFormInput): Promise<Category | null> {
@@ -57,6 +62,22 @@ export async function getCategoryById(rawInput: GetCategoryByIdFormInput): Promi
 	}
 }
 
+export async function getCategoryBySlug(rawInput: GetCategoryBySlugFormInput): Promise<Category | null> {
+	const validatedInput = getCategoryBySlugSchema.safeParse(rawInput);
+	if (!validatedInput.success) return null;
+
+	try {
+		noStore();
+		const [category] = await psGetCategoryBySlug.execute({
+			slug: validatedInput.data.slug,
+		});
+		return category || null;
+	} catch (error) {
+		console.error(error);
+		throw new Error("Error getting category by slug");
+	}
+}
+
 export async function getAllCategories(): Promise<Category[] | null> {
 	try {
 		noStore();
@@ -76,7 +97,7 @@ export async function addCategory(
 
 	try {
 		const existingCategory = await getCategoryByName({
-			name: validatedInput.data.name.toLowerCase().trim(),
+			name: validatedInput.data.name.trim(),
 		});
 		if (existingCategory) return "exists";
 
@@ -85,7 +106,7 @@ export async function addCategory(
 			.insert(categories)
 			.values({
 				id: crypto.randomUUID(),
-				name: validatedInput.data.name.toLowerCase().trim(),
+				name: validatedInput.data.name.trim(),
 				slug: slugify(validatedInput.data.name.toLowerCase().trim()),
 				position: 0,
 				updatedAt: new Date().toISOString(),
@@ -126,16 +147,15 @@ export async function updateCategory(
 
 	try {
 		const existingCategory = await getCategoryByName({
-			name: validatedInput.data.name.toLowerCase().trim(),
+			name: validatedInput.data.name.trim(),
 		});
 
-		if (existingCategory && existingCategory.name !== validatedInput.data.name.toLowerCase().trim())
-			return "exists";
+		if (existingCategory && existingCategory.name !== validatedInput.data.name.trim()) return "exists";
 
 		const newCategory = await db
 			.update(categories)
 			.set({
-				name: validatedInput.data.name.toLowerCase().trim(),
+				name: validatedInput.data.name.trim(),
 				description: validatedInput.data.description,
 			})
 			.where(eq(categories.id, validatedInput.data.id))

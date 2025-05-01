@@ -1,10 +1,10 @@
 "use client";
 
-import { addProduct } from "@/actions/product/products";
+import { createProduct, updateProduct } from "@/actions/product/products";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, ChevronUp, ExternalLink, Globe, Plus, Save, Trash2 } from "lucide-react";
+import { ExternalLink, Globe, Plus, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
 import { ProductCategories } from "@/components/admin/products/product-categories";
@@ -26,8 +26,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import config from "@/config/store.config";
-import type { Product } from "@/db/schema";
-import { ProductStatusEnum } from "@/types/types";
+import type { Product } from "@/db/types";
+import { ProductStatusEnum } from "@/db/types/enums";
 import { type ProductFormValues, productSchema } from "@/validations/product";
 import { toast } from "sonner";
 
@@ -43,11 +43,24 @@ interface ProductOption {
 
 type WeightUnitType = "KG" | "G" | "LB" | "OZ";
 
-export function ProductForm({ product }: { product?: Product }) {
+export type ProductFormProps = {
+	product?: ProductFormValues;
+};
+
+const ChevroButton = ({ title }: { isOpen: boolean; title: string }) => (
+	<div className="flex items-center justify-between p-6">
+		<CardTitle className="text-lg font-medium">{title}</CardTitle>
+	</div>
+);
+
+export function ProductForm({ product }: ProductFormProps) {
+	const isEditMode = !!product?.id;
 	const router = useRouter();
-	const [categories, setCategories] = useState<string[]>([]);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [images, setImages] = useState<Array<{ id?: string; url: string; alt?: string }>>([]);
+	const [categories, setCategories] = useState<string[]>(product?.categories || []);
+	const [isPending, startTransition] = useTransition();
+	const [images, setImages] = useState<Array<{ id?: string; url: string; alt?: string; position: number }>>(
+		product?.images || [],
+	);
 
 	// Collapsible sections state
 	const [openSections, setOpenSections] = useState({
@@ -60,103 +73,101 @@ export function ProductForm({ product }: { product?: Product }) {
 		options: false,
 	});
 
-	// TODO: change the inventory thing
-
-	const toggleSection = (section: keyof typeof openSections) => {
-		setOpenSections((prev) => ({
-			...prev,
-			[section]: !prev[section],
-		}));
-	};
-
 	const form = useForm<ProductFormValues>({
 		resolver: zodResolver(productSchema),
 		defaultValues: {
-			title: "",
-			status: ProductStatusEnum.DRAFT,
-			slug: "",
-			sku: "",
-			price: 0,
-			compareAtPrice: 0,
-			costPrice: 0,
-			inventoryQuantity: 0,
-			description: "",
-			categories: [],
-			images: [],
+			name: product?.name || "",
+			status: product?.status || ProductStatusEnum.DRAFT,
+			slug: product?.slug || "",
+			sku: product?.sku || "",
+			price: product?.price || 0,
+			compareAtPrice: product?.compareAtPrice || 0,
+			costPrice: product?.costPrice || 0,
+			stock: product?.stock || 0,
+			description: product?.description || "",
+			categories: product?.categories || [],
+			images: product?.images || [],
+			weight: product?.weight || 0,
+			weightUnit: product?.weightUnit || "KG",
 			isPublished: false,
-			options: [{ name: "Size", values: [{ value: "Small" }, { value: "Medium" }, { value: "Large" }] }],
-			variants: [
+			options: product?.options || [
+				{ name: "Size", values: [{ value: "Small" }, { value: "Medium" }, { value: "Large" }] },
+			],
+			variants: product?.variants || [
 				{
 					title: "",
 					sku: "",
 					price: 0,
 					compareAtPrice: 0,
-					inventoryQuantity: 0,
-					requiresShipping: true,
-					isTaxable: true,
+					stock: 0,
 					weight: 0,
 					weightUnit: "KG",
 				},
 			],
-			metaData: {
+			metaData: product?.metaData || {
 				title: "",
 				description: "",
 			},
 		},
 	});
 
-	async function onSubmit(data: ProductFormValues) {
+	function onSubmit(data: ProductFormValues) {
 		console.log("Form submitted:", data);
-		try {
-			setIsSubmitting(true);
-			toast("Creating product...", {
-				description: "Your product is being created.",
-				duration: 3000,
-			});
+		startTransition(async () => {
+			try {
+				// Update with product categories and images from state
+				const productData = {
+					...data,
+					categories,
+					images,
+					// id: product?.id, // Include ID for updates
+				};
 
-			// Update with product categories and images from state
-			const productData = {
-				...data,
-				categories,
-				// images,
-			};
+				let result: {
+					product: Product | null;
+					error?: string;
+				};
 
-			const result = await addProduct(productData);
+				if (isEditMode && product?.id) {
+					toast("Updating product...", {
+						description: "Your product is being updated.",
+						duration: 3000,
+					});
+					result = await updateProduct({
+						id: product.id,
+						...productData,
+					});
+				} else {
+					toast("Creating product...", {
+						description: "Your product is being created.",
+						duration: 3000,
+					});
+					result = await createProduct(productData);
+				}
 
-			if (result?.success) {
-				toast.success("Product created successfully", {
-					description: "Your product has been created successfully.",
-					duration: 3000,
+				if (result?.product) {
+					toast.success(isEditMode ? "Product updated successfully" : "Product created successfully", {
+						description: isEditMode
+							? "Your product has been updated successfully."
+							: "Your product has been created successfully.",
+						duration: 3000,
+					});
+					router.push("/admin/products/" + result.product.id);
+					router.refresh();
+				} else {
+					throw new Error(result?.error || `Failed to ${isEditMode ? "update" : "create"} product`);
+				}
+			} catch (error: unknown) {
+				console.error(`Failed to ${isEditMode ? "update" : "create"} product:`, error);
+				toast.error(`Error ${isEditMode ? "updating" : "creating"} product`, {
+					description: error instanceof Error ? error.message : "Unknown error occurred",
 				});
-				router.push("/admin/products");
-				router.refresh();
-			} else {
-				throw new Error(result?.error || "Failed to create product");
 			}
-		} catch (error: unknown) {
-			console.error("Failed to create product:", error);
-			toast.error("Error creating product", {
-				description: error instanceof Error ? error.message : "Unknown error occurred",
-			});
-		} finally {
-			setIsSubmitting(false);
-			form.reset();
-			setCategories([]);
-			setImages([]);
-			setOpenSections({
-				media: true,
-				pricing: true,
-				inventory: true,
-				organization: true,
-				variants: true,
-				metaData: true,
-				options: false,
-			});
-		}
+		});
 	}
 
 	const watchedValues = {
-		title: form.watch("title"),
+		name: form.watch("name"),
 		price: form.watch("price"),
 		compareAtPrice: form.watch("compareAtPrice"),
 		status: form.watch("status"),
@@ -223,6 +234,7 @@ export function ProductForm({ product }: { product?: Product }) {
 		title: "",
 		sku: "",
 		price: 0,
+		stock: 0,
 		compareAtPrice: 0,
 		inventoryQuantity: 0,
 		requiresShipping: true,
@@ -250,6 +262,8 @@ export function ProductForm({ product }: { product?: Product }) {
 		const newVariants = combinations.map((combo) => ({
 			...emptyVariant,
 			title: combo.map((c) => c.value).join(" / "),
+			price: form.getValues("price"),
+			compareAtPrice: form.getValues("compareAtPrice"),
 		}));
 
 		form.setValue("variants", newVariants);
@@ -262,18 +276,6 @@ export function ProductForm({ product }: { product?: Product }) {
 			.replace(/(^-|-$)/g, "");
 	}
 
-	const ChevroButton = ({
-		openSection,
-		isOpen,
-		title,
-	}: { openSection: () => void; isOpen: boolean; title: string }) => (
-		<div className="flex items-center justify-between p-6">
-			<CardTitle className="text-lg font-medium">{title}</CardTitle>
-			{/* <Button variant="ghost" type="button" size="icon">
-				{isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-			</Button> */}
-		</div>
-	);
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)}>
@@ -301,9 +303,9 @@ export function ProductForm({ product }: { product?: Product }) {
 									<SelectItem value={ProductStatusEnum.PUBLISHED}>PUBLISHED</SelectItem>
 								</SelectContent>
 							</Select>
-							<Button type="submit" disabled={isSubmitting}>
+							<Button type="submit" disabled={isPending}>
 								<Save className="w-4 h-4 mr-2" />
-								{isSubmitting ? "Saving..." : "Save"}
+								{isPending ? "Saving..." : "Save"}
 							</Button>
 						</div>
 					</div>
@@ -319,7 +321,7 @@ export function ProductForm({ product }: { product?: Product }) {
 								<CardContent className="pt-6">
 									<FormField
 										control={form.control}
-										name="title"
+										name="name"
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Title</FormLabel>
@@ -384,31 +386,16 @@ export function ProductForm({ product }: { product?: Product }) {
 							<Card>
 								<div
 									className="flex items-center justify-between p-6 cursor-pointer"
-									onClick={() => toggleSection("media")}
+									// onClick={() => toggleSection("media")}
 								>
 									<h2 className="text-lg font-medium">Media</h2>
-									<Button variant="ghost" size="icon">
-										{openSections.media ? (
-											<ChevronUp className="w-4 h-4" />
-										) : (
-											<ChevronDown className="w-4 h-4" />
-										)}
-									</Button>
 								</div>
 								{openSections.media && (
 									<CardContent className="pt-0">
 										<ProductImageUpload
 											images={images}
-											setImagesAction={(newImages) => {
-												setImages(newImages);
-												form.setValue(
-													"images",
-													newImages.map((image) => ({
-														...image,
-														position: newImages.indexOf(image),
-													})),
-												);
-											}}
+											// setImagesAction={uploadImages}
+											setImages={setImages}
 										/>
 									</CardContent>
 								)}
@@ -418,7 +405,7 @@ export function ProductForm({ product }: { product?: Product }) {
 							<Card>
 								<ChevroButton
 									title="Pricing"
-									openSection={() => toggleSection("pricing")}
+									// openSection={() => toggleSection("pricing")}
 									isOpen={openSections.pricing}
 								/>
 
@@ -514,11 +501,7 @@ export function ProductForm({ product }: { product?: Product }) {
 
 							{/* Inventory section */}
 							<Card>
-								<ChevroButton
-									title="Inventory"
-									openSection={() => toggleSection("inventory")}
-									isOpen={openSections.inventory}
-								/>
+								<ChevroButton title="Inventory" isOpen={openSections.inventory} />
 
 								{openSections.inventory && (
 									<CardContent className="pt-0">
@@ -539,53 +522,13 @@ export function ProductForm({ product }: { product?: Product }) {
 
 											<FormField
 												control={form.control}
-												name="inventoryQuantity"
+												name="stock"
 												render={({ field }) => (
 													<FormItem>
 														<FormLabel>Quantity</FormLabel>
 														<FormControl>
 															<Input type="number" min="0" {...field} />
 														</FormControl>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-										</div>
-
-										<div className="grid gap-6 mt-6 md:grid-cols-2">
-											<FormField
-												control={form.control}
-												name="weight"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Weight</FormLabel>
-														<FormControl>
-															<Input type="number" step="0.01" min="0" {...field} value={field.value || ""} />
-														</FormControl>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-
-											<FormField
-												control={form.control}
-												name="weightUnit"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Weight unit</FormLabel>
-														<Select onValueChange={field.onChange} defaultValue={field.value}>
-															<FormControl>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select weight unit" />
-																</SelectTrigger>
-															</FormControl>
-															<SelectContent>
-																<SelectItem value="KG">Kilograms (kg)</SelectItem>
-																<SelectItem value="G">Grams (g)</SelectItem>
-																<SelectItem value="LB">Pounds (lb)</SelectItem>
-																<SelectItem value="OZ">Ounces (oz)</SelectItem>
-															</SelectContent>
-														</Select>
 														<FormMessage />
 													</FormItem>
 												)}
@@ -603,21 +546,6 @@ export function ProductForm({ product }: { product?: Product }) {
 
 								<CardContent className="pt-0">
 									<div className="flex flex-col">
-										<FormField
-											control={form.control}
-											name="requiresShipping"
-											render={({ field }) => (
-												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 mt-4">
-													<div className="space-y-0.5">
-														<FormLabel className="text-base">Requires shipping</FormLabel>
-														<FormDescription>Check if this product requires shipping</FormDescription>
-													</div>
-													<FormControl>
-														<Switch checked={field.value} onCheckedChange={field.onChange} />
-													</FormControl>
-												</FormItem>
-											)}
-										/>
 										<div className="flex mt-6 gap-2 ">
 											<FormField
 												control={form.control}
@@ -663,7 +591,7 @@ export function ProductForm({ product }: { product?: Product }) {
 							<Card className="shadow-sm border-gray-200">
 								<ChevroButton
 									title="Variants"
-									openSection={() => toggleSection("variants")}
+									// openSection={() => toggleSection("variants")}
 									isOpen={openSections.variants}
 								/>
 
@@ -674,7 +602,7 @@ export function ProductForm({ product }: { product?: Product }) {
 												Add options like size or color to create variants of this product
 											</p>
 
-											{form.watch("options").map((_option: ProductOption, optionIndex: number) => (
+											{form.watch("options")?.map((_option: ProductOption, optionIndex: number) => (
 												<div key={optionIndex} className="bg-muted rounded-lg p-4">
 													<div className="flex justify-between items-center mb-4">
 														<FormField
@@ -758,7 +686,7 @@ export function ProductForm({ product }: { product?: Product }) {
 												</Button>
 											</div>
 
-											{form.watch("variants").length > 0 && (
+											{form.watch("variants") && (
 												<div className="space-y-4 mt-8">
 													<h3 className="text-base font-medium">Variants</h3>
 
@@ -769,7 +697,7 @@ export function ProductForm({ product }: { product?: Product }) {
 															<div>Quantity</div>
 														</div>
 														<div className="divide-y">
-															{form.watch("variants").map((_variant, index: number) => (
+															{form.watch("variants")?.map((_variant, index: number) => (
 																<div key={index} className="grid grid-cols-3 px-4 py-3 items-center">
 																	<div className="text-sm font-medium">
 																		{_variant.title}
@@ -796,7 +724,7 @@ export function ProductForm({ product }: { product?: Product }) {
 
 																	<FormField
 																		control={form.control}
-																		name={`variants.${index}.inventoryQuantity`}
+																		name={`variants.${index}.stock`}
 																		render={({ field }) => (
 																			<FormItem>
 																				<FormControl>
@@ -825,7 +753,7 @@ export function ProductForm({ product }: { product?: Product }) {
 							<Card>
 								<ChevroButton
 									title="Organization"
-									openSection={() => toggleSection("organization")}
+									// openSection={() => toggleSection("organization")}
 									isOpen={openSections.organization}
 								/>
 								{openSections.organization && (
@@ -865,7 +793,7 @@ export function ProductForm({ product }: { product?: Product }) {
 							<Card>
 								<ChevroButton
 									title="Meta"
-									openSection={() => toggleSection("metaData")}
+									// openSection={() => toggleSection("metaData")}
 									isOpen={openSections.metaData}
 								/>
 								{openSections.metaData && (
@@ -914,7 +842,7 @@ export function ProductForm({ product }: { product?: Product }) {
 												<h4 className="text-sm font-medium text-blue-600 truncate">
 													{form.watch("metaData.title") ||
 														form.watch("slug") ||
-														form.watch("title") ||
+														form.watch("name") ||
 														"Product Title"}
 												</h4>
 												<p className="text-sm text-green-700 truncate">
@@ -922,7 +850,7 @@ export function ProductForm({ product }: { product?: Product }) {
 													{config.storeName.toLowerCase()}/products/
 													{form.watch("metaData.title") ||
 														form.watch("slug") ||
-														form.watch("title") ||
+														form.watch("name") ||
 														"product-slug"}
 												</p>
 												<p className="text-sm text-muted-foreground line-clamp-2">
@@ -943,11 +871,11 @@ export function ProductForm({ product }: { product?: Product }) {
 								<CardContent className="p-6">
 									<h2 className="mb-4 text-lg font-medium">Product preview</h2>
 									<ProductPreview
-										title={watchedValues.title || "Product title"}
+										title={watchedValues.name || "Product title"}
 										price={watchedValues.price || 0}
 										compareAtPrice={watchedValues.compareAtPrice}
 										status={watchedValues.status}
-										image={form.getValues("images")?.[0]?.url || ""}
+										image={images?.[0]?.url || ""}
 									/>
 									<div className="mt-6">
 										<Button variant="outline" className="w-full" disabled={!form.getValues("slug")}>

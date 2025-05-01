@@ -1,4 +1,4 @@
-import { getProductsByCategory } from "@/actions/products";
+import { getProductsByCategory } from "@/actions/product/products";
 import { env } from "@/env";
 import { getTranslations } from "@/i18n/server";
 import type { Metadata } from "next/types";

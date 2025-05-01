@@ -1,11 +1,11 @@
-import { getCategoryById } from "@/actions/product/categories";
+import { getCategoryBySlug } from "@/actions/product/categories";
 import { auth } from "@/auth";
 import { env } from "@/env";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import type { JSX } from "react";
 
-import { UpdateCategoryForm } from "@/components/admin/forms/inventory/categories/update-category-form";
+import { CategoryForm } from "@/components/admin/forms/inventory/categories/category-form";
 import { SubSubHeader } from "@/components/admin/nav/subsubheader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -28,7 +28,8 @@ export default async function AppInventoryCategoriesUpdateCategoryPage(
 	const session = await auth();
 	if (!session) redirect("/signin");
 
-	const category = params.categoryId !== "new" ? await getCategoryById({ id: params.categoryId }) : undefined;
+	const category =
+		params.categoryId !== "new" ? await getCategoryBySlug({ slug: params.categoryId }) : undefined;
 	if (!category && params.categoryId !== "new") notFound();
 
 	return (
@@ -41,7 +42,7 @@ export default async function AppInventoryCategoriesUpdateCategoryPage(
 						<CardDescription className="text-base">Update this category of items</CardDescription>
 					</CardHeader>
 					<CardContent className="px-5 pt-2">
-						<UpdateCategoryForm category={category || undefined} />
+						<CategoryForm category={category || undefined} />
 					</CardContent>
 				</Card>
 			</div>

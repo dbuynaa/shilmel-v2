@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { ProductStatusEnum } from "@/types/types";
+import { ProductStatusEnum } from "@/db/types/enums";
 import Image from "next/image";
 
 interface ProductPreviewProps {

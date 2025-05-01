@@ -1,20 +1,35 @@
+import type { UploadFilesRouter } from "@/app/api/uploadthing/core";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { generateReactHelpers } from "@uploadthing/react";
 import { Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
+const { useUploadThing } = generateReactHelpers<UploadFilesRouter>();
+
 export function ProductImageUpload({
 	images = [],
-	setImagesAction,
+	setImages,
 }: {
-	images: Array<{ id?: string; url: string; alt?: string }>;
-	setImagesAction: (images: Array<{ id?: string; url: string; alt?: string }>) => void;
+	images: Array<{ id?: string; url: string; alt?: string; position: number }>;
+	setImages: (newImages: Array<{ id?: string; url: string; alt?: string; position: number }>) => void;
 }) {
 	const [isDragging, setIsDragging] = useState(false);
-	const [isUploading, setIsUploading] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const { isUploading, startUpload } = useUploadThing("productImage", {
+		onClientUploadComplete: () => {
+			toast.success("Image uploaded successfully");
+		},
+		onUploadError: () => {
+			toast.error("Failed to upload image");
+		},
+		onUploadBegin: () => {
+			toast.info("Uploading image");
+		},
+	});
 
 	const handleDragOver = (e: React.DragEvent) => {
 		e.preventDefault();
@@ -41,31 +56,51 @@ export function ProductImageUpload({
 	};
 
 	const handleFiles = async (files: FileList) => {
-		setIsUploading(true);
-
 		try {
-			// In a real implementation, you would upload files to your server or cloud storage
-			// For this example, we'll create object URLs locally
-			const newImages = Array.from(files).map((file) => ({
-				id: Math.random().toString(36).substring(2, 15),
-				url: URL.createObjectURL(file),
-				alt: file.name,
-			}));
+			const newImages = await startUpload(Array.from(files));
 
-			setImagesAction([...images, ...newImages]);
+			if (!newImages) {
+				throw new Error("Failed to upload images");
+			}
+
+			setImages([
+				...images,
+				...newImages.map((image) => ({
+					id: image.key,
+					url: image.ufsUrl,
+					alt: image.key.split("_")[1] ?? image.key,
+					position: images.length + 1,
+				})),
+			]);
+
 			toast.success(`${files.length} image${files.length > 1 ? "s" : ""} added successfully`);
 		} catch (error) {
 			console.error("Error uploading images:", error);
 			toast.error("Failed to upload images");
-		} finally {
-			setIsUploading(false);
 		}
 	};
 
-	const removeImage = (index: number) => {
+	const removeImage = async (index: number) => {
+		// Create a copy of the current images array
 		const newImages = [...images];
+
+		// Store the removed image info for the toast message
+		const removedImage = newImages[index];
+
+		// Remove the image at the specified index
 		newImages.splice(index, 1);
-		setImagesAction(newImages);
+
+		// Update positions for remaining images to ensure they're sequential
+		const updatedImages = newImages.map((img, idx) => ({
+			...img,
+			position: idx + 1,
+		}));
+
+		// Update the state with the new array
+		setImages(updatedImages);
+
+		// Show success toast
+		toast.success(`${removedImage?.alt} removed successfully`);
 	};
 
 	return (
@@ -92,6 +127,7 @@ export function ProductImageUpload({
 				<input
 					type="file"
 					ref={fileInputRef}
+					disabled={isUploading}
 					multiple
 					accept="image/*"
 					className="hidden"

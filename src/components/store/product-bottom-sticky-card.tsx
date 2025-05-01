@@ -1,7 +1,7 @@
 // import type * as Commerce from "commerce-kit"
 // import { formatMoney } from "commerce-kit/currencies"
 
-import type { ProudctWithVariants } from "@/db/schema";
+import type { ProductWithVariants } from "@/db/types";
 
 import { MainProductImage } from "@/components/store/products/main-product-image";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ export const ProductBottomStickyCard = ({
 	variant,
 	show,
 }: {
-	product: ProudctWithVariants;
+	product: ProductWithVariants;
 	variant: string;
 	show: boolean;
 }) => {
@@ -30,10 +30,10 @@ export const ProductBottomStickyCard = ({
 			<div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-x-2 px-4 sm:px-6 lg:px-8">
 				<div className="flex min-w-0 items-center gap-x-2 sm:gap-x-4">
 					<div className="shrink-0">
-						{product.variants.find((v) => v.sku === variant) && (
+						{product.productVariants.find((v) => v.sku === variant) && (
 							<MainProductImage
 								className="h-16 w-16 rounded-lg bg-neutral-100 object-cover object-center"
-								src={product.variants.find((v) => v.sku === variant)!.images[0]?.url ?? ""}
+								src={product.productVariants.find((v) => v.sku === variant)!.productImages[0]?.url ?? ""}
 								loading="eager"
 								priority
 								alt=""
@@ -60,7 +60,7 @@ export const ProductBottomStickyCard = ({
 				<AddToCartButton
 					productId={product.id}
 					variant={variant}
-					disabled={(product.variants.find((v) => v.sku === variant)?.stock ?? 0) <= 0}
+					disabled={(product.productVariants.find((v) => v.sku === variant)?.stock ?? 0) <= 0}
 					className="h-9 shrink-0 px-3 text-sm sm:h-10 sm:px-8 sm:text-lg"
 				/>
 			</div>

@@ -31,18 +31,18 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Product } from "@/db/schema";
+import type { Product } from "@/db/types";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 
 type AwaitedItem = Pick<Product, "id" | "name" | "description" | "createdAt">;
 
-interface ItemsTableShellProps {
+interface Props {
 	data: AwaitedItem[];
 	pageCount: number;
 }
 
-export function ProuductTableShell({ data, pageCount }: ItemsTableShellProps): JSX.Element {
+export function ProuductTableShell({ data, pageCount }: Props): JSX.Element {
 	const router = useRouter();
 	const [isPending, startTransition] = React.useTransition();
 	const [selectedRowIds, setSelectedRowIds] = React.useState<string[]>([]);

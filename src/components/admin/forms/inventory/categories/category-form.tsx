@@ -1,7 +1,7 @@
 "use client";
 
-import { addCategory } from "@/actions/product/categories";
-import { type AddCategoryFormInput, categorySchema } from "@/validations/inventory";
+import { addCategory, updateCategory } from "@/actions/product/categories";
+import { type UpdateCategoryFormInput, updateCategorySchema } from "@/validations/inventory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,56 +13,70 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import type { Category } from "@/db/types";
 import { useToast } from "@/lib/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-export function AddCategoryForm(): JSX.Element {
+interface CategoryFormProps {
+	category: Category | undefined;
+}
+
+export function CategoryForm({ category }: CategoryFormProps): JSX.Element {
 	const { toast } = useToast();
 	const router = useRouter();
 	const [isPending, startTransition] = React.useTransition();
 
-	const form = useForm<AddCategoryFormInput>({
-		resolver: zodResolver(categorySchema),
+	const form = useForm<UpdateCategoryFormInput>({
+		resolver: zodResolver(updateCategorySchema),
 		defaultValues: {
-			name: "",
-			description: "",
+			id: category?.id || "",
+			name: category?.name || "",
+			image: category?.image || undefined,
+			description: category?.description || "",
 		},
 	});
 
-	function onSubmit(formData: AddCategoryFormInput) {
+	function onSubmit(formData: UpdateCategoryFormInput) {
 		startTransition(async () => {
 			try {
-				const message = await addCategory({
-					name: formData.name,
-					description: formData.description,
-				});
+				const message = category
+					? await updateCategory({
+							id: category.id,
+							name: formData.name,
+							description: formData.description,
+						})
+					: await addCategory({
+							name: formData.name,
+							description: formData.description,
+						});
 
 				switch (message) {
-					case "exists":
-						toast({
-							title: "This category already exists",
-							description: "Please use a different name",
-							variant: "destructive",
-						});
-						break;
 					case "success":
 						toast({
 							title: "Success!",
-							description: "New category added",
+							description: "Category updated",
 						});
-						router.push("/admin/inventory/categories");
+						router.push("/admin/categories");
 						router.refresh();
+						break;
+					case "exists":
+						toast({
+							title: "This name is already taken",
+							description: "Select a different name and try again",
+							variant: "destructive",
+						});
 						break;
 					default:
 						toast({
-							title: "Error adding new category",
+							title: "Error updating category",
 							description: "Please try again",
 							variant: "destructive",
 						});
 				}
 			} catch (error) {
+				console.error(error);
 				toast({
-					title: "Something wend wrong",
+					title: "Something went wrong",
 					description: "Please try again",
 					variant: "destructive",
 				});
@@ -103,16 +117,16 @@ export function AddCategoryForm(): JSX.Element {
 				/>
 
 				<div className="flex items-center gap-2 pt-2">
-					<Button disabled={isPending} aria-label="Add Category" className="w-fit">
+					<Button disabled={isPending} aria-label="Update Category" className="w-fit">
 						{isPending ? (
 							<>
 								<Icons.spinner className="mr-2 size-4 animate-spin" aria-hidden="true" />
-								<span>Adding...</span>
+								<span>Updating...</span>
 							</>
 						) : (
-							<span>Add Category</span>
+							<span>Update Category</span>
 						)}
-						<span className="sr-only">Add Category</span>
+						<span className="sr-only">Update Category</span>
 					</Button>
 
 					<Link

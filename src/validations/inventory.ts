@@ -19,6 +19,10 @@ export const getCategoryByNameSchema = z.object({
 	name: z.string(),
 });
 
+export const getCategoryBySlugSchema = z.object({
+	slug: z.string(),
+});
+
 export const updateCategorySchema = categorySchema.extend({
 	id: z.string(),
 });
@@ -28,6 +32,7 @@ export type UpdateCategoryFormInput = z.infer<typeof updateCategorySchema>;
 export type DeleteCategoryFormInput = z.infer<typeof deleteCategorySchema>;
 export type GetCategoryByNameFormInput = z.infer<typeof getCategoryByNameSchema>;
 export type GetCategoryByIdFormInput = z.infer<typeof getCategoryByIdSchema>;
+export type GetCategoryBySlugFormInput = z.infer<typeof getCategoryBySlugSchema>;
 
 // Schema for product variant
 const productVariantSchema = z.object({

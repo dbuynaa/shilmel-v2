@@ -3,8 +3,10 @@
 import type React from "react";
 
 import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
+import { addCategory, getAllCategories } from "@/actions/product/categories";
+import { Icons } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,16 +29,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import type { Category } from "@/db/types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // Mock categories - in a real app, these would come from your API
-const mockCategories = [
-	{ id: "1", name: "Electronics", slug: "electronics" },
-	{ id: "2", name: "Clothing", slug: "clothing" },
-	{ id: "3", name: "Home & Kitchen", slug: "home-kitchen" },
-	{ id: "4", name: "Books", slug: "books" },
-	{ id: "5", name: "Toys", slug: "toys" },
-];
+// const mockCategories = [
+// 	{ id: "1", name: "Electronics", slug: "electronics" },
+// 	{ id: "2", name: "Clothing", slug: "clothing" },
+// 	{ id: "3", name: "Home & Kitchen", slug: "home-kitchen" },
+// 	{ id: "4", name: "Books", slug: "books" },
+// 	{ id: "5", name: "Toys", slug: "toys" },
+// ];
+type ProductCategory = Pick<Category, "id" | "name" | "description" | "slug" | "position">;
 
 interface ProductCategoriesProps {
 	selectedCategories: string[];
@@ -45,13 +50,23 @@ interface ProductCategoriesProps {
 
 export function ProductCategories({ selectedCategories, setSelectedCategories }: ProductCategoriesProps) {
 	const [open, setOpen] = useState(false);
-	const [categories, setCategories] = useState(mockCategories);
+	const [categories, setCategories] = useState<ProductCategory[]>([]);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [isPending, startTransition] = useTransition();
 	const [newCategory, setNewCategory] = useState({
 		name: "",
 		slug: "",
+		position: 0,
 		description: "",
 	});
+
+	useEffect(() => {
+		const fetchCategories = async () => {
+			const categories = await getAllCategories();
+			setCategories(categories || []);
+		};
+		fetchCategories();
+	}, []);
 
 	const handleSelectCategory = (categoryId: string) => {
 		setSelectedCategories((current) =>
@@ -78,12 +93,28 @@ export function ProductCategories({ selectedCategories, setSelectedCategories }:
 			id: crypto.randomUUID(),
 			name: newCategory.name,
 			slug,
+			position: categories.length + 1,
+			description: newCategory.description,
 		};
 
-		setCategories([...categories, newCategoryItem]);
-		setSelectedCategories([...selectedCategories, newCategoryItem.id]);
-		setNewCategory({ name: "", slug: "", description: "" });
-		setIsDialogOpen(false);
+		startTransition(async () => {
+			const message = await addCategory(newCategoryItem);
+
+			if (message === "success") {
+				toast.success("Category added successfully");
+				setCategories((prev) => [...prev, newCategoryItem]);
+				setSelectedCategories((prev) => [...prev, newCategoryItem.id]);
+				setNewCategory({
+					name: "",
+					slug: "",
+					position: 0,
+					description: "",
+				});
+				setIsDialogOpen(false);
+			} else {
+				toast.error("Error adding category");
+			}
+		});
 	};
 
 	return (
@@ -164,7 +195,7 @@ export function ProductCategories({ selectedCategories, setSelectedCategories }:
 									setNewCategory({
 										...newCategory,
 										name: e.target.value,
-										slug: newCategory.slug || generateSlug(e.target.value),
+										slug: generateSlug(e.target.value),
 									});
 								}}
 							/>
@@ -192,7 +223,17 @@ export function ProductCategories({ selectedCategories, setSelectedCategories }:
 						<Button variant="outline" onClick={() => setIsDialogOpen(false)}>
 							Cancel
 						</Button>
-						<Button onClick={handleAddCategory}>Create Category</Button>
+						<Button disabled={isPending} onClick={handleAddCategory}>
+							{isPending ? (
+								<>
+									<Icons.spinner className="mr-2 size-4 animate-spin" aria-hidden="true" />
+									<span>Creating...</span>
+								</>
+							) : (
+								<span>Create Category</span>
+							)}
+							<span className="sr-only">Create Category</span>
+						</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>

@@ -36,8 +36,8 @@ export const sidebarItems = [
 			},
 			{
 				title: "Categories",
-				href: "/admin/products/categories",
-				hrefPlus: "/admin/products/categories/new",
+				href: "/admin/categories",
+				hrefPlus: "/admin/categories/new",
 			},
 		],
 	},

@@ -16,7 +16,7 @@ export function ItemsSelect(): JSX.Element {
 			<SelectTrigger className="w-40">
 				<SelectValue placeholder="All Items"></SelectValue>
 			</SelectTrigger>
-			<SelectContent className="bg-tertiary">
+			<SelectContent>
 				<SelectGroup>
 					{inventoryItemsSelectOptions.map((option) => (
 						<SelectItem key={option.value} value={option.value}>

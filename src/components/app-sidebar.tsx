@@ -3,6 +3,7 @@
 import {
 	IconBox,
 	IconCamera,
+	IconCategory,
 	IconDashboard,
 	IconFileAi,
 	IconFileDescription,
@@ -45,6 +46,11 @@ const data = {
 			title: "Products",
 			url: "/admin/products",
 			icon: IconBox,
+		},
+		{
+			title: "Categories",
+			url: "/admin/categories",
+			icon: IconCategory,
 		},
 		{
 			title: "Customer",

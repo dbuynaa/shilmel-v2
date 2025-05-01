@@ -1,4 +1,4 @@
-import type { ProudctWithVariants } from "@/db/schema";
+import type { ProductWithVariants } from "@/db/types";
 
 const NO_MATCH = 0;
 const EXACT_MATCH = 5;
@@ -26,7 +26,7 @@ function simpleSearchMatch(query: string, value: null | undefined | string): num
 	return (EXACT_WORD_MULTIPLIER * exactWordOccurrences + includesOccurrences) / allWords;
 }
 
-export function simpleSearch(products: ProudctWithVariants[], query: string) {
+export function simpleSearch(products: ProductWithVariants[], query: string) {
 	const escapedQuery = escapeRegExp(query);
 	const matches = products
 		.flatMap((product) => {
@@ -34,8 +34,8 @@ export function simpleSearch(products: ProudctWithVariants[], query: string) {
 				[product.name, 1.5],
 				[product.description, 1],
 				[product.slug, 1],
-				[product.category.name, 1],
-				[product.variants.map((v) => v.sku).join(" "), 1],
+				// [product.productCategories.category.name, 1],
+				[product.productVariants.map((v) => v.sku).join(" "), 1],
 			] as const;
 
 			const score = fieldsWithWeights

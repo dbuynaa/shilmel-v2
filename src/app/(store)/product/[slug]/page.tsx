@@ -1,4 +1,3 @@
-import { getProductBySlug } from "@/actions/products";
 import { env } from "@/env";
 import { getLocale, getTranslations } from "@/i18n/server";
 import Image from "next/image";
@@ -7,6 +6,7 @@ import type { Metadata } from "next/types";
 // import { ProductModel3D } from "@/admin/(store)/product/[slug]/product-model3d";
 import { Suspense } from "react";
 
+import { getProductBySlug, getProductVariantsByProductId } from "@/actions/product/products";
 import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal";
 import { AddToCartButton } from "@/components/store/add-to-cart-button";
 import { JsonLd, mappedProductToJsonLd } from "@/components/store/json-ld";
@@ -30,9 +30,10 @@ export const generateMetadata = async (props: {
 	const searchParams = await props.searchParams;
 	const params = await props.params;
 	const product = await getProductBySlug(params.slug);
-	const variants = product?.variants;
-	const selectedVariant = variants?.find((variant) => variant.sku === searchParams.variant) ?? variants?.[0];
-
+	const variants = await getProductVariantsByProductId(product?.id || "");
+	const selectedVariant = variants?.length
+		? (variants.find((variant) => variant.sku === searchParams.variant) ?? variants[0])
+		: null;
 	if (!product || !selectedVariant) {
 		return notFound();
 	}
@@ -44,7 +45,7 @@ export const generateMetadata = async (props: {
 		canonical.searchParams.set("variant", searchParams.variant);
 	}
 
-	const productName = formatProductName(product.name, selectedVariant.sku);
+	const productName = formatProductName(product.name, selectedVariant?.sku || "");
 
 	return {
 		title: t("title", { productName }),
@@ -61,7 +62,7 @@ export default async function SingleProductPage(props: {
 	const searchParams = await props.searchParams;
 
 	const product = await getProductBySlug(params.slug);
-	const variants = product?.variants;
+	const variants = await getProductVariantsByProductId(product?.id || "");
 	const selectedVariant = variants?.find((variant) => variant.sku === searchParams.variant) ?? variants?.[0];
 	if (!product || !selectedVariant) {
 		return notFound();
@@ -70,8 +71,8 @@ export default async function SingleProductPage(props: {
 	const t = await getTranslations("/product.page");
 	const locale = await getLocale();
 
-	const category = product.category;
-	const images = selectedVariant?.images || [];
+	const category = product.productCategories[0];
+	const images = product.productImages || [];
 	return (
 		<article className="pb-12">
 			<Breadcrumb>
@@ -86,7 +87,9 @@ export default async function SingleProductPage(props: {
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink className="inline-flex min-h-12 min-w-12 items-center justify-center" asChild>
-									<YnsLink href={`/category/${category.name}`}>{deslugify(category.name)}</YnsLink>
+									<YnsLink href={`/category/${category.category.name}`}>
+										{deslugify(category.category.slug)}
+									</YnsLink>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 						</>
@@ -99,21 +102,21 @@ export default async function SingleProductPage(props: {
 						<>
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
-								<BreadcrumbPage>{deslugify(selectedVariant.sku)}</BreadcrumbPage>
+								<BreadcrumbPage>{selectedVariant.sku}</BreadcrumbPage>
 							</BreadcrumbItem>
 						</>
 					)}
 				</BreadcrumbList>
 			</Breadcrumb>
 
-			<StickyBottom product={product} variant={selectedVariant.sku}>
+			<StickyBottom product={product} variant={selectedVariant?.sku || ""}>
 				<div className="mt-4 grid gap-4 lg:grid-cols-12">
 					<div className="lg:col-span-5 lg:col-start-8">
 						<h1 className="text-foreground text-3xl leading-none font-bold tracking-tight">{product.name}</h1>
 						{product.price && (
 							<p className="text-foreground/70 mt-2 text-2xl leading-none font-medium tracking-tight">
 								{formatMoney({
-									amount: parseInt(product.price),
+									amount: Number.parseInt(product.price),
 									currency: "USD",
 									locale,
 								})}
@@ -128,12 +131,6 @@ export default async function SingleProductPage(props: {
 						<h2 className="sr-only">{t("imagesTitle")}</h2>
 
 						<div className="grid gap-4 lg:grid-cols-3 [&>*:first-child]:col-span-3">
-							{/* {selectedVariant && (
-                <ProductModel3D
-                  model3d={selectedVariant.images[0].url}
-                  imageSrc={selectedVariant.images[0].url}
-                />
-              )} */}
 							{images.map((image, idx) => {
 								const params = new URLSearchParams({
 									image: idx.toString(),
@@ -143,7 +140,7 @@ export default async function SingleProductPage(props: {
 								}
 								return (
 									<YnsLink key={idx} href={`?${params}`} scroll={false}>
-										{idx === 0 && !selectedVariant.images[0]?.url ? (
+										{idx === 0 && !selectedVariant.productImages[0]?.url ? (
 											<MainProductImage
 												key={image.id}
 												className="w-full rounded-lg object-cover object-center transition-opacity"
@@ -151,13 +148,13 @@ export default async function SingleProductPage(props: {
 												loading="eager"
 												priority
 												quality={100}
-												alt={image.altText || ""}
+												alt={image.alt || ""}
 											/>
 										) : (
 											<Image
 												key={image.id}
 												className="w-full rounded-lg object-cover object-center transition-opacity"
-												src={image.url}
+												src={image.url || "/placeholder.svg"}
 												width={700 / 3}
 												height={700 / 3}
 												sizes="(max-width: 1024x) 33vw, (max-width: 1280px) 20vw, 225px"
@@ -180,35 +177,41 @@ export default async function SingleProductPage(props: {
 								{/* <Markdown source={product.description || ""} /> */}
 							</div>
 						</section>
-
+						{/* TODO: fix the variants*/}
 						{variants && variants.length > 1 && (
 							<div className="grid gap-2">
-								<p className="text-base font-medium" id="variant-label">
-									{t("variantTitle")}
-								</p>
-								<ul role="list" className="grid grid-cols-4 gap-2" aria-labelledby="variant-label">
-									{variants.map((variant) => {
-										const isSelected = selectedVariant?.sku === variant.sku;
-										return (
-											variant && (
-												<li key={variant.id}>
-													<YnsLink
-														scroll={false}
-														prefetch={true}
-														href={`/product/${product.slug}?variant=${variant.sku}`}
-														className={cn(
-															"hover:bg-secondary/30 flex cursor-pointer items-center justify-center gap-2 rounded-md border p-2 transition-colors",
-															isSelected && "border-primary bg-tertiary font-medium",
-														)}
-														aria-selected={isSelected}
-													>
-														{deslugify(variant.sku)}
-													</YnsLink>
-												</li>
-											)
-										);
-									})}
-								</ul>
+								{product.productOptions.map((option) => (
+									<div key={option.id}>
+										<p className="text-base font-medium" id={`variant-label-${option.id}`}>
+											{option.name}
+										</p>
+										<ul
+											role="list"
+											className="grid grid-cols-4 gap-2"
+											aria-labelledby={`variant-label-${option.id}`}
+										>
+											{option.productOptionValues.map((value) => {
+												const isSelected = value.value === selectedVariant.sku;
+												return (
+													<li key={value.id}>
+														<YnsLink
+															scroll={false}
+															prefetch={true}
+															href={`/product/${product.slug}?variant=${value.value}`}
+															className={cn(
+																"hover:bg-secondary/30 flex cursor-pointer items-center justify-center gap-2 rounded-md border p-2 transition-colors",
+																isSelected && "border-primary bg-tertiary font-medium",
+															)}
+															aria-selected={isSelected}
+														>
+															{value.value}
+														</YnsLink>
+													</li>
+												);
+											})}
+										</ul>
+									</div>
+								))}
 							</div>
 						)}
 
@@ -221,10 +224,6 @@ export default async function SingleProductPage(props: {
 				</div>
 			</StickyBottom>
 
-			{/* <Suspense>
-        <SimilarProducts id={product.id} />
-      </Suspense> */}
-
 			<Suspense>
 				<ProductImageModal images={images.map((image) => image.url)} />
 			</Suspense>
@@ -233,68 +232,3 @@ export default async function SingleProductPage(props: {
 		</article>
 	);
 }
-
-// async function SimilarProducts({ id }: { id: string }) {
-//   const products = await getRecommendedProducts({ productId: id, limit: 4 })
-
-//   if (!products) {
-//     return null
-//   }
-
-//   return (
-//     <section className="py-12">
-//       <div className="mb-8">
-//         <h2 className="text-2xl font-bold tracking-tight">You May Also Like</h2>
-//       </div>
-//       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-//         {/* {products.map((product) => {
-//           const trieveMetadata = product.metadata as TrieveProductMetadata
-//           return (
-//             <div
-//               key={product.tracking_id}
-//               className="group overflow-hidden rounded bg-card shadow-xs"
-//             >
-//               {trieveMetadata.image_url && (
-//                 <YnsLink
-//                   href={`${publicUrl}${product.link}`}
-//                   className="block"
-//                   prefetch={false}
-//                 >
-//                   <Image
-//                     className={
-//                       "w-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-80"
-//                     }
-//                     src={trieveMetadata.image_url}
-//                     width={300}
-//                     height={300}
-//                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
-//                     alt=""
-//                   />
-//                 </YnsLink>
-//               )}
-//               <div className="p-4">
-//                 <h3 className="mb-2 text-lg font-semibold">
-//                   <YnsLink
-//                     href={product.link || "#"}
-//                     className="hover:text-primary"
-//                     prefetch={false}
-//                   >
-//                     {trieveMetadata.name}
-//                   </YnsLink>
-//                 </h3>
-//                 <div className="flex items-center justify-between">
-//                   <span>
-//                     {formatMoney({
-//                       amount: trieveMetadata.amount,
-//                       currency: trieveMetadata.currency,
-//                     })}
-//                   </span>
-//                 </div>
-//               </div>
-//             </div>
-//           )
-//         })} */}
-//       </div>
-//     </section>
-//   )
-// }

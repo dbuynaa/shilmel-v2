@@ -1,5 +1,5 @@
 // lib/validations/product.ts
-import { ProductStatusEnum } from "@/types/types";
+import { ProductStatusEnum } from "@/db/types/enums";
 import * as z from "zod";
 
 const optionValueSchema = z.object({
@@ -20,19 +20,27 @@ const inventorySchema = z.object({
 		.optional(),
 	costPrice: z.coerce.number().min(0, { message: "Cost price must be a positive number" }).optional(),
 	sku: z.string().max(100).optional(),
-	inventoryQuantity: z.coerce
+	stock: z.coerce
 		.number()
 		.int({ message: "Quantity must be a whole number" })
 		.min(0, { message: "Quantity must be a positive number" }),
 	weightUnit: z.enum(["KG", "G", "LB", "OZ"]).optional(),
-	weight: z.coerce.number().min(0, { message: "Weight must be a positive number" }).optional().nullable(),
-	requiresShipping: z.boolean().optional(),
-	isTaxable: z.boolean().optional(),
+	weight: z.coerce.number().min(0, { message: "Weight must be a positive number" }).optional(),
 });
 
 const variantSchema = z.object({
-	title: z.string().optional(),
+	title: z.string(),
 	...inventorySchema.shape,
+	images: z
+		.array(
+			z.object({
+				url: z.string(),
+				alt: z.string().optional(),
+				position: z.number(),
+			}),
+		)
+		.optional(),
+
 	optionValues: z
 		.array(
 			z.object({
@@ -43,12 +51,13 @@ const variantSchema = z.object({
 });
 
 const productSchema = z.object({
-	title: z.string().min(1, "Title is required"),
+	id: z.string().optional(),
+	name: z.string().min(1, "Name is required"),
 	slug: z.string().min(1, "Handle is required"),
 	description: z.string().optional(),
 	isPublished: z.boolean().optional(),
-	options: z.array(productOptionSchema),
-	variants: z.array(variantSchema),
+	options: z.array(productOptionSchema).optional(),
+	variants: z.array(variantSchema).optional(),
 	status: z.nativeEnum(ProductStatusEnum),
 	...inventorySchema.shape,
 	featured: z.boolean().optional(),

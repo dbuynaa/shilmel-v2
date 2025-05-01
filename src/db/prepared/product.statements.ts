@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { inventories, products } from "@/db/schema";
+import { productVariants, products } from "@/db/schema/schema";
 import { eq, sql } from "drizzle-orm";
 
 export const psGetProductById = db.query.products
@@ -9,15 +9,28 @@ export const psGetProductById = db.query.products
 			productVariants: {
 				with: {
 					productImages: true,
+					// productVariantOptions: {
+					// 	with: {
+					// 		productOptionValue: true,
+					// 	},
+					// },
 				},
 			},
+			metaData: true,
+			productOptions: {
+				with: {
+					productOptionValues: true,
+				},
+			},
+			productCategories: true,
+			productImages: true,
 		},
 	})
 	.prepare("psGetProductById");
 
 export const psGetProductVariantBySku = db.query.productVariants
 	.findMany({
-		where: eq(inventories.sku, sql.placeholder("sku")),
+		where: eq(productVariants.sku, sql.placeholder("sku")),
 		with: {
 			productImages: true,
 			product: true,
@@ -31,6 +44,16 @@ export const psGetAllProducts = db.query.products
 		offset: sql.placeholder("offset"),
 		with: {
 			productImages: true,
+			productCategories: {
+				with: {
+					category: true,
+				},
+			},
+			productOptions: {
+				with: {
+					productOptionValues: true,
+				},
+			},
 			productVariants: {
 				with: {
 					productImages: true,

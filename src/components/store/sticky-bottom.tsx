@@ -1,6 +1,6 @@
 "use client";
 
-import type { ProudctWithVariants } from "@/db/schema";
+import type { ProductWithVariants } from "@/db/types";
 // import type * as Commerce from "commerce-kit";
 import { useEffect, useState } from "react";
 
@@ -12,7 +12,7 @@ export const StickyBottom = ({
 	variant,
 }: Readonly<{
 	children: React.ReactNode;
-	product: ProudctWithVariants;
+	product: ProductWithVariants;
 	variant: string;
 }>) => {
 	const [show, setShow] = useState(false);
