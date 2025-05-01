@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		(category) =>
 			({
 				url: `${env.NEXT_PUBLIC_APP_URL}/category/${category.slug}`,
-				lastModified: new Date(),
+				lastModified: new Date(category.updatedAt),
 				changeFrequency: "daily",
 				priority: 0.5,
 			}) satisfies Item,
