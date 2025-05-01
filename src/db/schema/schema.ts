@@ -1,3 +1,4 @@
+import { createId } from "@paralleldrive/cuid2";
 import { sql } from "drizzle-orm";
 import {
 	boolean,
@@ -469,13 +470,13 @@ export const metaData = pgTable(
 	],
 );
 
-export const address = pgTable(
-	"Address",
+export const addresses = pgTable(
+	"addresses",
 	{
-		id: text().primaryKey().notNull(),
+		id: text()
+			.primaryKey()
+			.$defaultFn(() => createId()),
 		userId: text().notNull(),
-		firstName: text().notNull(),
-		lastName: text().notNull(),
 		company: text(),
 		address1: text().notNull(),
 		address2: text(),
@@ -485,8 +486,8 @@ export const address = pgTable(
 		postalCode: text().notNull(),
 		phone: text(),
 		isDefault: boolean().default(false).notNull(),
-		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`),
+		updatedAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`),
 		customerId: text(),
 	},
 	(table) => [
@@ -528,14 +529,14 @@ export const orders = pgTable(
 		uniqueIndex("orders_orderNumber_key").using("btree", table.orderNumber.asc().nullsLast().op("int4_ops")),
 		foreignKey({
 			columns: [table.billingAddressId],
-			foreignColumns: [address.id],
+			foreignColumns: [addresses.id],
 			name: "orders_billingAddressId_fkey",
 		})
 			.onUpdate("cascade")
 			.onDelete("set null"),
 		foreignKey({
 			columns: [table.shippingAddressId],
-			foreignColumns: [address.id],
+			foreignColumns: [addresses.id],
 			name: "orders_shippingAddressId_fkey",
 		})
 			.onUpdate("cascade")

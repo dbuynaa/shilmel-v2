@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
 	accounts,
-	address,
+	addresses,
 	cartItems,
 	carts,
 	categories,
@@ -78,7 +78,7 @@ export const customersRelations = relations(customers, ({ one, many }) => ({
 		fields: [customers.userId],
 		references: [users.id],
 	}),
-	addresses: many(address),
+	addresses: many(addresses),
 	orders: many(orders),
 	carts: many(carts),
 }));
@@ -183,9 +183,9 @@ export const metaDataRelations = relations(metaData, ({ one }) => ({
 	}),
 }));
 
-export const addressRelations = relations(address, ({ one, many }) => ({
+export const addressesRelations = relations(addresses, ({ one, many }) => ({
 	customer: one(customers, {
-		fields: [address.customerId],
+		fields: [addresses.customerId],
 		references: [customers.id],
 	}),
 	orders_billingAddressId: many(orders, {
@@ -197,14 +197,14 @@ export const addressRelations = relations(address, ({ one, many }) => ({
 }));
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
-	address_billingAddressId: one(address, {
+	address_billingAddressId: one(addresses, {
 		fields: [orders.billingAddressId],
-		references: [address.id],
+		references: [addresses.id],
 		relationName: "orders_billingAddressId_address_id",
 	}),
-	address_shippingAddressId: one(address, {
+	address_shippingAddressId: one(addresses, {
 		fields: [orders.shippingAddressId],
-		references: [address.id],
+		references: [addresses.id],
 		relationName: "orders_shippingAddressId_address_id",
 	}),
 	customer: one(customers, {

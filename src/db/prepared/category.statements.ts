@@ -5,6 +5,8 @@ import { desc, eq, sql } from "drizzle-orm";
 export const psGetAllCategories = db
 	.select()
 	.from(categories)
+	.limit(sql.placeholder("limit"))
+	.offset(sql.placeholder("offset"))
 	.orderBy(desc(categories.createdAt))
 	.prepare("psGetAllCategories");
 
