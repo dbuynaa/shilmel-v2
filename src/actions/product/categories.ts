@@ -81,7 +81,7 @@ export async function getCategoryBySlug(rawInput: GetCategoryBySlugFormInput): P
 export async function getAllCategories(): Promise<Category[] | null> {
 	try {
 		noStore();
-		const categories = await psGetAllCategories.execute();
+		const categories = await psGetAllCategories.execute({ limit: 1000, offset: 0 });
 		return categories || null;
 	} catch (error) {
 		console.error(error);
