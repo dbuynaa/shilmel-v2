@@ -9,6 +9,7 @@ const optionValueSchema = z.object({
 
 const productOptionSchema = z.object({
 	name: z.string().min(1, "Option name is required"),
+	// values: z.array(z.string()).min(1, "At least one option value is required"),
 	values: z.array(optionValueSchema).min(1, "At least one option value is required"),
 });
 
@@ -40,14 +41,12 @@ const variantSchema = z.object({
 			}),
 		)
 		.optional(),
-
-	optionValues: z
-		.array(
-			z.object({
-				id: z.string(),
-			}),
-		)
-		.optional(),
+	options: z.array(
+		z.object({
+			name: z.string().min(1, "Option name is required"),
+			value: z.string().min(1, "Option value is required"),
+		}),
+	),
 });
 
 const productSchema = z.object({
@@ -55,7 +54,6 @@ const productSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	slug: z.string().min(1, "Handle is required"),
 	description: z.string().optional(),
-	isPublished: z.boolean().optional(),
 	options: z.array(productOptionSchema).optional(),
 	variants: z.array(variantSchema).optional(),
 	status: z.nativeEnum(ProductStatusEnum),
@@ -81,3 +79,6 @@ const productSchema = z.object({
 
 export { productSchema, productOptionSchema, optionValueSchema, variantSchema };
 export type ProductFormValues = z.infer<typeof productSchema>;
+export type FormProductOption = z.infer<typeof productOptionSchema>;
+export type VariantFormValues = z.infer<typeof variantSchema>;
+// export type ProductOptionValues = z.infer<typeof productOptionSchema>;

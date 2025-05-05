@@ -110,7 +110,7 @@ export const productVariantsRelations = relations(productVariants, ({ one, many 
 		fields: [productVariants.productId],
 		references: [products.id],
 	}),
-	productVariantOptions: many(productVariantOptions),
+	optionValues: many(productVariantOptions),
 	orderItems: many(orderItems),
 	cartItems: many(cartItems),
 }));
@@ -154,7 +154,7 @@ export const productOptionsRelations = relations(productOptions, ({ one, many })
 		fields: [productOptions.productId],
 		references: [products.id],
 	}),
-	productOptionValues: many(productOptionValues),
+	values: many(productOptionValues),
 }));
 
 export const productOptionValuesRelations = relations(productOptionValues, ({ one, many }) => ({

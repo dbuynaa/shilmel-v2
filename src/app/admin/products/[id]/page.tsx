@@ -36,7 +36,7 @@ export default async function ProductPage(props: AppProductPageProps): Promise<J
 	if (!product && params.id !== "new") notFound();
 
 	const parsedProduct: ProductFormValues | undefined = product
-		? {
+		? ({
 				id: product.id,
 				name: product.name,
 				slug: product.slug,
@@ -62,13 +62,7 @@ export default async function ProductPage(props: AppProductPageProps): Promise<J
 							position: image.position,
 						};
 					}) || [],
-				options:
-					product?.productOptions.map((option) => {
-						return {
-							name: option.name,
-							values: option.productOptionValues,
-						};
-					}) || [],
+				options: product?.productOptions,
 				status: (product?.status as ProductStatusEnum) || ProductStatusEnum.DRAFT,
 				variants:
 					product?.productVariants.map((variant) => {
@@ -82,10 +76,17 @@ export default async function ProductPage(props: AppProductPageProps): Promise<J
 							weight: variant.weight ? Number(variant.weight) : undefined,
 							weightUnit: variant.weightUnit,
 							images: [],
-							optionValues: [],
+							options: variant.optionValues.map((optionValue) => {
+								return {
+									name:
+										product.productOptions.find((option) => option.id === optionValue.optionValueId)?.name ||
+										"",
+									value: optionValue.productOptionValue.value,
+								};
+							}),
 						};
 					}) || [],
-			}
+			} satisfies ProductFormValues)
 		: undefined;
 	return (
 		<div className="relative">

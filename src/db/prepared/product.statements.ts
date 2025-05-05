@@ -9,17 +9,17 @@ export const psGetProductById = db.query.products
 			productVariants: {
 				with: {
 					productImages: true,
-					// productVariantOptions: {
-					// 	with: {
-					// 		productOptionValue: true,
-					// 	},
-					// },
+					optionValues: {
+						with: {
+							productOptionValue: true,
+						},
+					},
 				},
 			},
 			metaData: true,
 			productOptions: {
 				with: {
-					productOptionValues: true,
+					values: true,
 				},
 			},
 			productCategories: true,
@@ -51,7 +51,7 @@ export const psGetAllProducts = db.query.products
 			},
 			productOptions: {
 				with: {
-					productOptionValues: true,
+					values: true,
 				},
 			},
 			productVariants: {

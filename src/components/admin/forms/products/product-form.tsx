@@ -26,9 +26,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import config from "@/config/store.config";
-import type { Product } from "@/db/types";
 import { ProductStatusEnum } from "@/db/types/enums";
-import { type ProductFormValues, productSchema } from "@/validations/product";
+import { type ProductFormValues, type VariantFormValues, productSchema } from "@/validations/product";
 import { toast } from "sonner";
 
 interface OptionValueType {
@@ -36,10 +35,14 @@ interface OptionValueType {
 	value: string;
 }
 
-interface ProductOption {
-	name: string;
-	values: { value: string }[];
-}
+// interface ProductOption {
+// 	name: string;
+// 	values: { value: string }[];
+// }
+// interface ProductOptionValues {
+// 	option: string;
+// 	value: string;
+// }
 
 type WeightUnitType = "KG" | "G" | "LB" | "OZ";
 
@@ -89,7 +92,6 @@ export function ProductForm({ product }: ProductFormProps) {
 			images: product?.images || [],
 			weight: product?.weight || 0,
 			weightUnit: product?.weightUnit || "KG",
-			isPublished: false,
 			options: product?.options || [
 				{ name: "Size", values: [{ value: "Small" }, { value: "Medium" }, { value: "Large" }] },
 			],
@@ -102,6 +104,9 @@ export function ProductForm({ product }: ProductFormProps) {
 					stock: 0,
 					weight: 0,
 					weightUnit: "KG",
+					options: [],
+					images: [],
+					costPrice: 0,
 				},
 			],
 			metaData: product?.metaData || {
@@ -123,20 +128,14 @@ export function ProductForm({ product }: ProductFormProps) {
 					// id: product?.id, // Include ID for updates
 				};
 
-				let result: {
-					product: Product | null;
-					error?: string;
-				};
+				let result;
 
 				if (isEditMode && product?.id) {
 					toast("Updating product...", {
 						description: "Your product is being updated.",
 						duration: 3000,
 					});
-					result = await updateProduct({
-						id: product.id,
-						...productData,
-					});
+					result = await updateProduct(product.id, productData);
 				} else {
 					toast("Creating product...", {
 						description: "Your product is being created.",
@@ -145,17 +144,20 @@ export function ProductForm({ product }: ProductFormProps) {
 					result = await createProduct(productData);
 				}
 
-				if (result?.product) {
+				if (result?.productId) {
 					toast.success(isEditMode ? "Product updated successfully" : "Product created successfully", {
 						description: isEditMode
 							? "Your product has been updated successfully."
 							: "Your product has been created successfully.",
 						duration: 3000,
 					});
-					router.push("/admin/products/" + result.product.id);
+					router.push("/admin/products/" + result.productId);
 					router.refresh();
 				} else {
-					throw new Error(result?.error || `Failed to ${isEditMode ? "update" : "create"} product`);
+					// Handle errors
+					throw new Error(
+						result.error?.toString() || `Failed to ${isEditMode ? "update" : "create"} product`,
+					);
 				}
 			} catch (error: unknown) {
 				console.error(`Failed to ${isEditMode ? "update" : "create"} product:`, error);
@@ -183,7 +185,7 @@ export function ProductForm({ product }: ProductFormProps) {
 		const currentOptions = form.getValues("options") || [];
 		form.setValue(
 			"options",
-			currentOptions.filter((_: ProductOption, i: number) => i !== index),
+			currentOptions.filter((_, i: number) => i !== index),
 		);
 	};
 
@@ -230,40 +232,43 @@ export function ProductForm({ product }: ProductFormProps) {
 		);
 	};
 
-	const emptyVariant = {
+	const emptyVariant: VariantFormValues = {
 		title: "",
 		sku: "",
 		price: 0,
 		stock: 0,
 		compareAtPrice: 0,
-		inventoryQuantity: 0,
-		requiresShipping: true,
-		isTaxable: true,
+		images: [],
+		costPrice: 0,
 		weight: 0,
 		weightUnit: "KG" as WeightUnitType,
+		options: [],
 	};
 
 	const generateVariants = () => {
 		const options = form.getValues("options");
 
 		// Check if we have valid options
-		if (!options?.every((option: ProductOption) => option.name && option.values.length > 0)) {
+		if (!options?.every((option) => option.name && option.values.length > 0)) {
 			return;
 		}
 
 		// Extract all option values
-		const optionValues = options.map((option: ProductOption) =>
-			option.values.map((v: { value: string }) => ({ option: option.name, value: v.value })),
+		const optionValues = options.map((option) =>
+			option.values.map((v) => ({ option: option.name, value: v.value })),
 		);
 
 		const combinations = generateCombinations(optionValues);
 
 		// Create variants from combinations
-		const newVariants = combinations.map((combo) => ({
+		const newVariants: VariantFormValues[] = combinations.map((combo) => ({
 			...emptyVariant,
 			title: combo.map((c) => c.value).join(" / "),
 			price: form.getValues("price"),
+			constePrice: form.getValues("costPrice"),
 			compareAtPrice: form.getValues("compareAtPrice"),
+			options: combo.map((c) => ({ name: c.option, value: c.value })),
+			// optionValues: combo.map((c) => ({ name: c.option, value: c.value })),
 		}));
 
 		form.setValue("variants", newVariants);
@@ -602,7 +607,7 @@ export function ProductForm({ product }: ProductFormProps) {
 												Add options like size or color to create variants of this product
 											</p>
 
-											{form.watch("options")?.map((_option: ProductOption, optionIndex: number) => (
+											{form.watch("options")?.map((_option, optionIndex: number) => (
 												<div key={optionIndex} className="bg-muted rounded-lg p-4">
 													<div className="flex justify-between items-center mb-4">
 														<FormField

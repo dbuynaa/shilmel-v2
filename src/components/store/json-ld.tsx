@@ -19,7 +19,7 @@ type ProductWithVariants = InferResultType<
 		};
 		productOptions: {
 			with: {
-				productOptionValues: true;
+				values: true;
 			};
 		};
 		productImages: true;

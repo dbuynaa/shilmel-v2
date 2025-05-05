@@ -5,6 +5,7 @@ import type {
 	productImage,
 	productOptionValues,
 	productOptions,
+	productVariantOptions,
 	productVariants,
 	products,
 	users,
@@ -19,10 +20,12 @@ export type ProductImage = typeof productImage.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type ProductCategory = typeof productCategories.$inferSelect;
 export type ProductOption = typeof productOptions.$inferSelect;
-export type ProductOptionWithValues = InferResultType<"productOptions", { productOptionValues: true }>;
+export type ProductOptionWithValues = InferResultType<"productOptions", { values: true }>;
 export type ProductWithVariants = InferResultType<
 	"products",
-	{ inventories: true; productImages: true; productVariants: { with: { productImages: true } } }
+	{ productImages: true; productVariants: { with: { productImages: true } } }
 >;
+export type ProductWithImages = InferResultType<"products", { productImages: true }>;
 export type ProductOptionValue = typeof productOptionValues.$inferSelect;
+export type ProductVariantOptions = typeof productVariantOptions.$inferSelect;
 export type MetaData = typeof metaData.$inferSelect;

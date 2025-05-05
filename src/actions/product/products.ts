@@ -12,15 +12,15 @@ import {
 	productVariants,
 	products,
 } from "@/db/schema/schema";
-import type { Product, ProductVariant } from "@/db/types";
+import type { Product, ProductOptionValue } from "@/db/types";
 import { slugify } from "@/lib/utils";
 import type { SearchParams } from "@/types";
 import { searchParamsSchema } from "@/validations/params";
-import type { productSchema } from "@/validations/product";
+import { type ProductFormValues, productSchema } from "@/validations/product";
 import { and, asc, desc, eq, isNull, like } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
-import type { z } from "zod";
+import { z } from "zod";
 
 export type CreateProductInput = z.infer<typeof productSchema>;
 
@@ -29,52 +29,580 @@ export type UpdateProductInput = Partial<CreateProductInput> & {
 	slug?: string;
 };
 
-export async function createProduct(
-	input: z.infer<typeof productSchema>,
-): Promise<{ product: Product | null; error?: string }> {
-	try {
-		const productId = nanoid();
-		const slug = slugify(input.name);
+// export async function createProduct(
+// 	input: z.infer<typeof productSchema>,
+// ): Promise<{ product: Product | null; error?: string }> {
+// 	try {
+// 		const productId = nanoid();
+// 		const slug = slugify(input.name);
 
+// 		const newProduct: Product = {
+// 			id: productId,
+// 			name: input.name,
+// 			stock: input.stock,
+// 			description: input.description || null,
+// 			slug,
+// 			sku: input.sku || null,
+// 			price: input.price.toString(),
+// 			costPrice: input.costPrice?.toString() || null,
+// 			compareAtPrice: input.compareAtPrice?.toString() || null,
+// 			weightUnit: input.weightUnit || "KG",
+// 			weight: input.weight?.toString() || null,
+// 			status: input.status || "DRAFT",
+// 			createdAt: new Date().toISOString(),
+// 			updatedAt: new Date().toISOString(),
+// 		};
+// 		// Create the product
+// 		const product = await db.insert(products).values(newProduct).returning().execute();
+
+// 		// Add product categories if provided
+// 		if (input.categories && input.categories.length > 0) {
+// 			await db
+// 				.insert(productCategories)
+// 				.values(
+// 					input.categories.map((categoryId) => ({
+// 						id: nanoid(),
+// 						productId,
+// 						categoryId,
+// 					})),
+// 				)
+// 				.execute();
+// 		}
+
+// 		// Add product images if provided
+// 		if (input.images && input.images.length > 0) {
+// 			await db
+// 				.insert(productImage)
+// 				.values(
+// 					input.images.map((image, index) => ({
+// 						id: nanoid(),
+// 						productId,
+// 						url: image.url,
+// 						alt: image.alt || null,
+// 						position: image.position || index,
+// 						createdAt: new Date().toISOString(),
+// 					})),
+// 				)
+// 				.execute();
+// 		}
+
+// 		// Add meta data if provided
+// 		if (input.metaData) {
+// 			await db
+// 				.insert(metaData)
+// 				.values({
+// 					id: nanoid(),
+// 					productId,
+// 					title: input.metaData.title || null,
+// 					description: input.metaData.description || null,
+// 				})
+// 				.execute();
+// 		}
+
+// 		// Process options and variants
+// 		// Create product options and their values if provided
+// 		if (input.options && input.options.length > 0) {
+// 			for (const option of input.options) {
+// 				const optionId = nanoid();
+
+// 				// Create option
+// 				await db
+// 					.insert(productOptions)
+// 					.values({
+// 						id: optionId,
+// 						productId,
+// 						name: option.name,
+// 						// position: option.position || 1,
+// 					})
+// 					.execute();
+
+// 				// Create option values
+// 				for (const [index, value] of option.values.entries()) {
+// 					const valueId = nanoid();
+// 					await db
+// 						.insert(productOptionValues)
+// 						.values({
+// 							id: valueId,
+// 							optionId,
+// 							value: value.value,
+// 							position: value.position || index + 1,
+// 						})
+// 						.execute();
+// 				}
+// 			}
+// 		}
+
+// 		// Create product variants if provided
+// 		if (input.variants && input.variants.length > 0) {
+// 			for (const variant of input.variants) {
+// 				const variantId = nanoid();
+
+// 				const newVariant: ProductVariant = {
+// 					id: variantId,
+// 					productId,
+// 					title: variant.title,
+// 					sku: variant.sku || null,
+// 					stock: variant.stock !== undefined ? variant.stock : 0,
+// 					price: variant.price.toString(),
+// 					compareAtPrice: variant.compareAtPrice ? variant.compareAtPrice.toString() : null,
+// 					costPrice: variant.costPrice ? variant.costPrice.toString() : null,
+// 					weight: variant.weight?.toString() || null,
+// 					weightUnit: variant.weightUnit || "KG",
+// 					createdAt: new Date().toISOString(),
+// 					updatedAt: new Date().toISOString(),
+// 				};
+// 				// Create variant
+// 				await db.insert(productVariants).values(newVariant).execute();
+
+// 				// Link variant options if provided
+// 				// if (variant.optionValues) {
+// 				// 	for (const optionValue of variant.optionValues) {
+// 				// 		const optionValueId = optionValue.id;
+
+// 				// 		if (optionValueId) {
+// 				// 			await db
+// 				// 				.insert(productVariantOptions)
+// 				// 				.values({
+// 				// 					id: nanoid(),
+// 				// 					variantId,
+// 				// 					optionValueId,
+// 				// 				})
+// 				// 				.execute();
+// 				// 		}
+// 				// 	}
+// 				// }
+
+// 				// Add variant images if provided
+// 				if (variant.images && variant.images.length > 0) {
+// 					await db
+// 						.insert(productImage)
+// 						.values(
+// 							variant.images.map((image, index) => ({
+// 								id: nanoid(),
+// 								productId,
+// 								productVariantId: variantId,
+// 								url: image.url,
+// 								alt: image.alt || null,
+// 								position: image.position || index,
+// 								createdAt: new Date().toISOString(),
+// 							})),
+// 						)
+// 						.execute();
+// 				}
+// 			}
+// 		}
+
+// 		return { product: product[0] || null };
+// 	} catch (error) {
+// 		console.error("Error creating product:", error);
+// 		return { product: null, error: error instanceof Error ? error.message : "Unknown error occurred" };
+// 	}
+// }
+
+// export async function updateProduct(
+// 	input: UpdateProductInput,
+// ): Promise<{ product: Product | null; error?: string }> {
+// 	console.log("productFrom:", input);
+// 	try {
+// 		const slug = input.name ? slugify(input.name) : undefined;
+// 		const productId = input.id;
+
+// 		// Update the product
+// 		const updateData: Partial<Product> = {
+// 			...(input.name && { name: input.name }),
+// 			...(input.stock !== undefined && { stock: input.stock }),
+// 			...(input.description !== undefined && { description: input.description }),
+// 			...(slug && { slug }),
+// 			...(input.sku !== undefined && { sku: input.sku }),
+// 			...(input.price !== undefined && { price: input.price.toString() }),
+// 			...(input.costPrice !== undefined && { costPrice: input.costPrice.toString() }),
+// 			...(input.compareAtPrice !== undefined && { compareAtPrice: input.compareAtPrice.toString() }),
+// 			...(input.weightUnit && { weightUnit: input.weightUnit }),
+// 			...(input.weight !== undefined && { weight: input.weight.toString() }),
+// 			...(input.status && { status: input.status }),
+// 			updatedAt: new Date().toISOString(),
+// 		};
+
+// 		// Update product base record
+// 		await db.update(products).set(updateData).where(eq(products.id, productId)).execute();
+
+// 		// Fetch the updated product
+// 		const updatedProduct = await db.select().from(products).where(eq(products.id, productId)).execute();
+
+// 		if (!updatedProduct.length) {
+// 			return { product: null, error: "Product not found" };
+// 		}
+
+// 		// Update product categories if provided
+// 		if (input.categories !== undefined) {
+// 			// First delete existing categories
+// 			await db.delete(productCategories).where(eq(productCategories.productId, productId)).execute();
+
+// 			// Then add new categories if any
+// 			if (input.categories.length > 0) {
+// 				await db
+// 					.insert(productCategories)
+// 					.values(
+// 						input.categories.map((categoryId) => ({
+// 							id: nanoid(),
+// 							productId,
+// 							categoryId,
+// 						})),
+// 					)
+// 					.execute();
+// 			}
+// 		}
+
+// 		// Update product images if provided
+// 		if (input.images !== undefined) {
+// 			// Delete existing product-level images
+// 			await db
+// 				.delete(productImage)
+// 				.where(and(eq(productImage.productId, productId), isNull(productImage.productVariantId)))
+// 				.execute();
+
+// 			// Add new images if any
+// 			if (input.images.length > 0) {
+// 				await db
+// 					.insert(productImage)
+// 					.values(
+// 						input.images.map((image, index) => ({
+// 							id: nanoid(),
+// 							productId,
+// 							url: image.url,
+// 							alt: image.alt || null,
+// 							position: image.position || index,
+// 							createdAt: new Date().toISOString(),
+// 						})),
+// 					)
+// 					.execute();
+// 			}
+// 		}
+
+// 		// Update meta data if provided
+// 		if (input.metaData !== undefined) {
+// 			// Delete existing metadata
+// 			await db.delete(metaData).where(eq(metaData.productId, productId)).execute();
+
+// 			// Add new metadata if provided
+// 			if (input.metaData) {
+// 				await db
+// 					.insert(metaData)
+// 					.values({
+// 						id: nanoid(),
+// 						productId,
+// 						title: input.metaData.title || null,
+// 						description: input.metaData.description || null,
+// 					})
+// 					.execute();
+// 			}
+// 		}
+
+// 		// Create product variants if provided
+// 		const variantIds: JSON = ;
+// 		const optionsId: string[] = [];
+
+// 		// Update options and variants if provided
+// 		if (input.options !== undefined) {
+// 			// Get existing options for this product
+// 			const existingOptions = await db
+// 				.select()
+// 				.from(productOptions)
+// 				.where(eq(productOptions.productId, productId))
+// 				.execute();
+
+// 			// Delete existing options and their values
+// 			for (const option of existingOptions) {
+// 				// Delete option values first (foreign key constraint)
+// 				await db.delete(productOptionValues).where(eq(productOptionValues.optionId, option.id)).execute();
+
+// 				// Delete variant options that reference these option values
+// 				// First get all option values for this option
+// 				const optionValues = await db
+// 					.select()
+// 					.from(productOptionValues)
+// 					.where(eq(productOptionValues.optionId, option.id))
+// 					.execute();
+
+// 				for (const optValue of optionValues) {
+// 					await db
+// 						.delete(productVariantOptions)
+// 						.where(eq(productVariantOptions.optionValueId, optValue.id))
+// 						.execute();
+// 				}
+// 			}
+
+// 			// Delete the options themselves
+// 			await db.delete(productOptions).where(eq(productOptions.productId, productId)).execute();
+
+// 			// Create new options and values if provided
+// 			if (input.options.length > 0) {
+// 				for (const option of input.options) {
+// 					const optionId = nanoid();
+
+// 					// Create option
+// 					await db
+// 						.insert(productOptions)
+// 						.values({
+// 							id: optionId,
+// 							productId,
+// 							name: option.name,
+// 						})
+// 						.execute();
+
+// 					// Create option values
+// 					for (const [index, value] of option.values.entries()) {
+// 						const valueId = nanoid();
+// 						await db
+// 							.insert(productOptionValues)
+// 							.values({
+// 								id: nanoid(),
+// 								optionId,
+// 								value: value.value,
+// 								position: value.position || index + 1,
+// 								// variantId: variantIds,
+// 							})
+// 							.execute();
+// 						optionsId.push(valueId);
+// 					}
+// 				}
+// 			}
+// 		}
+
+// 		if (input.variants && input.variants.length > 0) {
+// 			for (const variant of input.variants) {
+// 				const variantId = nanoid();
+
+// 				const newVariant: ProductVariant = {
+// 					id: variantId,
+// 					productId,
+// 					title: variant.title,
+// 					sku: variant.sku || null,
+// 					stock: variant.stock !== undefined ? variant.stock : 0,
+// 					optionValues: optionsId,
+// 					price: variant.price.toString(),
+// 					compareAtPrice: variant.compareAtPrice ? variant.compareAtPrice.toString() : null,
+// 					costPrice: variant.costPrice ? variant.costPrice.toString() : null,
+// 					weight: variant.weight ? variant.weight.toString() : null,
+// 					weightUnit: variant.weightUnit || "KG",
+// 					createdAt: new Date().toISOString(),
+// 					updatedAt: new Date().toISOString(),
+// 				};
+// 				// Create variant
+// 				const updatedVariant = await db.insert(productVariants).values(newVariant).returning().execute();
+
+// 				if (updatedVariant && updatedVariant.length > 0) variantIds.push(updatedVariant[0]?.id || "");
+
+// 				//
+// 				// Add variant images if provided
+// 				if (variant.images && variant.images.length > 0) {
+// 					await db
+// 						.insert(productImage)
+// 						.values(
+// 							variant.images.map((image, index) => ({
+// 								id: nanoid(),
+// 								productId,
+// 								productVariantId: variantId,
+// 								url: image.url,
+// 								alt: image.alt || null,
+// 								position: image.position || index,
+// 								createdAt: new Date().toISOString(),
+// 							})),
+// 						)
+// 						.execute();
+// 				}
+// 			}
+// 		}
+
+// 		// const productvariantOptions: ProductVariantOptions = {
+// 		// 	id: nanoid(),
+// 		// 	variantId: variantIds,
+// 		// 	optionValueId: optionsId,
+// 		// };
+// 		// db.insert(productVariantOptions).values(productvariantOptions);
+
+// 		// Update options and option values if provided
+// 		// if (input.options !== undefined) {
+// 		// 	// Get existing options for this product
+// 		// 	const existingOptions = await db
+// 		// 		.select()
+// 		// 		.from(productOptions)
+// 		// 		.where(eq(productOptions.productId, productId))
+// 		// 		.execute();
+
+// 		// 	// Delete existing options and their values
+// 		// 	for (const option of existingOptions) {
+// 		// 		// Delete option values first (foreign key constraint)
+// 		// 		await db.delete(productOptionValues).where(eq(productOptionValues.optionId, option.id)).execute();
+// 		// 	}
+
+// 		// 	// Delete the options themselves
+// 		// 	await db.delete(productOptions).where(eq(productOptions.productId, productId)).execute();
+
+// 		// 	// Create new options and values if provided
+// 		// 	if (input.options.length > 0) {
+// 		// 		for (const option of input.options) {
+// 		// 			const optionId = nanoid();
+
+// 		// 			// Create option
+// 		// 			await db
+// 		// 				.insert(productOptions)
+// 		// 				.values({
+// 		// 					id: optionId,
+// 		// 					productId,
+// 		// 					name: option.name,
+// 		// 				})
+// 		// 				.execute();
+
+// 		// 			// Create option values
+// 		// 			for (const [index, value] of option.values.entries()) {
+// 		// 				await db
+// 		// 					.insert(productOptionValues)
+// 		// 					.values({
+// 		// 						id: nanoid(),
+// 		// 						optionId,
+// 		// 						value: value.value,
+// 		// 						position: value.position || index + 1,
+// 		// 					})
+// 		// 					.execute();
+// 		// 			}
+// 		// 		}
+// 		// 	}
+// 		// }
+
+// 		// // Update variants if provided
+// 		// if (input.variants !== undefined) {
+// 		// 	// Get existing variants for this product
+// 		// 	const existingVariants = await db
+// 		// 		.select()
+// 		// 		.from(productVariants)
+// 		// 		.where(eq(productVariants.productId, productId))
+// 		// 		.execute();
+
+// 		// 	// Delete existing variants and their images
+// 		// 	for (const variant of existingVariants) {
+// 		// 		// Delete variant images first
+// 		// 		await db.delete(productImage).where(eq(productImage.productVariantId, variant.id)).execute();
+// 		// 	}
+
+// 		// 	// Delete the variants themselves
+// 		// 	await db.delete(productVariants).where(eq(productVariants.productId, productId)).execute();
+
+// 		// 	// Create new variants if provided
+// 		// 	if (input.variants.length > 0) {
+// 		// 		for (const variant of input.variants) {
+// 		// 			const variantId = nanoid();
+
+// 		// 			const newVariant: ProductVariant = {
+// 		// 				id: variantId,
+// 		// 				productId,
+// 		// 				title: variant.title,
+// 		// 				sku: variant.sku || null,
+// 		// 				stock: variant.stock,
+// 		// 				price: variant.price.toString(),
+// 		// 				costPrice: input.costPrice?.toString() || null,
+// 		// 				compareAtPrice: input.compareAtPrice?.toString() || null,
+// 		// 				weightUnit: input.weightUnit || "KG",
+// 		// 				weight: input.weight?.toString() || null,
+// 		// 				createdAt: new Date().toISOString(),
+// 		// 				updatedAt: new Date().toISOString(),
+// 		// 			};
+
+// 		// 			// Create variant
+// 		// 			await db.insert(productVariants).values(newVariant).execute();
+
+// 		// 			// Add variant images if provided
+// 		// 			if (variant.images && variant.images.length > 0) {
+// 		// 				await db
+// 		// 					.insert(productImage)
+// 		// 					.values(
+// 		// 						variant.images.map((image, index) => ({
+// 		// 							id: nanoid(),
+// 		// 							productId,
+// 		// 							productVariantId: variantId,
+// 		// 							url: image.url,
+// 		// 							alt: image.alt || null,
+// 		// 							position: image.position || index,
+// 		// 							createdAt: new Date().toISOString(),
+// 		// 						})),
+// 		// 					)
+// 		// 					.execute();
+// 		// 			}
+// 		// 		}
+// 		// 	}
+// 		// }
+
+// 		return { product: updatedProduct[0] || null };
+// 	} catch (error) {
+// 		console.error("Error updating product:", error);
+// 		return { product: null, error: error instanceof Error ? error.message : "Unknown error occurred" };
+// 	}
+// }
+
+// Types for product creation
+
+/**
+ * Create a new product
+ */
+export async function createProduct(values: ProductFormValues) {
+	console.log("productFrom:", values);
+	const productId = nanoid();
+
+	try {
+		// Validate form input
+		const validatedFields = productSchema.parse(values);
+
+		// Generate slug if not provided
+		const slug = validatedFields.slug || slugify(validatedFields.name);
+
+		// Check if slug exists
+		const existingProduct = await db.query.products.findFirst({
+			where: eq(products.slug, slug),
+		});
+
+		if (existingProduct) {
+			return {
+				error: "A product with this slug already exists.",
+			};
+		}
+
+		// Create main product record - we'll create each entity separately without a transaction
 		const newProduct: Product = {
 			id: productId,
-			name: input.name,
-			stock: input.stock,
-			description: input.description || null,
+			name: validatedFields.name,
 			slug,
-			sku: input.sku || null,
-			price: input.price.toString(),
-			costPrice: input.costPrice?.toString() || null,
-			compareAtPrice: input.compareAtPrice?.toString() || null,
-			weightUnit: input.weightUnit || "KG",
-			weight: input.weight?.toString() || null,
-			status: input.status || "DRAFT",
+			description: validatedFields.description || null,
+			status: validatedFields.status,
+			sku: validatedFields.sku || null,
+			price: Number(validatedFields.price), // Convert price to number
+			compareAtPrice: validatedFields.compareAtPrice ? Number(validatedFields.compareAtPrice) : null,
+			costPrice: validatedFields.costPrice ? Number(validatedFields.costPrice) : null,
+			weight: validatedFields.weight ? Number(validatedFields.weight) : null,
+			weightUnit: validatedFields.weightUnit || "KG",
+			stock: validatedFields.stock,
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
 		};
-		// Create the product
-		const product = await db.insert(products).values(newProduct).returning().execute();
+
+		// Insert the main product
+		await db.insert(products).values(newProduct);
 
 		// Add product categories if provided
-		if (input.categories && input.categories.length > 0) {
-			await db
-				.insert(productCategories)
-				.values(
-					input.categories.map((categoryId) => ({
-						id: nanoid(),
-						productId,
-						categoryId,
-					})),
-				)
-				.execute();
+		if (validatedFields.categories && validatedFields.categories.length > 0) {
+			const categoryValues = validatedFields.categories.map((categoryId) => ({
+				id: nanoid(),
+				productId,
+				categoryId,
+			}));
+
+			await db.insert(productCategories).values(categoryValues);
 		}
 
-		// Add product images if provided
-		if (input.images && input.images.length > 0) {
+		if (validatedFields.images && validatedFields.images.length > 0) {
 			await db
 				.insert(productImage)
 				.values(
-					input.images.map((image, index) => ({
+					validatedFields.images.map((image, index) => ({
 						id: nanoid(),
 						productId,
 						url: image.url,
@@ -86,174 +614,218 @@ export async function createProduct(
 				.execute();
 		}
 
-		// Add meta data if provided
-		if (input.metaData) {
-			await db
-				.insert(metaData)
-				.values({
-					id: nanoid(),
-					productId,
-					title: input.metaData.title || null,
-					description: input.metaData.description || null,
-				})
-				.execute();
+		// Create metadata if provided
+		if (validatedFields.metaData) {
+			await db.insert(metaData).values({
+				id: nanoid(),
+				productId,
+				title: validatedFields.metaData.title,
+				description: validatedFields.metaData.description,
+			});
 		}
 
-		// Process options and variants
-		// Create product options and their values if provided
-		if (input.options && input.options.length > 0) {
-			for (const option of input.options) {
-				const optionId = nanoid();
+		// Create options and variants if provided
+		if (validatedFields.options && validatedFields.options.length > 0) {
+			// Map to track option IDs by name
+			const optionIdsByName = new Map<string, string>();
 
-				// Create option
-				await db
-					.insert(productOptions)
-					.values({
-						id: optionId,
-						productId,
-						name: option.name,
-						// position: option.position || 1,
-					})
-					.execute();
+			// Create options
+			for (const [index, option] of validatedFields.options.entries()) {
+				const optionId = nanoid();
+				optionIdsByName.set(option.name, optionId);
+
+				await db.insert(productOptions).values({
+					id: optionId,
+					productId,
+					name: option.name,
+					position: index + 1,
+				});
 
 				// Create option values
-				for (const [index, value] of option.values.entries()) {
-					const valueId = nanoid();
-					await db
-						.insert(productOptionValues)
-						.values({
-							id: valueId,
-							optionId,
-							value: value.value,
-							position: value.position || index + 1,
-						})
-						.execute();
+				for (const [valueIndex, value] of option.values.entries()) {
+					const newProuctOptionValue: ProductOptionValue = {
+						id: nanoid(),
+						optionId,
+						value: value.value,
+						position: value.position || valueIndex + 1,
+					};
+					await db.insert(productOptionValues).values(newProuctOptionValue);
 				}
 			}
-		}
 
-		// Create product variants if provided
-		if (input.variants && input.variants.length > 0) {
-			for (const variant of input.variants) {
-				const variantId = nanoid();
+			// Create variants if provided
+			if (validatedFields.variants && validatedFields.variants.length > 0) {
+				for (const variant of validatedFields.variants) {
+					const variantId = nanoid();
 
-				const newVariant: ProductVariant = {
-					id: variantId,
-					productId,
-					title: variant.title,
-					sku: variant.sku || null,
-					stock: variant.stock !== undefined ? variant.stock : 0,
-					price: variant.price.toString(),
-					compareAtPrice: variant.compareAtPrice ? variant.compareAtPrice.toString() : null,
-					costPrice: variant.costPrice ? variant.costPrice.toString() : null,
-					weight: variant.weight?.toString() || null,
-					weightUnit: variant.weightUnit || "KG",
-					createdAt: new Date().toISOString(),
-					updatedAt: new Date().toISOString(),
-				};
-				// Create variant
-				await db.insert(productVariants).values(newVariant).execute();
+					// Create variant
+					await db.insert(productVariants).values({
+						id: variantId,
+						productId,
+						title: variant.title,
+						sku: variant.sku,
+						price: Number(validatedFields.price), // Convert price to number
+						compareAtPrice: validatedFields.compareAtPrice ? Number(validatedFields.compareAtPrice) : null,
+						costPrice: validatedFields.costPrice ? Number(validatedFields.costPrice) : null,
+						weight: validatedFields.weight ? Number(validatedFields.weight) : null,
+						weightUnit: variant.weightUnit,
+						stock: variant.stock,
+						updatedAt: new Date().toISOString(),
+						createdAt: new Date().toISOString(),
+					});
 
-				// Link variant options if provided
-				if (variant.optionValues) {
-					for (const optionValue of variant.optionValues) {
-						const optionValueId = optionValue.id;
+					// Add variant images if provided
+					if (variant.images && variant.images.length > 0) {
+						await db
+							.insert(productImage)
+							.values(
+								variant.images.map((image, index) => ({
+									id: nanoid(),
+									productId,
+									productVariantId: variantId,
+									url: image.url,
+									alt: image.alt || null,
+									position: image.position || index,
+									createdAt: new Date().toISOString(),
+								})),
+							)
+							.execute();
+					}
 
-						if (optionValueId) {
-							await db
-								.insert(productVariantOptions)
-								.values({
+					// Create variant options
+					if (variant.options) {
+						console.log("optionIdsByName:", optionIdsByName);
+						for (const variantOption of variant.options) {
+							const optionId = optionIdsByName.get(variantOption.name);
+
+							if (!optionId) {
+								continue;
+							}
+
+							// Find the option value ID
+							const optionValue = await db.query.productOptionValues.findFirst({
+								where: (table) => eq(table.optionId, optionId) && eq(table.value, variantOption.value),
+							});
+
+							if (optionValue) {
+								await db.insert(productVariantOptions).values({
 									id: nanoid(),
 									variantId,
-									optionValueId,
-								})
-								.execute();
+									optionValueId: optionValue.id,
+								});
+							}
 						}
 					}
 				}
-
-				// Add variant images if provided
-				if (variant.images && variant.images.length > 0) {
-					await db
-						.insert(productImage)
-						.values(
-							variant.images.map((image, index) => ({
-								id: nanoid(),
-								productId,
-								productVariantId: variantId,
-								url: image.url,
-								alt: image.alt || null,
-								position: image.position || index,
-								createdAt: new Date().toISOString(),
-							})),
-						)
-						.execute();
-				}
 			}
 		}
 
-		return { product: product[0] || null };
+		revalidatePath("/admin/products");
+
+		return {
+			success: true,
+			productId,
+		};
 	} catch (error) {
 		console.error("Error creating product:", error);
-		return { product: null, error: error instanceof Error ? error.message : "Unknown error occurred" };
-	}
-}
 
-export async function updateProduct(
-	input: UpdateProductInput,
-): Promise<{ product: Product | null; error?: string }> {
-	try {
-		const slug = input.name ? slugify(input.name) : undefined;
-		const productId = input.id;
-
-		// Update the product
-		const updateData: Partial<Product> = {
-			...(input.name && { name: input.name }),
-			...(input.stock !== undefined && { stock: input.stock }),
-			...(input.description !== undefined && { description: input.description }),
-			...(slug && { slug }),
-			...(input.sku !== undefined && { sku: input.sku }),
-			...(input.price !== undefined && { price: input.price.toString() }),
-			...(input.costPrice !== undefined && { costPrice: input.costPrice.toString() }),
-			...(input.compareAtPrice !== undefined && { compareAtPrice: input.compareAtPrice.toString() }),
-			...(input.weightUnit && { weightUnit: input.weightUnit }),
-			...(input.weight !== undefined && { weight: input.weight.toString() }),
-			...(input.status && { status: input.status }),
-			updatedAt: new Date().toISOString(),
-		};
-
-		// Update product base record
-		await db.update(products).set(updateData).where(eq(products.id, productId)).execute();
-
-		// Fetch the updated product
-		const updatedProduct = await db.select().from(products).where(eq(products.id, productId)).execute();
-
-		if (!updatedProduct.length) {
-			return { product: null, error: "Product not found" };
+		// Handle errors and attempt cleanup if possible
+		if (error instanceof z.ZodError) {
+			return {
+				error: error.flatten().fieldErrors,
+			};
 		}
 
-		// Update product categories if provided
-		if (input.categories !== undefined) {
-			// First delete existing categories
-			await db.delete(productCategories).where(eq(productCategories.productId, productId)).execute();
+		// For other errors, try to delete the product if it was created
+		try {
+			await db.delete(products).where(eq(products.id, productId));
+		} catch (cleanupError) {
+			console.error("Failed to clean up after error:", cleanupError);
+		}
 
-			// Then add new categories if any
-			if (input.categories.length > 0) {
-				await db
-					.insert(productCategories)
-					.values(
-						input.categories.map((categoryId) => ({
-							id: nanoid(),
-							productId,
-							categoryId,
-						})),
-					)
-					.execute();
+		return {
+			error: "Failed to create product. Please try again.",
+		};
+	}
+}
+/**
+ * Update an existing product
+ */
+
+export async function updateProduct(productId: string, values: ProductFormValues) {
+	console.log("productFrom:", values);
+	try {
+		// Validate form input
+		const validatedFields = productSchema.parse(values);
+
+		// Get existing product
+		const existingProduct = await db.query.products.findFirst({
+			where: eq(products.id, productId),
+		});
+
+		if (!existingProduct) {
+			return {
+				error: "Product not found.",
+			};
+		}
+
+		// Generate slug if not provided or if name changed
+		let slug = existingProduct.slug;
+		if (validatedFields.slug) {
+			slug = validatedFields.slug;
+		} else if (validatedFields.name !== existingProduct.name) {
+			slug = slugify(validatedFields.name);
+		}
+
+		// Check if slug exists (if changed)
+		if (slug !== existingProduct.slug) {
+			const slugExists = await db.query.products.findFirst({
+				where: eq(products.slug, slug),
+			});
+
+			if (slugExists) {
+				return {
+					error: "A product with this slug already exists.",
+				};
 			}
+		}
+
+		const now = new Date().toISOString();
+
+		// 1. Update main product record
+		await db
+			.update(products)
+			.set({
+				name: validatedFields.name,
+				slug,
+				description: validatedFields.description || null,
+				status: validatedFields.status,
+				sku: validatedFields.sku || null,
+				price: Number(validatedFields.price), // Convert price to number
+				compareAtPrice: validatedFields.compareAtPrice ? Number(validatedFields.compareAtPrice) : null,
+				costPrice: validatedFields.costPrice ? Number(validatedFields.costPrice) : null,
+				weight: validatedFields.weight ? Number(validatedFields.weight) : null,
+				weightUnit: validatedFields.weightUnit || "KG",
+				stock: validatedFields.stock,
+				updatedAt: now,
+			})
+			.where(eq(products.id, productId));
+
+		// 2. Update categories - delete existing and insert new
+		await db.delete(productCategories).where(eq(productCategories.productId, productId));
+
+		if (validatedFields.categories && validatedFields.categories.length > 0) {
+			const categoryValues = validatedFields.categories.map((categoryId) => ({
+				id: nanoid(),
+				productId,
+				categoryId,
+			}));
+
+			await db.insert(productCategories).values(categoryValues);
 		}
 
 		// Update product images if provided
-		if (input.images !== undefined) {
+		if (validatedFields.images !== undefined) {
 			// Delete existing product-level images
 			await db
 				.delete(productImage)
@@ -261,11 +833,11 @@ export async function updateProduct(
 				.execute();
 
 			// Add new images if any
-			if (input.images.length > 0) {
+			if (validatedFields.images.length > 0) {
 				await db
 					.insert(productImage)
 					.values(
-						input.images.map((image, index) => ({
+						validatedFields.images.map((image, index) => ({
 							id: nanoid(),
 							productId,
 							url: image.url,
@@ -278,384 +850,194 @@ export async function updateProduct(
 			}
 		}
 
-		// Update meta data if provided
-		if (input.metaData !== undefined) {
-			// Delete existing metadata
-			await db.delete(metaData).where(eq(metaData.productId, productId)).execute();
+		// 3. Update metadata - delete existing and insert new if provided
+		await db.delete(metaData).where(eq(metaData.productId, productId));
 
-			// Add new metadata if provided
-			if (input.metaData) {
-				await db
-					.insert(metaData)
-					.values({
-						id: nanoid(),
-						productId,
-						title: input.metaData.title || null,
-						description: input.metaData.description || null,
-					})
-					.execute();
-			}
+		if (validatedFields.metaData) {
+			await db.insert(metaData).values({
+				id: nanoid(),
+				productId,
+				title: validatedFields.metaData.title,
+				description: validatedFields.metaData.description,
+			});
 		}
 
-		// Update options and variants if provided
-		if (input.options !== undefined) {
-			// Get existing options for this product
-			const existingOptions = await db
-				.select()
-				.from(productOptions)
-				.where(eq(productOptions.productId, productId))
-				.execute();
+		// 4. Handle options and variants - this is complex as we need to:
+		// - Find existing options to keep/remove
+		// - Update or create new options
+		// - Update or create new variants
 
-			// Delete existing options and their values
+		// First get all existing options for reference
+		const existingOptions = await db.query.productOptions.findMany({
+			where: eq(productOptions.productId, productId),
+			with: {
+				values: true,
+			},
+		});
+
+		// Get all existing variants
+		const existingVariants = await db.query.productVariants.findMany({
+			where: eq(productVariants.productId, productId),
+			with: {
+				optionValues: true,
+			},
+		});
+
+		// If new options provided, handle them
+		if (validatedFields.options && validatedFields.options.length > 0) {
+			// Map to track new option IDs by name
+			const optionIdsByName = new Map<string, string>();
+
+			// Delete all existing options and their values
+			// (This cascades to variant options too in most DB setups)
 			for (const option of existingOptions) {
-				// Delete option values first (foreign key constraint)
-				await db.delete(productOptionValues).where(eq(productOptionValues.optionId, option.id)).execute();
+				// Delete option values first
+				await db.delete(productOptionValues).where(eq(productOptionValues.optionId, option.id));
+			}
 
-				// Delete variant options that reference these option values
-				// First get all option values for this option
-				const optionValues = await db
-					.select()
-					.from(productOptionValues)
-					.where(eq(productOptionValues.optionId, option.id))
-					.execute();
+			// Delete options
+			await db.delete(productOptions).where(eq(productOptions.productId, productId));
 
-				for (const optValue of optionValues) {
-					await db
-						.delete(productVariantOptions)
-						.where(eq(productVariantOptions.optionValueId, optValue.id))
-						.execute();
+			// Create new options
+			for (const [index, option] of validatedFields.options.entries()) {
+				const optionId = nanoid();
+				optionIdsByName.set(option.name, optionId);
+
+				await db.insert(productOptions).values({
+					id: optionId,
+					productId,
+					name: option.name,
+					position: index + 1,
+				});
+
+				// Create option values
+				for (const [valueIndex, value] of option.values.entries()) {
+					await db.insert(productOptionValues).values({
+						id: nanoid(),
+						optionId,
+						value: value.value,
+						position: value.position || valueIndex + 1,
+					});
 				}
 			}
 
-			// Delete the options themselves
-			await db.delete(productOptions).where(eq(productOptions.productId, productId)).execute();
+			// Delete all existing variants
+			for (const variant of existingVariants) {
+				// Delete variant options first
+				await db.delete(productVariantOptions).where(eq(productVariantOptions.variantId, variant.id));
+			}
 
-			// Create new options and values if provided
-			if (input.options.length > 0) {
-				for (const option of input.options) {
-					const optionId = nanoid();
+			// Delete variants
+			await db.delete(productVariants).where(eq(productVariants.productId, productId));
 
-					// Create option
-					await db
-						.insert(productOptions)
-						.values({
-							id: optionId,
-							productId,
-							name: option.name,
-						})
-						.execute();
+			// Create new variants if provided
+			if (validatedFields.variants && validatedFields.variants.length > 0) {
+				for (const variant of validatedFields.variants) {
+					const variantId = nanoid();
 
-					// Create option values
-					for (const [index, value] of option.values.entries()) {
+					// Create variant
+					await db.insert(productVariants).values({
+						id: variantId,
+						productId,
+						title: variant.title,
+						sku: variant.sku,
+						price: Number(validatedFields.price), // Convert price to number
+						compareAtPrice: validatedFields.compareAtPrice ? Number(validatedFields.compareAtPrice) : null,
+						costPrice: validatedFields.costPrice ? Number(validatedFields.costPrice) : null,
+						weight: validatedFields.weight ? Number(validatedFields.weight) : null,
+						weightUnit: variant.weightUnit,
+						stock: variant.stock,
+						createdAt: now,
+						updatedAt: now,
+					});
+
+					if (variant.images && variant.images.length > 0) {
 						await db
-							.insert(productOptionValues)
-							.values({
-								id: nanoid(),
-								optionId,
-								value: value.value,
-								position: value.position || index + 1,
-							})
+							.insert(productImage)
+							.values(
+								variant.images.map((image, index) => ({
+									id: nanoid(),
+									productId,
+									productVariantId: variantId,
+									url: image.url,
+									alt: image.alt || null,
+									position: image.position || index,
+									createdAt: new Date().toISOString(),
+								})),
+							)
 							.execute();
 					}
-				}
-			}
-		}
 
-		// Create product variants if provided
-		if (input.variants && input.variants.length > 0) {
-			for (const variant of input.variants) {
-				const variantId = nanoid();
+					// Create variant options
+					if (variant.options) {
+						for (const variantOption of variant.options) {
+							const optionId = optionIdsByName.get(variantOption.name);
 
-				const newVariant: ProductVariant = {
-					id: variantId,
-					productId,
-					title: variant.title,
-					sku: variant.sku || null,
-					stock: variant.stock !== undefined ? variant.stock : 0,
-					price: variant.price.toString(),
-					compareAtPrice: variant.compareAtPrice ? variant.compareAtPrice.toString() : null,
-					costPrice: variant.costPrice ? variant.costPrice.toString() : null,
-					weight: variant.weight ? variant.weight.toString() : null,
-					weightUnit: variant.weightUnit || "KG",
-					createdAt: new Date().toISOString(),
-					updatedAt: new Date().toISOString(),
-				};
-				// Create variant
-				await db.insert(productVariants).values(newVariant).execute();
+							console.log("optionId", optionId);
+							if (!optionId) {
+								continue;
+							}
 
-				// Link variant options if provided
-				if (variant.optionValues && variant.optionValues.length > 0) {
-					for (const optionValue of variant.optionValues) {
-						const optionValueId = optionValue.id;
+							// Find the option value ID
+							const optionValue = await db.query.productOptionValues.findFirst({
+								with: {
+									productOption: true,
+								},
+								where: (table) => eq(table.optionId, optionId) && eq(table.value, variantOption.value),
+							});
 
-						if (optionValueId) {
-							await db
-								.insert(productVariantOptions)
-								.values({
+							console.log("optionValue", optionValue);
+
+							if (optionValue) {
+								await db.insert(productVariantOptions).values({
 									id: nanoid(),
 									variantId,
-									optionValueId,
-								})
-								.execute();
+									optionValueId: optionValue.id,
+								});
+							}
 						}
 					}
 				}
-
-				// Add variant images if provided
-				if (variant.images && variant.images.length > 0) {
-					await db
-						.insert(productImage)
-						.values(
-							variant.images.map((image, index) => ({
-								id: nanoid(),
-								productId,
-								productVariantId: variantId,
-								url: image.url,
-								alt: image.alt || null,
-								position: image.position || index,
-								createdAt: new Date().toISOString(),
-							})),
-						)
-						.execute();
-				}
 			}
+		} else if (validatedFields.options?.length === 0) {
+			// If options array is empty, delete all existing options and variants
+
+			// Delete variants first
+			for (const variant of existingVariants) {
+				await db.delete(productVariantOptions).where(eq(productVariantOptions.variantId, variant.id));
+			}
+
+			await db.delete(productVariants).where(eq(productVariants.productId, productId));
+
+			// Then delete options
+			for (const option of existingOptions) {
+				await db.delete(productOptionValues).where(eq(productOptionValues.optionId, option.id));
+			}
+
+			await db.delete(productOptions).where(eq(productOptions.productId, productId));
 		}
 
-		// Update options and option values if provided
-		// if (input.options !== undefined) {
-		// 	// Get existing options for this product
-		// 	const existingOptions = await db
-		// 		.select()
-		// 		.from(productOptions)
-		// 		.where(eq(productOptions.productId, productId))
-		// 		.execute();
+		revalidatePath("/admin/products");
+		revalidatePath(`/admin/products/${productId}`);
 
-		// 	// Delete existing options and their values
-		// 	for (const option of existingOptions) {
-		// 		// Delete option values first (foreign key constraint)
-		// 		await db.delete(productOptionValues).where(eq(productOptionValues.optionId, option.id)).execute();
-		// 	}
-
-		// 	// Delete the options themselves
-		// 	await db.delete(productOptions).where(eq(productOptions.productId, productId)).execute();
-
-		// 	// Create new options and values if provided
-		// 	if (input.options.length > 0) {
-		// 		for (const option of input.options) {
-		// 			const optionId = nanoid();
-
-		// 			// Create option
-		// 			await db
-		// 				.insert(productOptions)
-		// 				.values({
-		// 					id: optionId,
-		// 					productId,
-		// 					name: option.name,
-		// 				})
-		// 				.execute();
-
-		// 			// Create option values
-		// 			for (const [index, value] of option.values.entries()) {
-		// 				await db
-		// 					.insert(productOptionValues)
-		// 					.values({
-		// 						id: nanoid(),
-		// 						optionId,
-		// 						value: value.value,
-		// 						position: value.position || index + 1,
-		// 					})
-		// 					.execute();
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-		// // Update variants if provided
-		// if (input.variants !== undefined) {
-		// 	// Get existing variants for this product
-		// 	const existingVariants = await db
-		// 		.select()
-		// 		.from(productVariants)
-		// 		.where(eq(productVariants.productId, productId))
-		// 		.execute();
-
-		// 	// Delete existing variants and their images
-		// 	for (const variant of existingVariants) {
-		// 		// Delete variant images first
-		// 		await db.delete(productImage).where(eq(productImage.productVariantId, variant.id)).execute();
-		// 	}
-
-		// 	// Delete the variants themselves
-		// 	await db.delete(productVariants).where(eq(productVariants.productId, productId)).execute();
-
-		// 	// Create new variants if provided
-		// 	if (input.variants.length > 0) {
-		// 		for (const variant of input.variants) {
-		// 			const variantId = nanoid();
-
-		// 			const newVariant: ProductVariant = {
-		// 				id: variantId,
-		// 				productId,
-		// 				title: variant.title,
-		// 				sku: variant.sku || null,
-		// 				stock: variant.stock,
-		// 				price: variant.price.toString(),
-		// 				costPrice: input.costPrice?.toString() || null,
-		// 				compareAtPrice: input.compareAtPrice?.toString() || null,
-		// 				weightUnit: input.weightUnit || "KG",
-		// 				weight: input.weight?.toString() || null,
-		// 				createdAt: new Date().toISOString(),
-		// 				updatedAt: new Date().toISOString(),
-		// 			};
-
-		// 			// Create variant
-		// 			await db.insert(productVariants).values(newVariant).execute();
-
-		// 			// Add variant images if provided
-		// 			if (variant.images && variant.images.length > 0) {
-		// 				await db
-		// 					.insert(productImage)
-		// 					.values(
-		// 						variant.images.map((image, index) => ({
-		// 							id: nanoid(),
-		// 							productId,
-		// 							productVariantId: variantId,
-		// 							url: image.url,
-		// 							alt: image.alt || null,
-		// 							position: image.position || index,
-		// 							createdAt: new Date().toISOString(),
-		// 						})),
-		// 					)
-		// 					.execute();
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-		return { product: updatedProduct[0] || null };
+		return {
+			success: true,
+			productId,
+		};
 	} catch (error) {
-		console.error("Error updating product:", error);
-		return { product: null, error: error instanceof Error ? error.message : "Unknown error occurred" };
+		if (error instanceof z.ZodError) {
+			return {
+				error: error.flatten().fieldErrors,
+			};
+		}
+
+		console.error("Failed to update product:", error);
+
+		return {
+			error: "Failed to update product. Please try again.",
+		};
 	}
 }
-// export async function updateProduct(
-// 	input: UpdateProductInput,
-// ): Promise<{ product: Product | null; error?: string }> {
-// 	console.log("input", input);
-// 	// return { product: null };
-// 	try {
-// 		const product = await db.transaction(async (tx) => {
-// 			const { id, ...data } = input;
-
-// 			// Update product basic information
-// 			const updateData: Partial<Product> = {};
-// 			if (data.name) updateData.name = data.name;
-// 			if (data.slug) updateData.slug = data.slug;
-// 			else if (data.name) updateData.slug = slugify(data.name);
-// 			if (data.description !== undefined) updateData.description = data.description || null;
-// 			if (data.status) updateData.status = data.status;
-// 			updateData.updatedAt = new Date().toISOString();
-
-// 			if (Object.keys(updateData).length > 0) {
-// 				await tx.update(products).set(updateData).where(eq(products.id, id)).execute();
-// 			}
-
-// 			// Update categories if provided
-// 			if (data.categories) {
-// 				// Remove existing categories
-// 				await tx.delete(productCategories).where(eq(productCategories.productId, id)).execute();
-
-// 				// Add new categories
-// 				if (data.categories.length > 0) {
-// 					await tx
-// 						.insert(productCategories)
-// 						.values(
-// 							data.categories.map((categoryId) => ({
-// 								id: nanoid(),
-// 								productId: id,
-// 								categoryId,
-// 							})),
-// 						)
-// 						.execute();
-// 				}
-// 			}
-
-// 			// Update images if provided
-// 			if (data.images) {
-// 				// Remove existing product-level images
-// 				await tx
-// 					.delete(productImage)
-// 					.where(and(eq(productImage.productId, id), sql`${productImage.productVariantId} IS NULL`))
-// 					.execute();
-
-// 				// Add new images
-// 				if (data.images.length > 0) {
-// 					await tx
-// 						.insert(productImage)
-// 						.values(
-// 							data.images.map((image, index) => ({
-// 								id: nanoid(),
-// 								productId: id,
-// 								url: image.url,
-// 								alt: image.alt || null,
-// 								position: image.position || index,
-// 								createdAt: new Date().toISOString(),
-// 							})),
-// 						)
-// 						.execute();
-// 				}
-// 			}
-
-// 			// Update meta data if provided
-// 			if (data.metaData) {
-// 				const existingMetaData = await tx.select().from(metaData).where(eq(metaData.productId, id)).execute();
-
-// 				if (existingMetaData.length > 0) {
-// 					await tx
-// 						.update(metaData)
-// 						.set({
-// 							title: data.metaData.title !== undefined ? data.metaData.title : existingMetaData[0]?.title,
-// 							description:
-// 								data.metaData.description !== undefined
-// 									? data.metaData.description
-// 									: existingMetaData[0]?.description,
-// 						})
-// 						.where(eq(metaData.productId, id))
-// 						.execute();
-// 				} else {
-// 					await tx
-// 						.insert(metaData)
-// 						.values({
-// 							id: nanoid(),
-// 							productId: id,
-// 							title: data.metaData.title || null,
-// 							description: data.metaData.description || null,
-// 						})
-// 						.execute();
-// 				}
-// 			}
-
-// 			// Options and variants require more complex handling
-// 			// This is a simplistic approach - in a real app, you might want to handle
-// 			// updating existing options/variants rather than replacing them all
-// 			if (data.options || data.variants) {
-// 				// For simplicity, we'll get the full product data to work with
-// 				const updatedProduct = await getProductById(id);
-// 				return updatedProduct;
-// 			}
-
-// 			// Return the updated product
-// 			const updatedProduct = await getProductById(id);
-
-// 			return updatedProduct;
-// 		});
-// 		return { product: product || null };
-// 	} catch (error) {
-// 		console.error("Error updating product:", error);
-// 		// throw new Error("Failed to update product");
-// 		return { product: null, error: error instanceof Error ? error.message : "Unknown error occurred" };
-// 	}
-// }
 
 export async function checkProductSlug(input: {
 	slug: string;
@@ -712,7 +1094,7 @@ export async function getProductById(id: string) {
 				},
 				productOptions: {
 					with: {
-						productOptionValues: true,
+						values: true,
 					},
 				},
 				metaData: true,
@@ -767,7 +1149,19 @@ export async function getProductBySlug(slug: string) {
 				productImages: true,
 				productOptions: {
 					with: {
-						productOptionValues: true,
+						values: {
+							with: {
+								productVariantOptions: {
+									with: {
+										productVariant: {
+											columns: {
+												id: true,
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 				productCategories: {
@@ -777,19 +1171,48 @@ export async function getProductBySlug(slug: string) {
 				},
 				productVariants: {
 					with: {
-						productImages: true,
-						productVariantOptions: {
+						optionValues: {
 							with: {
-								productVariant: true,
 								productOptionValue: true,
+							},
+						},
+						productImages: true,
+					},
+				},
+			},
+		});
+		return product || null;
+	} catch (error) {
+		console.error("Error fetching product by slug:", error);
+		throw new Error("Failed to fetch product by slug");
+	}
+}
+
+export async function getProductVariantsByProductId(productId: string) {
+	noStore();
+	try {
+		const data = await db.query.productVariants.findMany({
+			where: eq(productVariants.productId, productId),
+			with: {
+				productImages: true,
+				optionValues: {
+					with: {
+						productOptionValue: {
+							with: {
+								productOption: {
+									with: {
+										values: true,
+									},
+								},
 							},
 						},
 					},
 				},
 			},
 		});
-		console.log("product", product);
-		return product || null;
+		// console.log("data", data);
+
+		return data || null;
 	} catch (error) {
 		console.error("Error fetching product by slug:", error);
 		throw new Error("Failed to fetch product by slug");
@@ -823,28 +1246,5 @@ export async function getProductsByCategory(categorySlug: string) {
 	} catch (error) {
 		console.error("Error fetching products by category:", error);
 		throw new Error("Failed to fetch products by category");
-	}
-}
-
-export async function getProductVariantsByProductId(productId: string) {
-	noStore();
-	try {
-		const data = await db.query.productVariants.findMany({
-			where: eq(productVariants.productId, productId),
-			with: {
-				productImages: true,
-				productVariantOptions: {
-					with: {
-						productOptionValue: true,
-					},
-				},
-			},
-		});
-		// console.log("data", data);
-
-		return data || null;
-	} catch (error) {
-		console.error("Error fetching product by slug:", error);
-		throw new Error("Failed to fetch product by slug");
 	}
 }
