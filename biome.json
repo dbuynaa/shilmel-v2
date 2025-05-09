@@ -36,6 +36,7 @@
 				"useOptionalChain": "error"
 			},
 			"correctness": {
+				"useHookAtTopLevel": "error",
 				"noEmptyPattern": "off",
 				"noPrecisionLoss": "error",
 				"noUnusedVariables": "off",

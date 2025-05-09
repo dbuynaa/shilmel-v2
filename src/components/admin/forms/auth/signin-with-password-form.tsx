@@ -1,7 +1,7 @@
 "use client";
 
 import { signInWithPassword } from "@/actions/auth";
-import { type SignInWithPasswordFormInput, signInWithPasswordSchema } from "@/validations/auth";
+import { type SignInWithPasswordFormInput, signInWithPasswordSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import * as React from "react";

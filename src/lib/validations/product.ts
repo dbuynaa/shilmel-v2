@@ -24,7 +24,8 @@ const inventorySchema = z.object({
 	stock: z.coerce
 		.number()
 		.int({ message: "Quantity must be a whole number" })
-		.min(0, { message: "Quantity must be a positive number" }),
+		.min(0, { message: "Quantity must be a positive number" })
+		.optional(),
 	weightUnit: z.enum(["KG", "G", "LB", "OZ"]).optional(),
 	weight: z.coerce.number().min(0, { message: "Weight must be a positive number" }).optional(),
 });

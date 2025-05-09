@@ -14,7 +14,7 @@ import {
 	type SignUpWithPasswordFormInput,
 	signInWithPasswordSchema,
 	signUpWithPasswordSchema,
-} from "@/validations/auth";
+} from "@/lib/validations/auth";
 import bcryptjs from "bcryptjs";
 // import crypto from "crypto"
 import { AuthError } from "next-auth";

@@ -1,7 +1,7 @@
 "use client";
 
 import { resetPassword } from "@/actions/auth";
-import { type PasswordResetFormInput, passwordResetSchema } from "@/validations/auth";
+import { type PasswordResetFormInput, passwordResetSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import * as React from "react";

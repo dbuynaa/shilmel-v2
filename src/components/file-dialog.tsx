@@ -5,7 +5,7 @@ import Image from "next/image";
 import * as React from "react";
 import Cropper, { type ReactCropperElement } from "react-cropper";
 import { type Accept, type FileRejection, type FileWithPath, useDropzone } from "react-dropzone";
-import type { FieldPath, FieldValues, Path, PathValue, UseFormSetValue } from "react-hook-form";
+import type { FieldPath, FieldValues } from "react-hook-form";
 
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ interface FileDialogProps<
 	TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends React.HTMLAttributes<HTMLDivElement> {
 	name: TName;
-	setValue: UseFormSetValue<TFieldValues>;
+	// setValue: UseFormSetValue<TFieldValues>;
 	accept?: Accept;
 	maxSize?: number;
 	maxFiles?: number;
@@ -32,7 +32,7 @@ interface FileDialogProps<
 
 export function FileDialog<TFieldValues extends FieldValues>({
 	name,
-	setValue,
+	// setValue,
 	accept = {
 		"image/*": [],
 	},
@@ -79,10 +79,10 @@ export function FileDialog<TFieldValues extends FieldValues>({
 		[maxSize, setFiles, toast],
 	);
 
-	React.useEffect(() => {
-		setValue(name, files as PathValue<TFieldValues, Path<TFieldValues>>);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [files]);
+	// React.useEffect(() => {
+	// 	setValue(name, files as PathValue<TFieldValues, Path<TFieldValues>>);
+	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, [files]);
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop,
@@ -125,7 +125,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
 					)}
 					{...props}
 				>
-					<input {...getInputProps()} />
+					<input type="file" {...getInputProps()} />
 					{isUploading ? (
 						<div className="group grid w-full place-items-center gap-1 sm:px-10">
 							<Icons.upload className="text-muted-foreground size-9 animate-pulse" aria-hidden="true" />

@@ -10,6 +10,7 @@ import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-mo
 import { AddToCartButton } from "@/components/store/add-to-cart-button";
 import { JsonLd, mappedProductToJsonLd } from "@/components/store/json-ld";
 import { MainProductImage } from "@/components/store/products/main-product-image";
+import { RelatedProducts } from "@/components/store/products/related-products";
 import { StickyBottom } from "@/components/store/sticky-bottom";
 import { YnsLink } from "@/components/store/yns-link";
 import {
@@ -78,8 +79,6 @@ export default async function SingleProductPage(props: {
 	const category = product.productCategories[0];
 	const images = product.productImages || [];
 
-	console.log("selectedVariant", variants);
-
 	return (
 		<article className="pb-12">
 			<Breadcrumb>
@@ -139,10 +138,10 @@ export default async function SingleProductPage(props: {
 						) : null}
 						<div className="mt-2">
 							{selectedVariant && selectedVariant.stock <= 0 && (
-								<div className="text-red-500 font-medium">out Of Stock</div>
+								<div className="text-red-500 font-medium">Out of Stock</div>
 							)}
 							{selectedVariant && selectedVariant.stock > 0 && (
-								<div className="text-green-500 font-medium">in Stock</div>
+								<div className="text-green-500 font-medium">In Stock</div>
 							)}
 						</div>
 					</div>
@@ -296,6 +295,7 @@ export default async function SingleProductPage(props: {
 			</Suspense>
 
 			<JsonLd jsonLd={mappedProductToJsonLd(product)} />
+			<RelatedProducts locale={locale} category={product.productCategories[0]?.category.slug} />
 		</article>
 	);
 }

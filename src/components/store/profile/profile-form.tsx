@@ -1,7 +1,7 @@
 "use client";
 
 import { updateUserProfile } from "@/actions/store/profile-actions";
-import { profileFormSchema } from "@/validations/profile";
+import { profileFormSchema } from "@/lib/validations/profile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

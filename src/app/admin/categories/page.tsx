@@ -1,6 +1,6 @@
 import { env } from "@/env";
+import { categoriesSearchParamsSchema } from "@/lib/validations/params";
 import type { SearchParams } from "@/types";
-import { categoriesSearchParamsSchema } from "@/validations/params";
 import type { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
 import * as React from "react";

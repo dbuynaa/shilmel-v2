@@ -14,9 +14,9 @@ import {
 } from "@/db/schema/schema";
 import type { Product, ProductOptionValue } from "@/db/types";
 import { slugify } from "@/lib/utils";
+import { searchParamsSchema } from "@/lib/validations/params";
+import { type ProductFormValues, productSchema } from "@/lib/validations/product";
 import type { SearchParams } from "@/types";
-import { searchParamsSchema } from "@/validations/params";
-import { type ProductFormValues, productSchema } from "@/validations/product";
 import { and, asc, desc, eq, isNull, like } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
@@ -579,7 +579,7 @@ export async function createProduct(values: ProductFormValues) {
 			costPrice: validatedFields.costPrice ? Number(validatedFields.costPrice) : null,
 			weight: validatedFields.weight ? Number(validatedFields.weight) : null,
 			weightUnit: validatedFields.weightUnit || "KG",
-			stock: validatedFields.stock,
+			stock: validatedFields.stock || 0,
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
 		};
@@ -806,7 +806,7 @@ export async function updateProduct(productId: string, values: ProductFormValues
 				costPrice: validatedFields.costPrice ? Number(validatedFields.costPrice) : null,
 				weight: validatedFields.weight ? Number(validatedFields.weight) : null,
 				weightUnit: validatedFields.weightUnit || "KG",
-				stock: validatedFields.stock,
+				stock: validatedFields.stock ? Number(validatedFields.stock) : 0,
 				updatedAt: now,
 			})
 			.where(eq(products.id, productId));

@@ -1,4 +1,4 @@
-import { emailSchema } from "@/validations/email";
+import { emailSchema } from "@/lib/validations/email";
 import * as z from "zod";
 
 const passwordSchema = z

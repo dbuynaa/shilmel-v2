@@ -2,8 +2,8 @@
 
 import { addItem, checkItem, type getItemById, updateItem } from "@/actions/inventory/items";
 import type { getAllCategories } from "@/actions/product/categories";
+import { type AddItemFormInput, itemSchema } from "@/lib/validations/inventory";
 import type { FileWithPreview } from "@/types";
-import { type AddItemFormInput, itemSchema } from "@/validations/inventory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateReactHelpers } from "@uploadthing/react";
 import Image from "next/image";

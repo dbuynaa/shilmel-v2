@@ -1,7 +1,7 @@
 "use client";
 
 import { updatePassword } from "@/actions/auth";
-import { type PasswordUpdateFormInput, passwordUpdateSchema } from "@/validations/auth";
+import { type PasswordUpdateFormInput, passwordUpdateSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import * as React from "react";

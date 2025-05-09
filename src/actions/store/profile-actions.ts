@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { profileFormSchema } from "@/validations/profile";
+import { profileFormSchema } from "@/lib/validations/profile";
 import { eq } from "drizzle-orm";
 import type { z } from "zod";
 

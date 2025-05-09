@@ -15,7 +15,7 @@ import {
 	getCategoryByNameSchema,
 	getCategoryBySlugSchema,
 	updateCategorySchema,
-} from "@/validations/inventory";
+} from "@/lib/validations/inventory";
 import { eq } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
 

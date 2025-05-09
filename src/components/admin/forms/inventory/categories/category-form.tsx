@@ -1,7 +1,7 @@
 "use client";
 
 import { addCategory, updateCategory } from "@/actions/product/categories";
-import { type UpdateCategoryFormInput, updateCategorySchema } from "@/validations/inventory";
+import { type UpdateCategoryFormInput, updateCategorySchema } from "@/lib/validations/inventory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
