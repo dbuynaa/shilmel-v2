@@ -26,6 +26,15 @@ export const psGetUserByResetPasswordToken = db
 	.where(eq(users.resetPasswordToken, sql.placeholder("resetPasswordToken")))
 	.prepare("psGetUserByResetPasswordToken");
 
+export const psMarkEmailAsVerified = db
+	.update(users)
+	.set({
+		emailVerified: sql`${sql.placeholder("emailVerified")}`,
+		emailVerificationToken: sql`${sql.placeholder("emailVerificationToken")}`,
+	})
+	.where(eq(users.emailVerificationToken, sql.placeholder("currentToken")))
+	.prepare("psMarkEmailAsVerified");
+
 export const psUpdateUserEmailVerificationToken = db
 	.update(users)
 	.set({
@@ -34,11 +43,40 @@ export const psUpdateUserEmailVerificationToken = db
 	.where(eq(users.email, sql.placeholder("email")))
 	.prepare("psUpdateUserEmailVerificationToken");
 
-export const psMarkEmailAsVerified = db
+export const psUpdateUserResetPasswordToken = db
+	.update(users)
+	.set({
+		resetPasswordToken: sql`${sql.placeholder("resetPasswordToken")}`,
+		resetPasswordTokenExpiry: sql`${sql.placeholder("resetPasswordTokenExpiry")}`,
+	})
+	.where(eq(users.email, sql.placeholder("email")))
+	.prepare("psUpdateUserResetPasswordToken");
+
+export const psUpdateUserPassword = db
+	.update(users)
+	.set({
+		password: sql`${sql.placeholder("password")}`,
+		resetPasswordToken: null,
+		resetPasswordTokenExpiry: null,
+	})
+	.where(eq(users.id, sql.placeholder("id")))
+	.prepare("psUpdateUserPassword");
+
+export const psLinkOAuthAccount = db
 	.update(users)
 	.set({
 		emailVerified: sql`${sql.placeholder("emailVerified")}`,
-		emailVerificationToken: sql`${sql.placeholder("emailVerificationToken")}`,
 	})
-	.where(eq(users.emailVerificationToken, sql`${sql.placeholder("currentToken")}`))
-	.prepare("psMarkEmailAsVerified");
+	.where(eq(users.id, sql.placeholder("id")))
+	.prepare("psLinkOAuthAccount");
+
+export const psCreateUser = db
+	.insert(users)
+	.values({
+		id: sql`${sql.placeholder("id")}`,
+		email: sql`${sql.placeholder("email")}`,
+		password: sql`${sql.placeholder("password")}`,
+		role: sql`${sql.placeholder("role")}`,
+		updatedAt: sql`${sql.placeholder("updatedAt")}`,
+	})
+	.prepare("psCreateUser");

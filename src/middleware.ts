@@ -19,10 +19,15 @@ export default async function middleware(req: NextRequest) {
 		return NextResponse.redirect(new URL("/signin", req.nextUrl));
 	}
 
-	// 5. Redirect to /app if the user is authenticated
-	if (isProtectedRoute && session?.user && req.nextUrl.pathname === "/admin") {
-		return NextResponse.redirect(new URL("/admin/home/dashboard", req.nextUrl));
+	// Check if user has admin role for admin routes
+	if (path.startsWith("/admin") && session?.user.role !== "ADMIN") {
+		return NextResponse.redirect(new URL("/", req.nextUrl));
 	}
+
+	// 5. Redirect to /app if the user is authenticated
+	// if (isProtectedRoute && session?.user && req.nextUrl.pathname === "/admin") {
+	// 	return NextResponse.redirect(new URL("/admin/home/dashboard", req.nextUrl));
+	// }
 
 	return NextResponse.next();
 }

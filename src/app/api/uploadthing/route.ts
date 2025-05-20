@@ -1,5 +1,5 @@
 // import { uploadFilesRouter } from "@/admin/api/uploadthing/core"
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { createRouteHandler } from "uploadthing/next";
 
 // import { uploadFilesRouter } from "@/app/api/uploadthing/core"

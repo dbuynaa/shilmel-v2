@@ -3,7 +3,7 @@
 import { getCartFromCookiesAction } from "@/actions/cart-actions";
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { addresses, orderItems, orders, payments, productVariants } from "@/db/schema";
+import { addresses, orderItems, orders, productVariants } from "@/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { and, eq, gte } from "drizzle-orm";
 import { z } from "zod";
@@ -120,20 +120,20 @@ export async function processCheckoutAction(data: CheckoutData) {
 				state: "CA",
 				country: "US",
 				postalCode: "12345",
-				street: "123 Main St",
+				address1: "",
 			})
 			.returning();
 
 		// Create order
-		await db.insert(orders).values({
-			id: orderId,
-			userId: userId,
-			shippingAddressId: shippingAddress!.id,
-			totalAmount: cart.total.toString(),
-			status: "PENDING",
-			paymentMethod: "card",
-			paymentStatus: "PENDING",
-		});
+		// await db.insert(orders).values({
+		// 	id: orderId,
+		// 	userId: userId,
+		// 	shippingAddressId: shippingAddress!.id,
+		// 	totalAmount: cart.total.toString(),
+		// 	status: "PENDING",
+		// 	paymentMethod: "card",
+		// 	paymentStatus: "PENDING",
+		// });
 
 		// Create order items
 		await Promise.all(
@@ -153,27 +153,27 @@ export async function processCheckoutAction(data: CheckoutData) {
 					throw new Error(`Product variant not found: ${item.variant.sku}`);
 				}
 
-				return db.insert(orderItems).values({
-					orderId,
-					productId: item.id,
-					variantId: variant.id,
-					quantity: item.quantity,
-					price: item.price.toString(),
-				});
+				// return db.insert(orderItems).values({
+				// 	orderId,
+				// 	productId: item.id,
+				// 	variantId: variant.id,
+				// 	quantity: item.quantity,
+				// 	price: item.price.toString(),
+				// });
 			}),
 		);
 
 		// Create payment record
-		await db.insert(payments).values({
-			id: paymentId,
-			orderId,
-			amount: cart.total.toString(),
-			status: "COMPLETED",
-			transactionId: paymentResult.transactionId!,
-		});
+		// await db.insert(payments).values({
+		// 	id: paymentId,
+		// 	orderId,
+		// 	amount: cart.total.toString(),
+		// 	status: "COMPLETED",
+		// 	transactionId: paymentResult.transactionId!,
+		// });
 
-		// Update order with payment ID and status
-		await db.update(orders).set({ paymentId, paymentStatus: "COMPLETED" }).where(eq(orders.id, orderId));
+		// // Update order with payment ID and status
+		// await db.update(orders).set({ paymentId, paymentStatus: "COMPLETED" }).where(eq(orders.id, orderId));
 
 		return {
 			success: true,
@@ -224,7 +224,7 @@ async function rollbackCheckout({
 		await rollbackStockUpdates(stockUpdates);
 
 		// Delete payment record if it exists
-		await db.delete(payments).where(eq(payments.id, paymentId));
+		// await db.delete(payments).where(eq(payments.id, paymentId));
 
 		// Delete order items
 		await db.delete(orderItems).where(eq(orderItems.orderId, orderId));

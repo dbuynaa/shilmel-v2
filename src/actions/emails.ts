@@ -41,7 +41,7 @@ export async function checkIfEmailVerified(email: string): Promise<boolean> {
 	try {
 		noStore();
 		const user = await getUserByEmail(email);
-		return user?.emailVerified instanceof Date ? true : false;
+		return user?.emailVerified ? true : false;
 	} catch (error) {
 		console.error(error);
 		throw new Error("Error checking if email verified");

@@ -6,7 +6,7 @@ import {
 	psGetUserById,
 	psGetUserByResetPasswordToken,
 } from "@/db/prepared/auth.statements";
-import type { User } from "@/db/schema";
+import type { User } from "@/db/types/index";
 import { unstable_noStore as noStore } from "next/cache";
 
 export async function getUserById(id: string): Promise<User | null> {

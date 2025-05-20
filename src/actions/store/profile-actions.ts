@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { profileFormSchema } from "@/validations/profile";
+import { profileFormSchema } from "@/lib/validations/profile";
 import { eq } from "drizzle-orm";
 import type { z } from "zod";
 
@@ -18,10 +18,14 @@ export async function getUserProfile() {
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, session.user.id),
 		with: {
-			addresses: true,
-			orders: {
-				limit: 5,
-				orderBy: (orders, { desc }) => [desc(orders.createdAt)],
+			customer: {
+				with: {
+					addresses: true,
+					orders: {
+						limit: 5,
+						orderBy: (orders, { desc }) => [desc(orders.createdAt)],
+					},
+				},
 			},
 		},
 	});
@@ -44,9 +48,9 @@ export async function updateUserProfile(data: ProfileFormValues) {
 	const updatedUser = await db
 		.update(users)
 		.set({
-			name: validatedData.name,
+			firstName: validatedData.name,
 			email: validatedData.email,
-			image: validatedData.image,
+			// image: validatedData.image,
 		})
 		.where(eq(users.id, session.user.id))
 		.returning();
@@ -54,39 +58,39 @@ export async function updateUserProfile(data: ProfileFormValues) {
 	return updatedUser[0];
 }
 
-export async function updateProfileImage(imageUrl: string) {
-	const session = await auth();
-	if (!session?.user?.id) {
-		throw new Error("Not authenticated");
-	}
+// export async function updateProfileImage(imageUrl: string) {
+// 	const session = await auth();
+// 	if (!session?.user?.id) {
+// 		throw new Error("Not authenticated");
+// 	}
 
-	const updatedUser = await db
-		.update(users)
-		.set({
-			image: imageUrl,
-		})
-		.where(eq(users.id, session.user.id))
-		.returning();
+// 	const updatedUser = await db
+// 		.update(users)
+// 		.set({
+// 			image: imageUrl,
+// 		})
+// 		.where(eq(users.id, session.user.id))
+// 		.returning();
 
-	return updatedUser[0];
-}
+// 	return updatedUser[0];
+// }
 
-export async function deleteProfileImage() {
-	const session = await auth();
-	if (!session?.user?.id) {
-		throw new Error("Not authenticated");
-	}
+// export async function deleteProfileImage() {
+// 	const session = await auth();
+// 	if (!session?.user?.id) {
+// 		throw new Error("Not authenticated");
+// 	}
 
-	const updatedUser = await db
-		.update(users)
-		.set({
-			image: null,
-		})
-		.where(eq(users.id, session.user.id))
-		.returning();
+// 	const updatedUser = await db
+// 		.update(users)
+// 		.set({
+// 			image: null,
+// 		})
+// 		.where(eq(users.id, session.user.id))
+// 		.returning();
 
-	return updatedUser[0];
-}
+// 	return updatedUser[0];
+// }
 
 export async function getCustomerProfile(customerId: string) {
 	const session = await auth();
@@ -94,7 +98,7 @@ export async function getCustomerProfile(customerId: string) {
 		throw new Error("Not authenticated");
 	}
 
-	const customer = await db.query.users.findFirst({
+	const customer = await db.query.customers.findFirst({
 		where: eq(users.id, customerId),
 		with: {
 			addresses: true,

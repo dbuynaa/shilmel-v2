@@ -1,7 +1,7 @@
 "use client";
 
 import { addUnit } from "@/actions/inventory/units";
-import { unitSchema } from "@/validations/inventory";
+import { unitSchema } from "@/lib/validations/inventory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

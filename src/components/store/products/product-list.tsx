@@ -1,15 +1,18 @@
-import type { ProudctWithVariants } from "@/db/schema";
 import { getLocale } from "@/i18n/server";
 import Image from "next/image";
 
-import { JsonLd, mappedProductsToJsonLd } from "@/components/store/json-ld";
+// import { JsonLd, mappedProductsToJsonLd } from "@/components/store/json-ld";
 import { YnsLink } from "@/components/store/yns-link";
+import type { InferResultType } from "@/db/types/InferResult";
+// import type { psGetAllProducts } from "@/db/prepared/product.statements";
 import { formatMoney } from "@/lib/utils";
 
+type ProductType = InferResultType<"products", { productImages: true }>;
+// type ProductWithVariants = Awaited<ReturnType<typeof psGetAllProducts.execute>>[number];
 export const ProductList = async ({
 	products,
 }: {
-	products: ProudctWithVariants[];
+	products: ProductType[];
 }) => {
 	const locale = await getLocale();
 
@@ -21,11 +24,11 @@ export const ProductList = async ({
 						<li key={product.id} className="group">
 							<YnsLink href={`/product/${product.slug}`}>
 								<article className="bg-card overflow-hidden">
-									{product?.variants?.[0]?.images[0] && (
+									{product?.productImages?.[0] && (
 										<div className="bg-tertiary aspect-square h-full overflow-hidden rounded-lg">
 											<Image
 												className="group-hover:rotate hover-perspective bg-tertiary h-full w-full object-cover object-center transition-opacity group-hover:opacity-75"
-												src={product.variants[0].images[0].url}
+												src={product.productImages[0].url}
 												width={768}
 												height={768}
 												loading={idx < 3 ? "eager" : "lazy"}
@@ -55,7 +58,7 @@ export const ProductList = async ({
 					);
 				})}
 			</ul>
-			<JsonLd jsonLd={mappedProductsToJsonLd(products)} />
+			{/* <JsonLd jsonLd={mappedProductsToJsonLd(products)} /> */}
 		</>
 	);
 };

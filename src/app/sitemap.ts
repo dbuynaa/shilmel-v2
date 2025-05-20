@@ -1,16 +1,13 @@
-import { db } from "@/db";
-import { env } from "@/env.mjs";
+import { psGetAllCategories } from "@/db/prepared/category.statements";
+import { psGetAllProducts } from "@/db/prepared/product.statements";
+import { env } from "@/env";
 import type { MetadataRoute } from "next";
 
 type Item = MetadataRoute.Sitemap[number];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const dbProducts = await db.query.products.findMany({
-		limit: 100,
-	});
-	const categories = await db.query.products.findMany({
-		limit: 100,
-	});
+	const dbProducts = await psGetAllProducts.execute({ limit: 1000, offset: 0 });
+	const categories = await psGetAllCategories.execute({ limit: 1000, offset: 0 });
 
 	const productUrls = dbProducts.map(
 		(product) =>
@@ -26,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		(category) =>
 			({
 				url: `${env.NEXT_PUBLIC_APP_URL}/category/${category.slug}`,
-				lastModified: new Date(),
+				lastModified: new Date(category.updatedAt),
 				changeFrequency: "daily",
 				priority: 0.5,
 			}) satisfies Item,

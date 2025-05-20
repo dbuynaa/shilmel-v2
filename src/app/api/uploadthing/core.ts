@@ -8,7 +8,6 @@ export const uploadFilesRouter = {
 	productImage: f({ image: { maxFileSize: "4MB", maxFileCount: 5 } })
 		.middleware(async (_req) => {
 			const session = await auth();
-			const user = session?.user;
 
 			// if (!session) throw new Error("Unauthorized")
 			if (!session) throw new UploadThingError("Unauthorized");

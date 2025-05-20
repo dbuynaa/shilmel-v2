@@ -1,7 +1,5 @@
-import type { InferResultType } from "@/db/schema/utils";
+import type { InferResultType } from "@/db/types/InferResult";
 import type { ItemList, Product as SchemaProduct, Thing, WebSite, WithContext } from "schema-dts";
-
-import { formatProductName } from "@/lib/utils";
 
 export const JsonLd = <T extends Thing>({
 	jsonLd,
@@ -11,25 +9,42 @@ export const JsonLd = <T extends Thing>({
 	return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />;
 };
 
-type ProductWithVariants = InferResultType<"products", { variants: { with: { images: true } } }>;
+type ProductWithVariants = InferResultType<
+	"products",
+	{
+		productCategories: {
+			with: {
+				category: true;
+			};
+		};
+		productOptions: {
+			with: {
+				values: true;
+			};
+		};
+		productImages: true;
+		productVariants: { with: { productImages: true } };
+	}
+>;
 
 export const mappedProductToJsonLd = (product: ProductWithVariants): WithContext<SchemaProduct> => {
-	const variant = product.variants[0];
-	const productName = formatProductName(product.name, variant?.size ?? undefined);
+	const imagePos = product.productImages.findIndex((i) => i.position === 1);
 
 	return {
 		"@context": "https://schema.org",
 		"@type": "Product",
-		name: productName,
-		image: variant?.images[0]?.url,
+		name: product.name,
+		image: product.productImages[imagePos]?.url,
 		description: product.description ?? undefined,
 		sku: product.id,
 		offers: {
 			"@type": "Offer",
-			price: product.price.toString(),
+			price: product.productVariants[0]?.price.toString(),
 			priceCurrency: "USD",
 			availability:
-				(variant?.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+				(product.productVariants[0]?.stock ?? 0) > 0
+					? "https://schema.org/InStock"
+					: "https://schema.org/OutOfStock",
 		},
 	};
 };

@@ -2,7 +2,6 @@
 
 import type { Cart, CartItem } from "@/types/cart";
 
-import { psGetProductVariantBySku } from "@/db/prepared/product.statements";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 

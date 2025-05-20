@@ -31,13 +31,16 @@ export function SubSubHeader(): JSX.Element {
 								"px-2 capitalize",
 							)}
 						>
-							{index === 0 ? (
+							{/* {index === 0 ? (
 								<p>{pathNames[0]}</p>
 							) : (
 								<Link href={href} className="tracking-wide">
 									{link.replace(/-/g, " ")}
 								</Link>
-							)}
+							)} */}
+							<Link href={href} className="tracking-wide">
+								{link.replace(/-/g, " ")}
+							</Link>
 						</li>
 						{pathNames.length !== index + 1 && (
 							<Icons.chevronRight className="text-muted-foreground size-4" />

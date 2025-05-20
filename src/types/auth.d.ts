@@ -1,6 +1,6 @@
 import type { DefaultSession } from "next-auth";
 
-export type UserRole = "USER" | "ADMIN";
+export type UserRole = "ADMIN" | "STAFF" | "CUSTOMER";
 
 export type ExtendedUser = DefaultSession["user"] & {
 	role: UserRole;

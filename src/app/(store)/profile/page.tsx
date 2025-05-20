@@ -4,7 +4,7 @@ import { getUserProfile } from "@/actions/store/profile-actions";
 import { CreditCard, MapPin, Package, Settings, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,14 +33,12 @@ export default async function AccountOverviewPage() {
 	// Format user data for display
 	const accountDetails: AccountDetails = {
 		id: user.id,
-		name: user.name,
+		name: user.firstName,
 		email: user.email,
-		image: user.image,
-		lastActivityDate: user.lastActivityDate,
 	};
 
-	const addresses = user.addresses;
-	const recentOrders = user.orders ?? [];
+	const addresses = user.customer?.addresses;
+	const recentOrders = user.customer?.orders ?? [];
 
 	return (
 		<>
@@ -54,20 +52,14 @@ export default async function AccountOverviewPage() {
 					<CardContent>
 						<div className="flex items-center space-x-4">
 							<Avatar className="h-20 w-20">
-								{accountDetails.image ? (
-									<AvatarImage src={accountDetails.image} alt={accountDetails.name ?? ""} />
-								) : (
-									<AvatarFallback className="text-2xl">
-										{accountDetails.name?.charAt(0) ?? "?"}
-									</AvatarFallback>
-								)}
+								<AvatarFallback className="text-2xl">{accountDetails.name?.charAt(0) ?? "?"}</AvatarFallback>
 							</Avatar>
 							<div>
 								<h3 className="font-semibold">{accountDetails.name ?? "No name set"}</h3>
 								<p className="text-muted-foreground text-sm">{accountDetails.email}</p>
-								<p className="text-muted-foreground text-sm">
+								{/* <p className="text-muted-foreground text-sm">
 									Last active: {accountDetails.lastActivityDate?.toLocaleDateString() ?? "Never"}
-								</p>
+								</p> */}
 							</div>
 						</div>
 						<div className="mt-4">
@@ -130,10 +122,10 @@ export default async function AccountOverviewPage() {
 						<CardTitle>Default Address</CardTitle>
 					</CardHeader>
 					<CardContent>
-						{addresses.length > 0 ? (
+						{addresses && addresses?.length > 0 ? (
 							<div>
 								<p className="font-medium">{accountDetails.name}</p>
-								<p className="text-muted-foreground text-sm">{addresses[0]?.street}</p>
+								<p className="text-muted-foreground text-sm">{addresses[0]?.state}</p>
 								<p className="text-muted-foreground text-sm">
 									{addresses[0]?.city}, {addresses[0]?.state} {addresses[0]?.postalCode}
 								</p>

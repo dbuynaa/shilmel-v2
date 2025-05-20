@@ -1,6 +1,6 @@
 "use client";
 
-import { type SignInWithEmailFormInput, signInWithEmailSchema } from "@/validations/auth";
+import { type SignInWithEmailFormInput, signInWithEmailSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";

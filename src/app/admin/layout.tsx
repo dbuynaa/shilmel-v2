@@ -1,21 +1,26 @@
-import type * as React from "react";
-import type { JSX } from "react";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SiteHeader } from "@/components/site-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { Header } from "@/components/admin/nav/admin/header";
-import { Sidebar } from "@/components/admin/nav/admin/sidebar";
-
-interface AppLayoutProps {
-	children: React.ReactNode;
-}
-
-export default async function AdminLayout({ children }: AppLayoutProps): Promise<JSX.Element> {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+	// const session = await auth();
+	// if (!session) {
+	// 	redirect("/login");
+	// }
 	return (
-		<div className="flex">
-			<Sidebar />
-			<div className="h-screen w-full overflow-y-auto">
-				<Header />
-				<main>{children}</main>
-			</div>
-		</div>
+		<SidebarProvider
+			style={
+				{
+					"--sidebar-width": "calc(var(--spacing) * 72)",
+					"--header-height": "calc(var(--spacing) * 12)",
+				} as React.CSSProperties
+			}
+		>
+			<AppSidebar variant="inset" />
+			<SidebarInset>
+				<SiteHeader />
+				{children}
+			</SidebarInset>
+		</SidebarProvider>
 	);
 }

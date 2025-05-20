@@ -1,7 +1,7 @@
 "use client";
 
 import { resendEmailVerificationLink } from "@/actions/emails";
-import { type EmailVerificationFormInput, emailVerificationSchema } from "@/validations/auth";
+import { type EmailVerificationFormInput, emailVerificationSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import * as React from "react";

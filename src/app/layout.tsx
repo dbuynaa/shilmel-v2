@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 import { auth } from "@/auth";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { IntlClientProvider } from "@/i18n/client";
 import { getLocale, getMessages } from "@/i18n/server";
 import type { Metadata, Viewport } from "next";
@@ -10,7 +10,7 @@ import type * as React from "react";
 
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Toaster } from "@/components/ui/toaster";
-import { fontInter } from "@/config/fonts";
+// import { fontInter } from "@/config/fonts";
 import config from "@/config/store.config";
 
 import { ThemeProvider } from "@/lib/theme-provider";
@@ -78,7 +78,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
 
 	return (
 		<html lang={locale} suppressHydrationWarning>
-			<body className={cn("font-sans antialiased", fontInter.className)}>
+			<body className={cn("font-sans antialiased")}>
 				<SessionProvider session={session}>
 					<IntlClientProvider messages={messages} locale={locale}>
 						<ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>

@@ -1,5 +1,5 @@
 import { getUserByResetPasswordToken } from "@/actions/users";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { JSX } from "react";
